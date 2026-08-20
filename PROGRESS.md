@@ -122,6 +122,52 @@ behaviour switches, the tool defaults, export, import and reset.
   choice persists.
 - Missing lines fall back to English automatically.
 
+### What testing actually caught
+
+Listing these because "we tested it" means nothing without saying what the
+testing found. Every one of these was a real defect, found by looking, and fixed.
+
+1. **The page could hang forever on start-up.** If this device's storage was
+   locked by another tab, the browser's database call never returned and never
+   failed — so the interface sat at "Checking…" indefinitely, which is precisely
+   the never-ending spinner the brief forbids. Now it gives up after six seconds
+   and says, in plain words, what is wrong and that everything else still works.
+   Verified: the message appears at exactly 6.0 seconds.
+
+2. **Loading files waited on saving them.** Dropping files took six seconds to
+   show anything when storage was struggling, because the list waited for the
+   save to finish. Saving is only there so a refresh does not lose your work, so
+   it now happens in the background. Files appear in **14 milliseconds** instead
+   of 6,000, and if the save later fails you are told then.
+
+3. **The site held its database open forever**, so a second tab clearing or
+   updating it would block indefinitely. It now steps aside when another tab
+   needs it.
+
+4. **Three colour pairings failed the accessibility standard** — control borders
+   in Paper, Midnight and Sepia, between 2.41:1 and 2.78:1 where 3:1 is required.
+   Found by the contrast script, not by eye. Fixed and re-verified.
+
+5. **The memory estimate was too optimistic.** Chrome reports the same 4 GB limit
+   on a small laptop as on a large workstation, so the warning would rarely have
+   fired where it mattered. It now takes the smaller of what the browser claims
+   and what the machine's actual memory suggests.
+
+6. **Search did not understand how people type.** "make smaller", "shrink my
+   photos" and "get rid of the location" all returned nothing or the wrong tool.
+   Now handled properly, with everyday synonyms.
+
+7. **Touch targets were too small.** Measured at 375 pixels wide: pin buttons
+   30 pixels, navigation links 23. Both now 44.
+
+8. **An unidentifiable file said nothing at all.** It now explains that the
+   contents match no known format and that no tool will offer to open it.
+
+Tested under deliberately broken storage as a final check: the site loads
+completely, all 41 tools appear, files are identified correctly in 14 ms, and
+three honest messages explain the empty file, the misnamed file and the storage
+failure. Zero external requests throughout.
+
 ---
 
 ## Known imperfect — read this part

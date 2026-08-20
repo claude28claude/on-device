@@ -19,6 +19,12 @@ export function idbAvailable() {
   return typeof indexedDB !== "undefined" && indexedDB !== null;
 }
 
+/* Opening the database can hang forever rather than failing - another
+   tab holding it open, or a deletion still in progress, both do it.
+   A page that waits forever is worse than one that says what is wrong,
+   so we give up after a few seconds and explain. */
+const OPEN_TIMEOUT_MS = 6000;
+
 function openDb() {
   if (dbPromise) return dbPromise;
   dbPromise = new Promise((resolve, reject) => {
@@ -26,15 +32,35 @@ function openDb() {
       reject(new Error("This browser does not provide on-device storage (IndexedDB)."));
       return;
     }
+
+    let settled = false;
+    const finish = (fn, value) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      fn(value);
+    };
+
+    const timer = window.setTimeout(() => {
+      finish(reject, new Error(
+        "On-device storage did not respond. This normally means another tab of this " +
+        "site is holding it open, or it is being cleared. Everything still works - " +
+        "loaded files just will not survive a refresh until the other tab is closed."
+      ));
+      /* Let a later attempt try again rather than caching the failure. */
+      dbPromise = null;
+    }, OPEN_TIMEOUT_MS);
+
     let request;
     try {
       request = indexedDB.open(DB_NAME, DB_VERSION);
     } catch (err) {
-      reject(new Error(
+      finish(reject, new Error(
         "On-device storage could not be opened: " + (err && err.message ? err.message : err)
       ));
       return;
     }
+
     request.onupgradeneeded = () => {
       const db = request.result;
       for (const name of STORES) {
@@ -43,15 +69,31 @@ function openDb() {
         }
       }
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const db = request.result;
+      /* If another tab of this site needs to upgrade or clear the
+         database, step out of its way instead of blocking it forever.
+         The next thing that needs the database will simply reopen it. */
+      db.onversionchange = () => {
+        db.close();
+        dbPromise = null;
+        console.info("[On Device] Closed the on-device database so another tab could update it.");
+      };
+      db.onclose = () => {
+        dbPromise = null;
+      };
+      finish(resolve, db);
+    };
     request.onerror = () =>
-      reject(new Error(
+      finish(reject, new Error(
         "On-device storage was refused by the browser. This is normal in some private " +
         "windows. Files will still work, they just will not survive a refresh. " +
         (request.error && request.error.message ? request.error.message : "")
       ));
     request.onblocked = () =>
-      reject(new Error("On-device storage is locked by another tab of this site. Close the other tab and try again."));
+      finish(reject, new Error(
+        "On-device storage is locked by another tab of this site. Close the other tab and reload."
+      ));
   });
   return dbPromise;
 }

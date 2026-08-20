@@ -154,7 +154,7 @@ export function toast(message, { kind = "info", title = "", timeout = 6000 } = {
     icon("x", 16)
   );
   const node = el("div", { class: "toast", dataset: { kind } }, [
-    icon(kind === "error" ? "alert" : kind === "ok" ? "check" : "info", 18),
+    icon(kind === "error" || kind === "warn" ? "alert" : kind === "ok" ? "check" : "info", 18),
     el("div", { class: "t-text" }, [
       title ? el("strong", { class: "t-title", text: title }) : null,
       el("span", { text: message })

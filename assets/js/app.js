@@ -212,14 +212,32 @@ export async function initPage({ pathPrefix = "", withDropPanel = null } = {}) {
 
   window.addEventListener("ondevice:show-not-built", (e) => showNotBuilt(e.detail.id));
 
+  /* Storage trouble found after the interface has already moved on. */
+  workspace.onStorageProblem((message) => {
+    toast(message, { kind: "warn", title: "Could not save to this device", timeout: 12000 });
+  });
+
   dropzone.installWindowDrop((fileList) => dropzone.handleFiles(fileList));
   if (withDropPanel) {
     dropzone.mountPanel(withDropPanel, { onFiles: (fileList) => dropzone.handleFiles(fileList) });
   }
 
-  await workspace.applyPendingAutoClear();
-  await workspace.restore();
-  await tray.restore();
+  /* Reading back what was stored last time is a convenience, never a
+     requirement. If storage is unavailable, slow or locked by another
+     tab, the interface must still finish loading and say what happened
+     rather than sitting there. */
+  try {
+    await workspace.applyPendingAutoClear();
+    await workspace.restore();
+    await tray.restore();
+  } catch (err) {
+    console.error("[On Device] Previously loaded files could not be read back:", err);
+    toast(
+      (err && err.message ? err.message : String(err)) +
+      " Everything else on this page works normally.",
+      { kind: "warn", title: "Could not reopen your last session", timeout: 12000 }
+    );
+  }
   dropzone.renderFiles();
 
   registerServiceWorker();

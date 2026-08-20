@@ -160,15 +160,18 @@ export async function add(fileList) {
   }
 
   if (added.length) {
-    await persist().catch((err) => {
-      problems.push({
-        kind: "storage",
-        message:
-          "These files could not be saved on this device, so a refresh will lose them. " +
-          (err && err.message ? err.message : "")
-      });
-    });
+    /* Show the files immediately. They are already in memory and usable.
+       Writing them to this device's storage is a convenience for surviving
+       a refresh, so it happens in the background - the interface never
+       waits for it, and if it fails we say so then rather than freezing
+       now. */
     emit("add", added);
+    persist().catch((err) => {
+      reportStorageProblem(
+        "These files are loaded and ready to use, but could not be saved on this " +
+        "device, so a refresh will lose them. " + (err && err.message ? err.message : "")
+      );
+    });
   } else if (problems.length) {
     emit("problem", problems);
   }
@@ -176,13 +179,38 @@ export async function add(fileList) {
   return { added, problems };
 }
 
+/* Storage trouble discovered after the fact, once the interface has
+   already moved on. */
+const storageListeners = new Set();
+
+export function onStorageProblem(fn) {
+  storageListeners.add(fn);
+  return () => storageListeners.delete(fn);
+}
+
+function reportStorageProblem(message) {
+  console.warn("[On Device] " + message);
+  for (const fn of storageListeners) {
+    try {
+      fn(message);
+    } catch (err) {
+      console.error("[On Device] A storage listener threw:", err);
+    }
+  }
+}
+
 export async function removeFile(id) {
   const record = files.get(id);
   if (!record) return false;
   files.delete(id);
   if (record.thumbUrl) revoke(record.thumbUrl);
-  await persist().catch((err) => console.error("[On Device] Could not update stored files:", err));
   emit("remove", record);
+  persist().catch((err) =>
+    reportStorageProblem(
+      "The file was removed here, but this device's saved copy could not be updated. " +
+      (err && err.message ? err.message : "")
+    )
+  );
   return true;
 }
 
