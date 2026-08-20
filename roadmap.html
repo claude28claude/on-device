@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>What is built &mdash; On Device</title>
+<meta name="description" content="An honest list of every tool, whether it exists yet, and which phase it arrives in.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>What is built, and what is not</h1>
+      <p class="lede">
+        This site is being built one phase at a time. Nothing appears on the homepage
+        pretending to work before it does. This page is the honest state of it,
+        generated from the same list the homepage uses, so it cannot drift out of date.
+      </p>
+    </div>
+
+    <div class="stat-row" id="roadmap-stats"></div>
+
+    <section class="mb-5">
+      <h2>The phases</h2>
+      <table class="status-table">
+        <thead>
+          <tr><th scope="col">Phase</th><th scope="col">What it covers</th><th scope="col">State</th></tr>
+        </thead>
+        <tbody id="phase-table"></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Every tool</h2>
+      <p class="prose">
+        Forty-one tools are planned. A tool marked <span class="badge badge-ready">Ready</span>
+        has been built and tested with real files. Everything else says which phase it
+        arrives in.
+      </p>
+      <div id="tool-table"></div>
+    </section>
+
+    <section class="prose">
+      <h2>Things that may not survive</h2>
+      <p>
+        Being straight about this now rather than at the end. These are the parts most
+        likely to be cut or delivered in a reduced form, and why.
+      </p>
+      <ul>
+        <li>
+          <strong>Compressing a PDF.</strong> Re-encoding the pictures inside a PDF while
+          keeping its text selectable is genuinely difficult in a browser. The reliable
+          version turns pages into pictures, which saves a lot of space but loses
+          selectable text. It will ship clearly labelled, or not at all.
+        </li>
+        <li>
+          <strong>AVIF export.</strong> Only some browsers can write this format. It will
+          be best-effort with a plain warning, never a silent failure.
+        </li>
+        <li>
+          <strong>Password-protected zip files.</strong> Reading them is fine. Creating
+          them only works in formats that are either weak or poorly supported. The
+          "Lock a file" tool does this properly instead.
+        </li>
+        <li>
+          <strong>Video and audio.</strong> Works, but slowly, and needs a large one-time
+          download. Last, and only if everything else is finished.
+        </li>
+        <li>
+          <strong>Very large files on a phone.</strong> Frequently impossible. The site
+          measures the available memory and refuses before starting, with the real
+          numbers, rather than crashing your tab.
+        </li>
+      </ul>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-roadmap.js"></script>
+</body>
+</html>

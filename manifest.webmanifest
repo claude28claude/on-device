@@ -1,0 +1,38 @@
+{
+  "name": "On Device — file tools that never upload anything",
+  "short_name": "On Device",
+  "description": "PDF, image, QR and file tools that run entirely inside your own browser. Nothing is uploaded, because there is nowhere to upload to.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui", "browser"],
+  "orientation": "any",
+  "background_color": "#faf9f7",
+  "theme_color": "#1750c8",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "photo"],
+  "icons": [
+    { "src": "assets/icons/icon-32.png",  "sizes": "32x32",   "type": "image/png" },
+    { "src": "assets/icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-256.png", "sizes": "256x256", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "How this works",
+      "short_name": "Trust",
+      "description": "The live network monitor and how to check for yourself",
+      "url": "./trust.html"
+    },
+    {
+      "name": "Settings",
+      "short_name": "Settings",
+      "description": "Themes, defaults and language",
+      "url": "./settings.html"
+    }
+  ]
+}

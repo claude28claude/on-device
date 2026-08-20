@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>How this works, and how to check — On Device</title>
+<meta name="description" content="A live count of every network request this page has made, and the three ways you can verify for yourself that your files never leave your device.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>How this works, and how to check</h1>
+      <p class="lede">
+        Every site that handles your files says it respects your privacy. Saying it
+        costs nothing. This page is here so you do not have to take our word for it.
+      </p>
+    </div>
+
+    <!-- ============ 1. What "in your browser" means ============ -->
+    <section class="prose">
+      <h2>What “it runs in your browser” actually means</h2>
+      <p>
+        When you use most file websites, your file is copied over the internet to a
+        computer owned by that company. Their computer does the work and sends a
+        result back. Your file sat on someone else’s hard drive, at least for a
+        while. What happened to it after that is a matter of trust.
+      </p>
+      <p>
+        This site does not do that. Your browser — Chrome, Safari, Firefox, Edge —
+        is already a very capable piece of software. It can read a PDF, decode a
+        photo, and re-encode an image without help from anyone. This site is a set
+        of instructions that tells your browser how to do those jobs. The
+        instructions travel to you; your file never travels anywhere.
+      </p>
+      <p>
+        There is no account to make, because there is nothing to attach an account
+        to. There is no upload progress bar, because there is no upload. There is no
+        “your file will be deleted in one hour” promise, because your file was never
+        anywhere that needed deleting.
+      </p>
+    </section>
+
+    <!-- ============ 2. Live network monitor ============ -->
+    <section>
+      <h2 id="monitor">Live network monitor</h2>
+      <p class="prose">
+        This is not a graphic. It is a live count, taken from your browser’s own
+        records, of every network request this page has made since you opened it.
+      </p>
+
+      <div class="stat-row" id="monitor-stats"></div>
+
+      <div class="panel mb-4">
+        <h3>Prove it to yourself, right now</h3>
+        <p>
+          This button deliberately tries to contact <span class="mono">example.com</span>,
+          a site with nothing to do with us. Watch it be refused. If it is ever
+          <em>not</em> refused, this whole page is a lie and you should say so
+          loudly.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" type="button" id="test-outbound"
+                  data-i18n="trust.test.button">Try to contact another site</button>
+        </div>
+        <div id="test-result" class="mt-0"></div>
+      </div>
+
+      <h3 id="log">Everything this page has loaded</h3>
+      <p class="prose">
+        Every item below is a file belonging to this site — the page itself, its
+        styles, its code. Anything loaded from anywhere else would appear in red,
+        and there should never be one.
+      </p>
+      <div class="log-scroll">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th scope="col" data-i18n="trust.log.url">Address</th>
+              <th scope="col" data-i18n="trust.log.type">Kind</th>
+              <th scope="col" data-i18n="trust.log.size">Size</th>
+              <th scope="col" data-i18n="trust.log.where">Where from</th>
+            </tr>
+          </thead>
+          <tbody id="log-body"></tbody>
+        </table>
+      </div>
+      <p class="text-sm muted" id="log-note"></p>
+    </section>
+
+    <!-- ============ 3. Check it yourself ============ -->
+    <section class="prose">
+      <h2>Check it yourself, with your browser’s own tools</h2>
+      <p>
+        You do not need to know anything technical for this. You are going to open a
+        panel that shows every request your browser makes, then use a tool and watch
+        nothing happen.
+      </p>
+      <ol>
+        <li>Press <kbd>F12</kbd> on Windows, or <kbd>Cmd</kbd> + <kbd>Option</kbd> + <kbd>I</kbd> on a Mac. A panel opens.</li>
+        <li>Click the tab named <strong>Network</strong>.</li>
+        <li>Click the small circle or “Clear” button to empty the list.</li>
+        <li>Now go and use any tool on this site. Drop in a file. Do the thing.</li>
+        <li>Look back at the Network tab. It stays empty. Nothing was sent.</li>
+      </ol>
+      <p>
+        On a phone this is harder to do, which is why the next check exists.
+      </p>
+    </section>
+
+    <!-- ============ 4. The strongest check ============ -->
+    <section class="prose">
+      <h2>The check that settles it: turn your internet off</h2>
+      <p>
+        Visit this site once, so your browser has the files. Then switch off wifi and
+        mobile data completely — aeroplane mode is fine. Now come back and use it.
+      </p>
+      <p>
+        Everything still works. Every tool, on every file.
+      </p>
+      <p>
+        This is worth sitting with for a second, because it is not a claim, it is a
+        proof. A site that uploaded your files could not possibly work with the
+        internet switched off. If it works offline, the work is happening on your
+        machine. There is no third possibility.
+      </p>
+      <div class="note note-accent">
+        <strong class="note-title">Right now</strong>
+        <p class="mb-0" id="offline-state">Checking whether this site is saved for offline use…</p>
+      </div>
+    </section>
+
+    <!-- ============ 5. The policy, honestly ============ -->
+    <section class="prose">
+      <h2>The rule the browser enforces on us</h2>
+      <p>
+        Every page of this site carries a Content Security Policy — a short set of
+        instructions to your browser about what the page is permitted to do. Ours
+        says, in effect: <em>this page may only load and contact files from its own
+        address, and nothing else, ever.</em>
+      </p>
+      <p>
+        The important part is who enforces it. Not us. Your browser reads that policy
+        before it runs a single line of our code, and refuses anything that breaks
+        it. If we made a mistake, or if some piece of code we included tried to phone
+        home, the browser would block it and you would see it counted in red above.
+      </p>
+      <p>
+        Being straight with you about one detail: the strictest possible setting
+        would forbid the page from making <em>any</em> request at all, including for
+        our own files. We cannot use that, because several tools are large programs
+        that are only fetched from this site when you actually open them — a PDF
+        password module, an offline text recogniser. So the policy permits requests
+        to this site’s own address and refuses every other address in the world. The
+        practical result is the same: there is no destination your file could be sent
+        to, and the browser will not permit one to be invented.
+      </p>
+      <p>
+        There is also no analytics, no error reporting, no fonts or icons loaded from
+        anyone else’s servers, and no cookies. Not as a policy choice we might revisit
+        — the policy above makes them technically impossible without you noticing.
+      </p>
+    </section>
+
+    <!-- ============ 6. Source ============ -->
+    <section class="prose">
+      <h2>Read the code</h2>
+      <p>
+        The whole site is plain HTML, CSS and JavaScript, deliberately not
+        compressed or scrambled, so that what runs is what you can read. Nothing is
+        hidden behind a build step.
+      </p>
+      <p>
+        The file worth reading first is
+        <span class="mono">assets/js/netguard.js</span>. It is about two hundred
+        lines, it is commented in plain English, and it is the thing that counts and
+        blocks requests. If you know someone who reads code, that is the file to
+        show them.
+      </p>
+      <p id="source-link-note" class="muted">
+        The public source-code link will be added here as soon as the site is
+        published. Until then, it is on the machine it was built on.
+      </p>
+    </section>
+
+    <!-- ============ 7. What is stored ============ -->
+    <section>
+      <h2>What this site keeps on your device</h2>
+      <p class="prose">
+        Not nothing — but all of it is on your machine, and all of it is yours to
+        delete. Here is the complete list.
+      </p>
+
+      <table class="mb-5">
+        <thead>
+          <tr><th scope="col">What</th><th scope="col">Why</th><th scope="col">Where</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Your settings</td>
+            <td>So your theme and preferences survive a reload</td>
+            <td>Local storage</td>
+          </tr>
+          <tr>
+            <td>Pinned and recently used tools</td>
+            <td>So the homepage is useful to you</td>
+            <td>Local storage</td>
+          </tr>
+          <tr>
+            <td>Files you have loaded</td>
+            <td>So a refresh does not lose your work. Optional; off with one switch</td>
+            <td>IndexedDB</td>
+          </tr>
+          <tr>
+            <td>Finished results</td>
+            <td>So the results tray survives a refresh</td>
+            <td>IndexedDB</td>
+          </tr>
+          <tr>
+            <td>A copy of the site itself</td>
+            <td>So it works with the internet off</td>
+            <td>Cache storage</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="panel">
+        <h3>Erase all of it</h3>
+        <p class="text-sm muted" id="storage-usage">Checking how much space this site is using…</p>
+        <div class="btn-row">
+          <button class="btn btn-danger" type="button" id="wipe-files">Delete loaded files and results</button>
+          <button class="btn btn-danger" type="button" id="wipe-everything">Delete absolutely everything</button>
+        </div>
+        <p class="field-hint">
+          “Absolutely everything” also removes your settings and the offline copy of
+          the site. The next visit starts completely fresh. You can also do this from
+          your browser’s own settings, under site data — we have no way to stop you,
+          and no way to keep a copy.
+        </p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device — <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-trust.js"></script>
+</body>
+</html>

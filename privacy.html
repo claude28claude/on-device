@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Privacy &mdash; On Device</title>
+<meta name="description" content="We collect nothing. There is no we. There is no server.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>Privacy</h1>
+      <p class="lede">
+        The short version: we collect nothing. There is no we. There is no server.
+      </p>
+    </div>
+
+    <section class="prose">
+      <h2>What we collect</h2>
+      <p>Nothing.</p>
+      <p>
+        That is not a turn of phrase. There is no computer anywhere that receives
+        anything from this site. It is a folder of files served to your browser,
+        and after that everything happens on your machine.
+      </p>
+
+      <h2>What about my files?</h2>
+      <p>
+        They stay on your device. They are opened by your browser, worked on by your
+        browser, and saved by your browser. They are never transmitted. You can
+        confirm this by switching off your internet and using the site anyway &mdash;
+        it works, which would be impossible if your files were going somewhere.
+      </p>
+
+      <h2>Cookies</h2>
+      <p>
+        None. Not "essential cookies", not "we use cookies to improve your
+        experience". None at all, which is why you have not seen a banner.
+      </p>
+
+      <h2>Analytics and tracking</h2>
+      <p>
+        None. No page views, no events, no error reporting, no session recording, no
+        A/B tests, no advertising, no third-party scripts of any kind. Nothing on
+        this site is loaded from anyone else's computer &mdash; not fonts, not icons,
+        not code.
+      </p>
+
+      <h2>What is stored on your device</h2>
+      <p>
+        Your settings and pinned tools, and &mdash; only if you leave that switch on
+        &mdash; the files you have loaded and the results you have produced, so that a
+        refresh does not lose your work. All of it sits in your own browser's storage.
+        None of it is readable by us, because there is no us to read it.
+      </p>
+      <p>
+        <a href="trust.html">The full list, and a button that erases every bit of it.</a>
+      </p>
+
+      <h2>Who can see what you do here</h2>
+      <p>
+        Whoever hosts these files can see that a browser at your IP address requested
+        them, in the same way any website is requested. They cannot see which tool you
+        used or which file you opened, because that information never leaves your
+        machine. If even that bothers you, download the site and open it from your own
+        disk.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        There is nothing here to sign up to, nothing to buy, and no data collected
+        from anybody of any age.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If this ever changes, it changes in the public source code, where anyone can
+        see it. There is no version of this site that quietly starts collecting
+        things; the browser's own security policy would have to be weakened first, and
+        that is written in plain sight at the top of every page.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        There is no contact form, because a form would send something somewhere. If
+        you find a problem, raise it wherever the source code is published.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-static.js"></script>
+</body>
+</html>

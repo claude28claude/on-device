@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Settings — On Device</title>
+<meta name="description" content="Themes, text size, defaults, language and your stored data. Everything is saved on this device only.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1 data-i18n="settings.title">Settings</h1>
+      <p class="lede" data-i18n="settings.lede">
+        Everything here is saved on this device only, and can be exported to a file
+        and carried to another one.
+      </p>
+    </div>
+
+    <div id="storage-warning"></div>
+
+    <div class="settings-layout">
+      <nav aria-label="Settings sections">
+        <ul class="settings-nav">
+          <li><a href="#appearance" data-i18n="settings.group.appearance">Appearance</a></li>
+          <li><a href="#layout" data-i18n="settings.group.layout">Layout</a></li>
+          <li><a href="#behaviour" data-i18n="settings.group.behaviour">Behaviour and defaults</a></li>
+          <li><a href="#keyboard" data-i18n="settings.group.shortcuts">Keyboard</a></li>
+          <li><a href="#language" data-i18n="settings.group.language">Language</a></li>
+          <li><a href="#data" data-i18n="settings.group.data">Your data on this device</a></li>
+        </ul>
+      </nav>
+
+      <div>
+
+        <!-- ================= Appearance ================= -->
+        <section class="setting-group" id="appearance">
+          <h2 data-i18n="settings.group.appearance">Appearance</h2>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.theme">Theme</strong>
+              <span data-i18n="settings.theme.hint">“Follow system” uses Paper in daylight mode and Midnight in dark mode.</span>
+            </div>
+            <div class="setting-control">
+              <div class="theme-swatches" id="theme-swatches" role="group" aria-label="Theme">
+                <button class="theme-swatch" type="button" data-theme-value="system" aria-pressed="false">
+                  <span class="sw-preview sw-system" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.system">Follow system</span>
+                </button>
+                <button class="theme-swatch" type="button" data-theme-value="paper" aria-pressed="false">
+                  <span class="sw-preview sw-paper" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.paper">Paper</span>
+                </button>
+                <button class="theme-swatch" type="button" data-theme-value="midnight" aria-pressed="false">
+                  <span class="sw-preview sw-midnight" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.midnight">Midnight</span>
+                </button>
+                <button class="theme-swatch" type="button" data-theme-value="contrast" aria-pressed="false">
+                  <span class="sw-preview sw-contrast" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.contrast">High contrast</span>
+                </button>
+                <button class="theme-swatch" type="button" data-theme-value="sepia" aria-pressed="false">
+                  <span class="sw-preview sw-sepia" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.sepia">Sepia</span>
+                </button>
+                <button class="theme-swatch" type="button" data-theme-value="terminal" aria-pressed="false">
+                  <span class="sw-preview sw-terminal" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span data-i18n="settings.theme.terminal">Terminal</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.accent">Accent colour</strong>
+              <span data-i18n="settings.accent.hint">Used for links, buttons and highlights.</span>
+            </div>
+            <div class="setting-control">
+              <div class="accent-swatches" id="accent-swatches" role="group" aria-label="Accent colour">
+                <button class="accent-dot ac-default" type="button" data-accent="" aria-pressed="false" aria-label="Theme default"></button>
+                <button class="accent-dot ac-blue" type="button" data-accent="#1750c8" aria-pressed="false" aria-label="Blue"></button>
+                <button class="accent-dot ac-teal" type="button" data-accent="#0f6d68" aria-pressed="false" aria-label="Teal"></button>
+                <button class="accent-dot ac-green" type="button" data-accent="#1c6b3a" aria-pressed="false" aria-label="Green"></button>
+                <button class="accent-dot ac-plum" type="button" data-accent="#7a2a6d" aria-pressed="false" aria-label="Plum"></button>
+                <button class="accent-dot ac-rust" type="button" data-accent="#9c3d16" aria-pressed="false" aria-label="Rust"></button>
+                <button class="accent-dot ac-slate" type="button" data-accent="#3f4a5a" aria-pressed="false" aria-label="Slate"></button>
+                <label class="sr-only" for="accent-custom" data-i18n="settings.accent.custom">Custom colour</label>
+                <input type="color" id="accent-custom" value="#1750c8">
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.density">Density</strong>
+              <span>How much space sits between things.</span>
+            </div>
+            <div class="setting-control">
+              <div class="segmented" id="density-toggle" role="group" aria-label="Density">
+                <button type="button" data-value="comfortable" aria-pressed="true" data-i18n="settings.density.comfortable">Comfortable</button>
+                <button type="button" data-value="compact" aria-pressed="false" data-i18n="settings.density.compact">Compact</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="text-scale" data-i18n="settings.textScale">Text size</label></strong>
+              <span id="text-scale-hint">Currently 100% of the normal size.</span>
+            </div>
+            <div class="setting-control">
+              <input type="range" id="text-scale" min="0.9" max="1.4" step="0.05" value="1">
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="font-choice" data-i18n="settings.font">Font</label></strong>
+              <span data-i18n="settings.font.hint">The extra-legible option uses a dyslexia-friendly font if one is installed on this device, and a very clear fallback if not. A bundled font arrives in a later phase.</span>
+            </div>
+            <div class="setting-control">
+              <select id="font-choice">
+                <option value="ui" data-i18n="settings.font.ui">Your system font</option>
+                <option value="legible" data-i18n="settings.font.legible">Extra-legible font</option>
+                <option value="mono" data-i18n="settings.font.mono">Monospace</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.corners">Corners</strong>
+              <span>Rounded or square edges throughout.</span>
+            </div>
+            <div class="setting-control">
+              <div class="segmented" id="corners-toggle" role="group" aria-label="Corners">
+                <button type="button" data-value="rounded" aria-pressed="true" data-i18n="settings.corners.rounded">Rounded</button>
+                <button type="button" data-value="square" aria-pressed="false" data-i18n="settings.corners.square">Square</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="motion-choice" data-i18n="settings.motion">Animation</label></strong>
+              <span>Your operating system's own preference is followed unless you override it here.</span>
+            </div>
+            <div class="setting-control">
+              <select id="motion-choice">
+                <option value="system" data-i18n="settings.motion.system">Follow system setting</option>
+                <option value="reduced" data-i18n="settings.motion.reduced">Reduce animation</option>
+                <option value="full" data-i18n="settings.motion.full">Full animation</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= Layout ================= -->
+        <section class="setting-group" id="layout">
+          <h2 data-i18n="settings.group.layout">Layout</h2>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.view">Default view</strong>
+              <span>How the tool list is shown when you arrive.</span>
+            </div>
+            <div class="setting-control">
+              <div class="segmented" id="view-choice" role="group" aria-label="Default view">
+                <button type="button" data-value="grid" aria-pressed="true" data-i18n="settings.view.grid">Grid</button>
+                <button type="button" data-value="list" aria-pressed="false" data-i18n="settings.view.list">List</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="home-opens" data-i18n="settings.homeOpensTo">The homepage opens to</label></strong>
+              <span>Pin tools from the homepage by pressing the pin on a tool's card.</span>
+            </div>
+            <div class="setting-control">
+              <select id="home-opens">
+                <option value="all" data-i18n="settings.homeOpensTo.all">All tools</option>
+                <option value="favourites" data-i18n="settings.homeOpensTo.favourites">Pinned tools only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong>Hidden tools</strong>
+              <span>Tools you have hidden do not appear anywhere. Nothing is hidden yet.</span>
+            </div>
+            <div class="setting-control">
+              <button class="btn btn-sm" type="button" id="unhide-all" disabled>Show all tools again</button>
+            </div>
+          </div>
+
+          <div class="note note-accent">
+            <strong class="note-title">Coming in a later phase</strong>
+            <p class="mb-0">
+              Renaming and reordering tools, and the optional sidebar, arrive with the
+              customisation phase. They are listed in the brief and have not been
+              forgotten — they are simply not built yet, and are not shown here
+              pretending to work.
+            </p>
+          </div>
+        </section>
+
+        <!-- ================= Behaviour ================= -->
+        <section class="setting-group" id="behaviour">
+          <h2 data-i18n="settings.group.behaviour">Behaviour and defaults</h2>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.autoDownload">Download results automatically</strong>
+              <span data-i18n="settings.autoDownload.hint">Off means finished files wait in the results tray.</span>
+            </div>
+            <div class="setting-control">
+              <label class="check-row">
+                <input type="checkbox" id="auto-download">
+                <span class="check-text"><span>Download as soon as a file is finished</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong>Keep loaded files after a refresh</strong>
+              <span>Files are stored on this device only, in the browser's own database.</span>
+            </div>
+            <div class="setting-control">
+              <label class="check-row">
+                <input type="checkbox" id="keep-workspace">
+                <span class="check-text"><span>Remember loaded files</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.autoClearOnClose">Clear loaded files when the tab closes</strong>
+              <span>Applied when you next open the site, because a browser cannot be trusted to finish work as it is closing. We would rather say that than pretend.</span>
+            </div>
+            <div class="setting-control">
+              <label class="check-row">
+                <input type="checkbox" id="auto-clear">
+                <span class="check-text"><span>Clear on close</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.keepHistory">Keep a local history of what was processed</strong>
+              <span data-i18n="settings.keepHistory.hint">Off by default. Stored on this device only, never sent anywhere.</span>
+            </div>
+            <div class="setting-control">
+              <label class="check-row">
+                <input type="checkbox" id="keep-history">
+                <span class="check-text"><span>Keep a history</span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong data-i18n="settings.confirmDestructive">Ask before anything destructive</strong>
+              <span>Clearing files, wiping settings, and anything that cannot be undone.</span>
+            </div>
+            <div class="setting-control">
+              <label class="check-row">
+                <input type="checkbox" id="confirm-destructive">
+                <span class="check-text"><span>Ask first</span></span>
+              </label>
+            </div>
+          </div>
+
+          <h3>Defaults for tools</h3>
+          <div class="note note-warn">
+            <strong class="note-title">Honest note</strong>
+            <p class="mb-0">
+              These are saved now, and each tool will read them as it is built. No tool
+              exists yet, so nothing reads them today. They are here because the
+              settings file needs to be stable before the tools land, not to pad the page.
+            </p>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="image-quality" data-i18n="settings.imageQuality">Default image quality</label></strong>
+              <span id="quality-hint">82 out of 100.</span>
+            </div>
+            <div class="setting-control">
+              <input type="range" id="image-quality" min="40" max="100" step="1" value="82">
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="image-format" data-i18n="settings.imageFormat">Default image format</label></strong>
+              <span>What images are saved as unless you choose otherwise.</span>
+            </div>
+            <div class="setting-control">
+              <select id="image-format">
+                <option value="keep" data-i18n="settings.imageFormat.keep">Keep the original format</option>
+                <option value="jpg">JPG</option>
+                <option value="png">PNG</option>
+                <option value="webp">WebP</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="page-size" data-i18n="settings.pageSize">Default page size</label></strong>
+              <span>Used when making a PDF.</span>
+            </div>
+            <div class="setting-control">
+              <select id="page-size">
+                <option value="a4">A4</option>
+                <option value="letter">Letter</option>
+                <option value="match">Match the image</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="dpi" data-i18n="settings.dpi">Default resolution</label></strong>
+              <span>Used when turning PDF pages into pictures.</span>
+            </div>
+            <div class="setting-control">
+              <select id="dpi">
+                <option value="72">72 dots per inch (screen)</option>
+                <option value="150">150 dots per inch (good print)</option>
+                <option value="300">300 dots per inch (high quality)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="units" data-i18n="settings.units">Units</label></strong>
+              <span>How sizes are shown and entered.</span>
+            </div>
+            <div class="setting-control">
+              <select id="units">
+                <option value="px">Pixels</option>
+                <option value="mm">Millimetres</option>
+                <option value="cm">Centimetres</option>
+                <option value="in">Inches</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="filename-pattern" data-i18n="settings.filenamePattern">Output filename pattern</label></strong>
+              <span data-i18n="settings.filenamePattern.hint">Available pieces: {name} the original name, {tool} the tool used, {date} today's date, {n} a number, {ext} the file extension.</span>
+            </div>
+            <div class="setting-control">
+              <input type="text" id="filename-pattern" spellcheck="false" autocomplete="off">
+              <p class="field-hint" id="filename-preview"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= Keyboard ================= -->
+        <section class="setting-group" id="keyboard">
+          <h2 data-i18n="settings.group.shortcuts">Keyboard</h2>
+          <p>Everything on this site can be done with the keyboard alone.</p>
+          <table class="mb-4">
+            <thead><tr><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
+            <tbody>
+              <tr><td><kbd>Ctrl</kbd> <kbd>K</kbd> <span class="muted">or</span> <kbd>Cmd</kbd> <kbd>K</kbd></td><td>Open the command palette</td></tr>
+              <tr><td><kbd>/</kbd></td><td>Open the command palette (when not typing in a box)</td></tr>
+              <tr><td><kbd>Tab</kbd></td><td>Move to the next control</td></tr>
+              <tr><td><kbd>Shift</kbd> <kbd>Tab</kbd></td><td>Move to the previous control</td></tr>
+              <tr><td><kbd>Enter</kbd> <span class="muted">or</span> <kbd>Space</kbd></td><td>Press the focused button</td></tr>
+              <tr><td><kbd>Esc</kbd></td><td>Close a dialog, or clear the search box</td></tr>
+              <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Move through palette results</td></tr>
+            </tbody>
+          </table>
+          <div class="note note-accent">
+            <p class="mb-0">Changing these to your own keys arrives with the power-features phase.</p>
+          </div>
+        </section>
+
+        <!-- ================= Language ================= -->
+        <section class="setting-group" id="language">
+          <h2 data-i18n="settings.group.language">Language</h2>
+          <div class="setting-row">
+            <div class="setting-text">
+              <strong><label for="language-choice">Interface language</label></strong>
+              <span data-i18n="settings.language.hint">Text you have not translated falls back to English.</span>
+            </div>
+            <div class="setting-control">
+              <select id="language-choice"></select>
+            </div>
+          </div>
+          <div id="language-note"></div>
+        </section>
+
+        <!-- ================= Data ================= -->
+        <section class="setting-group" id="data">
+          <h2 data-i18n="settings.group.data">Your data on this device</h2>
+          <p id="storage-used" class="muted">Checking how much space this site is using…</p>
+
+          <div class="btn-row mb-5">
+            <button class="btn" type="button" id="export-settings" data-i18n="settings.export">Export settings to a file</button>
+            <button class="btn" type="button" id="import-settings" data-i18n="settings.import">Import settings from a file</button>
+            <input type="file" id="import-input" accept=".json,application/json" class="sr-only">
+          </div>
+
+          <div class="note note-danger">
+            <strong class="note-title">Reset everything</strong>
+            <p data-i18n="settings.reset.confirm">
+              This wipes every setting, every pinned tool and everything this site has
+              stored on this device. It cannot be undone.
+            </p>
+            <button class="btn btn-danger" type="button" id="reset-all" data-i18n="settings.reset">Reset everything</button>
+          </div>
+
+          <p class="text-sm muted">
+            You can also erase everything from your browser's own settings, under site
+            data. We have no way to stop you, and no copy of any of it.
+            <a href="trust.html#log">See exactly what is stored and why.</a>
+          </p>
+        </section>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device — <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-settings.js"></script>
+</body>
+</html>

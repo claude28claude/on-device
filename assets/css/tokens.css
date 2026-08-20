@@ -1,0 +1,303 @@
+/* ============================================================
+   On Device - design tokens
+
+   Every colour, size and timing value in the app comes from
+   here. Themes work by redefining these variables and nothing
+   else, so a new theme can never miss a corner of the UI.
+   ============================================================ */
+
+:root {
+  /* ---- Typography ---------------------------------------- */
+  --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+             "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo,
+               Consolas, "Liberation Mono", monospace;
+  /* Chosen for legibility. All are widely pre-installed; none are downloaded. */
+  --font-legible: "Atkinson Hyperlegible", "OpenDyslexic", Verdana, Tahoma,
+                  "DejaVu Sans", sans-serif;
+
+  --font-body: var(--font-ui);
+
+  /* Text scale. --text-scale is set by the Settings page (0.9 - 1.4). */
+  --text-scale: 1;
+  --fs-xs:   calc(0.75rem   * var(--text-scale));
+  --fs-sm:   calc(0.8125rem * var(--text-scale));
+  --fs-base: calc(0.9375rem * var(--text-scale));
+  --fs-md:   calc(1.0625rem * var(--text-scale));
+  --fs-lg:   calc(1.25rem   * var(--text-scale));
+  --fs-xl:   calc(1.625rem  * var(--text-scale));
+  --fs-2xl:  calc(2.125rem  * var(--text-scale));
+  --fs-3xl:  calc(2.75rem   * var(--text-scale));
+
+  --lh-tight: 1.2;
+  --lh-snug: 1.4;
+  --lh-body: 1.6;
+
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semi: 600;
+  --fw-bold: 700;
+
+  /* ---- Spacing ------------------------------------------- */
+  /* --density-scale is 1 for Comfortable, 0.72 for Compact. */
+  --density-scale: 1;
+  --s-1: calc(0.25rem * var(--density-scale));
+  --s-2: calc(0.5rem  * var(--density-scale));
+  --s-3: calc(0.75rem * var(--density-scale));
+  --s-4: calc(1rem    * var(--density-scale));
+  --s-5: calc(1.5rem  * var(--density-scale));
+  --s-6: calc(2rem    * var(--density-scale));
+  --s-7: calc(3rem    * var(--density-scale));
+  --s-8: calc(4rem    * var(--density-scale));
+
+  --page-max: 1180px;
+  --prose-max: 68ch;
+
+  /* ---- Shape --------------------------------------------- */
+  /* --radius-scale is 0 when the visitor picks square corners. */
+  --radius-scale: 1;
+  --r-1: calc(4px  * var(--radius-scale));
+  --r-2: calc(8px  * var(--radius-scale));
+  --r-3: calc(12px * var(--radius-scale));
+  --r-4: calc(18px * var(--radius-scale));
+  --r-full: calc(999px * var(--radius-scale));
+
+  --border-w: 1px;
+
+  /* ---- Motion -------------------------------------------- */
+  --motion-scale: 1;
+  --dur-fast: calc(110ms * var(--motion-scale));
+  --dur-mid:  calc(200ms * var(--motion-scale));
+  --dur-slow: calc(340ms * var(--motion-scale));
+  --ease: cubic-bezier(0.2, 0, 0.1, 1);
+
+  --z-sticky: 20;
+  --z-tray: 40;
+  --z-dialog: 60;
+  --z-toast: 80;
+
+  /* ---- Colour: Paper (the default light theme) ----------- */
+  --bg:            #faf9f7;
+  --bg-raised:     #ffffff;
+  --bg-sunken:     #efece6;
+  --bg-hover:      #f1eee8;
+  --bg-active:     #e7e3da;
+
+  --fg:            #16151a;
+  --fg-muted:      #56545e;
+  --fg-faint:      #64626c;
+
+  --border:        #ddd8ce;
+  --border-strong: #8a8271;
+
+  --accent:        #1750c8;
+  --accent-hover:  #123fa2;
+  --accent-fg:     #ffffff;
+  --accent-soft:   #e6edfc;
+  --accent-line:   #b9cdf6;
+
+  --ok:            #146c43;
+  --ok-soft:       #e3f4ea;
+  --warn:          #7d4a00;
+  --warn-soft:     #fdf0da;
+  --danger:        #b3261e;
+  --danger-hover:  #8c1c16;
+  --danger-soft:   #fbe7e5;
+
+  --focus:         #1750c8;
+  --focus-ring-w:  3px;
+
+  --shadow-1: 0 1px 2px rgba(20, 18, 14, 0.06), 0 1px 1px rgba(20, 18, 14, 0.04);
+  --shadow-2: 0 4px 14px rgba(20, 18, 14, 0.09), 0 1px 3px rgba(20, 18, 14, 0.06);
+  --shadow-3: 0 18px 46px rgba(20, 18, 14, 0.16), 0 3px 10px rgba(20, 18, 14, 0.08);
+
+  --selection-bg: #cddcfa;
+  --selection-fg: #10131a;
+
+  /* Veil shown over the page while a file is dragged onto the window. */
+  --drop-veil: rgba(250, 249, 247, 0.88);
+}
+
+/* ---- Colour: Midnight ------------------------------------ */
+[data-theme="midnight"] {
+  --bg:            #0e1014;
+  --bg-raised:     #171a20;
+  --bg-sunken:     #08090c;
+  --bg-hover:      #1e222a;
+  --bg-active:     #262b34;
+
+  --fg:            #e9eaee;
+  --fg-muted:      #a7abb5;
+  --fg-faint:      #9498a2;
+
+  --border:        #282d36;
+  --border-strong: #697181;
+
+  --accent:        #79aaff;
+  --accent-hover:  #9cc0ff;
+  --accent-fg:     #06101f;
+  --accent-soft:   #16233a;
+  --accent-line:   #2c4570;
+
+  --ok:            #5fd39a;
+  --ok-soft:       #12281f;
+  --warn:          #e8b563;
+  --warn-soft:     #2d2413;
+  --danger:        #ff8b80;
+  --danger-hover:  #ffa79e;
+  --danger-soft:   #33191a;
+
+  --focus:         #9cc0ff;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.55);
+  --shadow-3: 0 20px 50px rgba(0, 0, 0, 0.65);
+
+  --selection-bg: #2c4570;
+  --selection-fg: #f2f4f8;
+
+  --drop-veil: rgba(14, 16, 20, 0.9);
+}
+
+/* ---- Colour: High contrast ------------------------------- */
+[data-theme="contrast"] {
+  --bg:            #000000;
+  --bg-raised:     #000000;
+  --bg-sunken:     #000000;
+  --bg-hover:      #1f1f1f;
+  --bg-active:     #333333;
+
+  --fg:            #ffffff;
+  --fg-muted:      #ffffff;
+  --fg-faint:      #ededed;
+
+  --border:        #ffffff;
+  --border-strong: #ffffff;
+  --border-w:      2px;
+
+  --accent:        #ffe600;
+  --accent-hover:  #fff36b;
+  --accent-fg:     #000000;
+  --accent-soft:   #2b2600;
+  --accent-line:   #ffe600;
+
+  --ok:            #4afa7f;
+  --ok-soft:       #002b0c;
+  --warn:          #ffb000;
+  --warn-soft:     #2b1d00;
+  --danger:        #ff8a7d;
+  --danger-hover:  #ffb0a7;
+  --danger-soft:   #2b0a06;
+
+  --focus:         #ffe600;
+  --focus-ring-w:  4px;
+
+  --shadow-1: none;
+  --shadow-2: none;
+  --shadow-3: none;
+
+  --selection-bg: #ffe600;
+  --selection-fg: #000000;
+
+  --drop-veil: rgba(0, 0, 0, 0.94);
+}
+
+/* ---- Colour: Sepia --------------------------------------- */
+[data-theme="sepia"] {
+  --bg:            #f3ead6;
+  --bg-raised:     #fbf5e7;
+  --bg-sunken:     #e7dbc1;
+  --bg-hover:      #ece0c8;
+  --bg-active:     #e1d3b6;
+
+  --fg:            #2f2718;
+  --fg-muted:      #574a32;
+  --fg-faint:      #63563c;
+
+  --border:        #d8c9a8;
+  --border-strong: #877655;
+
+  --accent:        #8a4212;
+  --accent-hover:  #6d330c;
+  --accent-fg:     #fdf8ee;
+  --accent-soft:   #f2e2cd;
+  --accent-line:   #cfa87e;
+
+  --ok:            #3a6420;
+  --ok-soft:       #e6efd6;
+  --warn:          #7d5200;
+  --warn-soft:     #f6e6c6;
+  --danger:        #9e2b18;
+  --danger-hover:  #7d2010;
+  --danger-soft:   #f6ddd6;
+
+  --focus:         #8a4212;
+
+  --shadow-1: 0 1px 2px rgba(70, 52, 24, 0.10);
+  --shadow-2: 0 4px 14px rgba(70, 52, 24, 0.14);
+  --shadow-3: 0 18px 46px rgba(70, 52, 24, 0.20);
+
+  --selection-bg: #e0c79b;
+  --selection-fg: #2f2718;
+
+  --drop-veil: rgba(243, 234, 214, 0.92);
+}
+
+/* ---- Colour: Terminal ------------------------------------ */
+[data-theme="terminal"] {
+  --font-body: var(--font-mono);
+
+  --bg:            #05100a;
+  --bg-raised:     #0a1a11;
+  --bg-sunken:     #030a06;
+  --bg-hover:      #0f2418;
+  --bg-active:     #163322;
+
+  --fg:            #c6f7d3;
+  --fg-muted:      #8fd2a4;
+  --fg-faint:      #82c497;
+
+  --border:        #1c4029;
+  --border-strong: #3d7f55;
+
+  --accent:        #48f08c;
+  --accent-hover:  #7ff7b1;
+  --accent-fg:     #02150a;
+  --accent-soft:   #0d2a19;
+  --accent-line:   #2a6b44;
+
+  --ok:            #48f08c;
+  --ok-soft:       #0d2a19;
+  --warn:          #f2d16b;
+  --warn-soft:     #2a2410;
+  --danger:        #ff8577;
+  --danger-hover:  #ffa79c;
+  --danger-soft:   #2c1210;
+
+  --focus:         #48f08c;
+
+  --shadow-1: none;
+  --shadow-2: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-3: 0 20px 50px rgba(0, 0, 0, 0.7);
+
+  --selection-bg: #2a6b44;
+  --selection-fg: #eafff1;
+
+  --drop-veil: rgba(5, 16, 10, 0.92);
+}
+
+/* Font preference (Settings - Appearance). */
+[data-font="legible"] { --font-body: var(--font-legible); }
+[data-font="mono"]    { --font-body: var(--font-mono); }
+
+/* Compact density. */
+[data-density="compact"] { --density-scale: 0.72; }
+
+/* Square corners. */
+[data-corners="square"] { --radius-scale: 0; }
+
+/* Reduced motion, whether chosen here or by the operating system. */
+[data-motion="reduced"] { --motion-scale: 0.001; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-scale: 0.001; }
+}

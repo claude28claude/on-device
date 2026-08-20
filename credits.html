@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Credits and licences &mdash; On Device</title>
+<meta name="description" content="Every bundled library, its version and its licence.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1>Credits and licences</h1>
+      <p class="lede">
+        Everything this site uses is stored inside the site itself and served from the
+        same address as the page. Nothing is fetched from anyone else's servers, which
+        is both a privacy decision and the reason it works offline.
+      </p>
+    </div>
+
+    <section class="prose">
+      <h2>Bundled libraries</h2>
+      <p>
+        At this stage &mdash; the end of Phase 1 &mdash; the site uses
+        <strong>no third-party code at all</strong>. Every line of HTML, CSS and
+        JavaScript here was written for this project. That is not a boast, it is just
+        what the shell needed.
+      </p>
+      <p>
+        Libraries arrive as the tools that need them arrive. Each one will be listed
+        below with its version and licence before the tool using it ships. Only
+        permissive licences are used: MIT, Apache&nbsp;2.0 and BSD.
+      </p>
+
+      <table class="mb-5">
+        <thead>
+          <tr>
+            <th scope="col">Library</th>
+            <th scope="col">Used for</th>
+            <th scope="col">Licence</th>
+            <th scope="col">Arrives in</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>pdf-lib</td><td>Building and editing PDFs</td><td>MIT</td><td>Phase 3</td></tr>
+          <tr><td>pdf.js</td><td>Drawing page previews, reading text</td><td>Apache 2.0</td><td>Phase 3</td></tr>
+          <tr><td>qpdf (WebAssembly)</td><td>PDF passwords</td><td>Apache 2.0</td><td>Phase 4</td></tr>
+          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>To be confirmed &mdash; see the note below</td><td>Phase 2</td></tr>
+          <tr><td>exifr</td><td>Reading hidden photo information</td><td>MIT</td><td>Phase 2</td></tr>
+          <tr><td>zip.js</td><td>Zip and unzip</td><td>BSD 3-clause</td><td>Phase 6</td></tr>
+          <tr><td>tesseract.js</td><td>Offline text recognition</td><td>Apache 2.0</td><td>Phase 7</td></tr>
+          <tr><td>SheetJS (community)</td><td>Spreadsheets</td><td>Apache 2.0</td><td>Phase 6</td></tr>
+          <tr><td>qrcode / jsQR</td><td>QR codes out and in</td><td>MIT / Apache 2.0</td><td>Phase 6</td></tr>
+          <tr><td>marked + DOMPurify</td><td>Markdown</td><td>MIT</td><td>Phase 6</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note note-warn">
+        <strong class="note-title">One licence still to settle</strong>
+        <p class="mb-0">
+          The best-known HEIC decoder for browsers is built on a library released under
+          the LGPL, which is not one of the permissive licences this project promised
+          to stick to. Before Phase 2 ships, either a permissively licensed decoder
+          will be used instead, or the licence position will be stated here plainly so
+          the choice is yours. It will not be quietly included and hoped for the best.
+        </p>
+      </div>
+
+      <h2>Fonts</h2>
+      <p>
+        None are downloaded. The site uses whichever typeface your own device already
+        provides for its interface, which is why the first page load is so small and
+        why there is no request to a font service.
+      </p>
+
+      <h2>Icons</h2>
+      <p>
+        All drawn for this project as plain shapes inside the page. There is no icon
+        font and no icon service.
+      </p>
+
+      <h2>The app icons and social image</h2>
+      <p>
+        Generated by a small script in this repository that writes the image files
+        directly, pixel by pixel, using nothing but what Node.js already includes. No
+        image library, no design tool, no download.
+      </p>
+
+      <h2>This project's own licence</h2>
+      <p>
+        MIT. Use it, read it, copy it, host your own. The point of the promise on the
+        front page is that you should not have to trust anybody, including us.
+      </p>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-static.js"></script>
+</body>
+</html>
