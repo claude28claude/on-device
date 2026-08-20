@@ -40,6 +40,14 @@ export const SOURCES = [
     files: ["pdf-lib/pdf-lib.esm.min.js"]
   },
   {
+    name: "qpdf (WebAssembly)",
+    version: "0.0.2",
+    licence: "Apache-2.0",
+    package: "@jspawn/qpdf-wasm@0.0.2",
+    purpose: "Adding and removing PDF passwords - the one job pdf-lib cannot do",
+    files: ["qpdf/qpdf.js", "qpdf/qpdf.mjs", "qpdf/qpdf.wasm"]
+  },
+  {
     name: "pdf.js",
     version: "5.4.149",
     licence: "Apache-2.0",

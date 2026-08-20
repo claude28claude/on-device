@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Compress a PDF &mdash; On Device</title>
+<meta name="description" content="Make a PDF smaller, with an honest explanation of what each method costs you.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<script src="../assets/js/netguard.js"></script>
+<script src="../assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="../index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="../help.html" data-i18n="nav.help">Help</a>
+      <a href="../settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <nav aria-label="Breadcrumb" class="text-sm muted">
+      <a href="../index.html">Tools</a> &rsaquo; <span>Compress a PDF</span>
+    </nav>
+
+    <div class="page-head">
+      <h1>Compress a PDF</h1>
+      <p class="lede">Make a PDF smaller &mdash; and understand exactly what you give up, before you give it up.</p>
+    </div>
+
+    <div id="tool-status"></div>
+
+    <div class="note">
+      <strong class="note-title">What this tool cannot do</strong>
+      <p class="mb-0">There is no way to make a PDF dramatically smaller without changing it. The tidy method is completely safe but usually saves little. The flatten method saves a great deal but turns text into pictures, so it can no longer be selected, searched or copied. Both are offered here with their real numbers; neither is disguised.</p>
+    </div>
+
+    <div class="tool-layout">
+      <div class="tool-main">
+        <div id="files-host"></div>
+        <div id="extra-host"></div>
+        <div id="queue-host"></div>
+      </div>
+
+      <aside class="tool-options" aria-label="Options">
+        <h2>Options</h2>
+        <div class="field">
+          <span class="field-label">Method</span>
+          <div class="segmented" id="method" role="group" aria-label="Method">
+            <button type="button" data-method="tidy" aria-pressed="true">Tidy up</button>
+            <button type="button" data-method="flatten" aria-pressed="false">Flatten to pictures</button>
+          </div>
+          <p class="field-hint" id="method-hint">Safe. Rewrites the file more compactly and keeps everything.</p>
+        </div>
+
+        <div id="flatten-options" hidden>
+          <div class="field">
+            <label for="dpi">Detail</label>
+            <select id="dpi">
+              <option value="72">72 dpi &mdash; smallest, screen only</option>
+              <option value="120" selected>120 dpi &mdash; a good balance</option>
+              <option value="150">150 dpi &mdash; still prints acceptably</option>
+              <option value="200">200 dpi &mdash; larger, prints well</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="quality">Picture quality</label>
+            <input type="range" id="quality" min="30" max="95" value="70">
+            <p class="field-hint" id="quality-hint">70 out of 100.</p>
+          </div>
+
+          <div class="note note-warn">
+            <strong class="note-title">This removes selectable text</strong>
+            <p class="mb-0" id="text-warning">
+              Choose a PDF and this will tell you whether the document actually has
+              text to lose.
+            </p>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="btn-row">
+            <button class="btn btn-sm" type="button" id="try-both">Try both and compare</button>
+          </div>
+          <p class="field-hint">Runs each method and shows the real sizes before you commit.</p>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" data-label="Compress" disabled>Compress</button>
+        <p class="field-hint">Finished files land in the results tray at the bottom of the screen.</p>
+      </aside>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="../credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="../assets/js/tools/pdf-compress.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 3.
+Last updated: **20 August 2026**, end of Phase 4.
 
 Each phase section below describes the state **at the end of that phase**. Where a
 later phase changed something, it says so. The "Known imperfect" list at the bottom
@@ -19,8 +19,8 @@ is always current.
 | 1 | The shell: homepage, drop zone, results tray, settings, offline, trust page | **Done** — see below |
 | 2 | Images core: resize, convert, compress, crop, rotate, metadata | **Done** |
 | 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
-| 4 | PDF advanced | Next |
-| 5 | Privacy specials | Not started |
+| 4 | PDF advanced: compress, watermark, numbers, metadata, passwords, flatten, n-up | **Done** |
+| 5 | Privacy specials | Next |
 | 6 | Text, data and utilities | Not started |
 | 7 | Extraction (text + OCR) | Not started |
 | 8 | Recipes and power features | Not started |
@@ -28,7 +28,7 @@ is always current.
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 12 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 20 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -371,6 +371,77 @@ tool that made it:
 
 4. **Three pages of the site still claimed zero third-party code.** The Credits,
    Privacy and Trust pages all had to be corrected the moment the libraries landed.
+
+
+---
+
+## Phase 4 — PDF advanced
+
+Eight tools. All eight were run against real documents and the output reopened to
+confirm it was what the tool claimed.
+
+| Tool | State |
+|---|---|
+| Password: add | Working — AES-256, with printing and copying controls |
+| Password: remove | Working — with the correct password, and only then |
+| Watermark | Working — text, colour, angle, opacity, tiling, page ranges |
+| Page numbers and headers | Working — {n} and {total}, skip-first, six positions |
+| PDF metadata | Working — read, edit, or erase everything |
+| Flatten | Working — bakes in form fields |
+| Several pages per sheet | Working — 2-up, 4-up and fold-ready booklet order |
+| Compress | Working — two methods, both honest about their cost |
+
+### Passwords
+
+Uses **qpdf 0.0.2** (Apache 2.0), compiled to WebAssembly, added to the vendored
+set with a recorded fingerprint like the others. It is about 1.3 MB and only
+downloads the first time a password tool is used.
+
+Verified: a document encrypted here refuses to open without its password, opens
+with it, and after removal opens freely again with all three pages intact. A wrong
+password fails cleanly.
+
+**Stated on the tool page and meant:** On Device cannot guess, crack or bypass a
+password, does not try, and never will. The remove tool decrypts using a password
+you supply, for a document you already own.
+
+The "add" tool also refuses to double-encrypt an already-protected file, and warns
+unmissably that a forgotten password cannot be recovered by anyone — because there
+is no server that ever saw it.
+
+### Compress, and being straight about it
+
+This is the tool I flagged in Phase 0 as half-possible, and it turned out exactly
+as expected. There are two honest methods and both are offered:
+
+- **Tidy up** — rewrites the file structure. Completely safe. On the test document
+  it saved **26%** (1719 → 1275 bytes). On many files it saves almost nothing, and
+  the tool says so rather than implying failure.
+- **Flatten to pictures** — every page becomes an image. On a scan this saves a
+  great deal. On the text-based test document it made the file **24 times larger**
+  (1719 → 41,815 bytes).
+
+That last number is the point. Most sites do the second method, call it
+"compression", and never mention that it destroys selectable text or that it can
+make a text document enormously bigger. On Device checks whether the document has
+selectable text before you choose, says so, and offers a "try both and compare"
+button that runs each and shows the real sizes.
+
+### What testing caught in Phase 4
+
+1. **`isEncrypted` only looked at the start of the file.** The reference that marks
+   a PDF as encrypted lives in the trailer, at the *end*. Since the remove tool now
+   refuses to run on an unencrypted file, this would have wrongly refused real
+   locked documents. Now checks both ends.
+
+2. **This build of qpdf prints no error messages at all** — only an exit code, and
+   a wrong password and a corrupt file both return the same one. So the reason is
+   worked out here instead: encrypted plus failure means wrong password; not
+   encrypted means nothing to remove. Verified by running each case.
+
+3. **The compress tool would have called a 24× size increase "no difference".**
+   The check was `percent <= 0`, which lumps "made it worse" in with "made no
+   change". Now says plainly that the file got bigger, by how much, and why.
 
 ---
 

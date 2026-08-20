@@ -13,6 +13,18 @@
       ]
     },
     {
+      "name": "qpdf (WebAssembly)",
+      "version": "0.0.2",
+      "licence": "Apache-2.0",
+      "package": "@jspawn/qpdf-wasm@0.0.2",
+      "purpose": "Adding and removing PDF passwords - the one job pdf-lib cannot do",
+      "files": [
+        "qpdf/qpdf.js",
+        "qpdf/qpdf.mjs",
+        "qpdf/qpdf.wasm"
+      ]
+    },
+    {
       "name": "pdf.js",
       "version": "5.4.149",
       "licence": "Apache-2.0",
@@ -24,8 +36,8 @@
       ]
     }
   ],
-  "totalFiles": 197,
-  "totalBytes": 4736060,
+  "totalFiles": 202,
+  "totalBytes": 6075569,
   "fingerprints": {
     "pdf-lib/LICENSE.md": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb",
     "pdf-lib/pdf-lib.esm.min.js": "72c052d97b4d5d9fa6cdbdcb7ad709f03d4ddb1122390cb3afeba4d88651d969",
@@ -223,6 +235,11 @@
     "pdfjs/wasm/LICENSE_QCMS": "36d847ae882f6574ebc72f56a4f354e4f104fde4a584373496482e97d52d31bc",
     "pdfjs/wasm/openjpeg.wasm": "cb031f36245b389e1f5bffc59d10eed35bb0f85d7368b46c3f0b462042ec8e9e",
     "pdfjs/wasm/openjpeg_nowasm_fallback.js": "53c228428a8861035a34738966af263fc9d4cee6df25a0ad942af947469a0bd9",
-    "pdfjs/wasm/qcms_bg.wasm": "6017eca5939cde1836e88e6d8cd27ae039246f206515ea4487bdfd0e3fb16e26"
+    "pdfjs/wasm/qcms_bg.wasm": "6017eca5939cde1836e88e6d8cd27ae039246f206515ea4487bdfd0e3fb16e26",
+    "qpdf/LICENSE": "7bc8081b7018b0b136347cb0f96b0c697936856f6d3cd6987812cf78828c79d6",
+    "qpdf/browser.js": "546deb1e8cca0bb91dae3bba5f50c535fbe8764e5528399ffaca6070cb4b7ad2",
+    "qpdf/qpdf.js": "0129e94930f34f9b3b371db00427f9ae81502bc8be4873f9ad114fc353ae306f",
+    "qpdf/qpdf.mjs": "134336f7b6b4fcef183c866ff3ea81bb06c452e712aab5f2f4d6b151fbcddb75",
+    "qpdf/qpdf.wasm": "cbd81a244d622a39e3cf16f2e589a9a0d7cc51f588d35b3dd6b425a677cc3f99"
   }
 }

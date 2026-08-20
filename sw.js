@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-29557d3fd1";
+const VERSION = "0.1.0-14c497e631";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -54,10 +54,13 @@ const PRECACHE = [
   "./assets/js/page-trust.js",
   "./assets/js/palette.js",
   "./assets/js/pdf-tool-page.js",
+  "./assets/js/pdf/compress.js",
   "./assets/js/pdf/doc.js",
   "./assets/js/pdf/edit.js",
   "./assets/js/pdf/loader.js",
+  "./assets/js/pdf/password.js",
   "./assets/js/pdf/render.js",
+  "./assets/js/pdf/stamp.js",
   "./assets/js/preboot.js",
   "./assets/js/queue.js",
   "./assets/js/search-terms.js",
@@ -74,11 +77,19 @@ const PRECACHE = [
   "./assets/js/tools/image-resize.js",
   "./assets/js/tools/image-rotate.js",
   "./assets/js/tools/images-to-pdf.js",
+  "./assets/js/tools/pdf-compress.js",
+  "./assets/js/tools/pdf-flatten.js",
   "./assets/js/tools/pdf-merge.js",
+  "./assets/js/tools/pdf-metadata.js",
+  "./assets/js/tools/pdf-nup.js",
   "./assets/js/tools/pdf-organise.js",
+  "./assets/js/tools/pdf-page-numbers.js",
+  "./assets/js/tools/pdf-password-add.js",
+  "./assets/js/tools/pdf-password-remove.js",
   "./assets/js/tools/pdf-rotate-crop.js",
   "./assets/js/tools/pdf-split.js",
   "./assets/js/tools/pdf-to-images.js",
+  "./assets/js/tools/pdf-watermark.js",
   "./assets/js/tray.js",
   "./assets/js/ui.js",
   "./assets/js/workers/image-worker.js",
@@ -97,11 +108,19 @@ const PRECACHE = [
   "./tools/image-resize.html",
   "./tools/image-rotate.html",
   "./tools/images-to-pdf.html",
+  "./tools/pdf-compress.html",
+  "./tools/pdf-flatten.html",
   "./tools/pdf-merge.html",
+  "./tools/pdf-metadata.html",
+  "./tools/pdf-nup.html",
   "./tools/pdf-organise.html",
+  "./tools/pdf-page-numbers.html",
+  "./tools/pdf-password-add.html",
+  "./tools/pdf-password-remove.html",
   "./tools/pdf-rotate-crop.html",
   "./tools/pdf-split.html",
   "./tools/pdf-to-images.html",
+  "./tools/pdf-watermark.html",
   "./trust.html"
 ];
 /* --- END BUILD:PRECACHE --- */
