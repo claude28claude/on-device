@@ -3,7 +3,7 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 4.
+Last updated: **20 August 2026**, end of Phase 5.
 
 Each phase section below describes the state **at the end of that phase**. Where a
 later phase changed something, it says so. The "Known imperfect" list at the bottom
@@ -20,15 +20,15 @@ is always current.
 | 2 | Images core: resize, convert, compress, crop, rotate, metadata | **Done** |
 | 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
 | 4 | PDF advanced: compress, watermark, numbers, metadata, passwords, flatten, n-up | **Done** |
-| 5 | Privacy specials | Next |
-| 6 | Text, data and utilities | Not started |
+| 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
+| 6 | Text, data and utilities | Next |
 | 7 | Extraction (text + OCR) | Not started |
 | 8 | Recipes and power features | Not started |
 | 9 | Customisation and languages | Not started |
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 20 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 24 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -442,6 +442,79 @@ button that runs each and shows the real sizes.
 3. **The compress tool would have called a 24× size increase "no difference".**
    The check was `percent <= 0`, which lumps "made it worse" in with "made no
    change". Now says plainly that the file got bigger, by how much, and why.
+
+
+---
+
+## Phase 5 — the privacy specials
+
+The four tools the whole site exists to justify.
+
+| Tool | State |
+|---|---|
+| Redact, properly | Working — and provably destroys content |
+| Blur or pixelate | Working — with honest warnings about weak settings |
+| Fill and sign | Working — drawn into the page, not as movable notes |
+| Lock a file with a password | Working — AES-256-GCM, verified round trip |
+
+### Redaction: the proof
+
+Most tools draw a black rectangle over words that are still in the file. This one
+paints the marked areas onto a picture of the page, throws the original page away,
+and rebuilds from the picture. Pages you did not mark are copied across untouched.
+
+Verified on a real document by three separate measurements:
+
+- **Text extraction**: page 2 of the output returns an empty string. Pages 1 and 3
+  still return their text, because they were not marked.
+- **Raw bytes**: the phrase "Page two" does not appear anywhere in the output file.
+  "Page one" and "Page three" do — correctly, since those pages were untouched.
+- **Ink measurement**: page 2 went from 0.41% dark pixels to 27.22%, proving the
+  page still has its content plus the black box, rather than being wiped.
+
+The tool also offers to check for you: type a phrase, and after redacting it reads
+the finished file back and reports whether that text can still be found. A
+redaction tool that cannot demonstrate its own claim is asking to be believed,
+which is the thing this site refuses to do.
+
+### File locking
+
+Uses the browser's own AES-256-GCM with PBKDF2 (310,000 rounds). No encryption
+library — nothing to trust beyond what the browser already does for banking.
+
+Verified: a locked file round-trips **byte-for-byte identical**; the encrypted
+bytes match the original in 9 places out of 2000, which is what random chance
+looks like; a wrong password is rejected; and a single flipped byte in the middle
+of the file is **detected and refused**, because GCM authenticates as well as
+encrypts.
+
+The file format is documented in full in `assets/js/lock.js` so that anyone could
+write their own unlocker if this site vanished tomorrow.
+
+### Blur and pixelate
+
+Verified by measuring pixel variance inside the marked region: original 2245, a
+solid block **exactly 0**, pixelation 1364, blur 871. Areas outside the region are
+untouched.
+
+The tool is honest that **blur and light pixelation can sometimes be reversed** —
+this has been done to recover faces and read blurred text — and says which side of
+that line the current setting falls on. A solid block is the default.
+
+### What testing caught in Phase 5
+
+**The serious one:** the first version of the redaction tool produced a
+**completely blank page** where the redacted page should have been. It destroyed
+the whole page rather than the marked area — and it looked like it had worked,
+because the text extraction check showed the text was gone.
+
+It was caught by rendering the output and counting the dark pixels: 0.00%. The
+cause was assembling redacted pages in one document and then trying to embed them
+into another, which pdf-lib does not support that way. Rebuilt as a single pass in
+page order.
+
+That is exactly the failure mode a redaction tool must never have, and it is only
+caught by checking what came out rather than what went in.
 
 ---
 

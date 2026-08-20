@@ -33,8 +33,8 @@ export const TOOLS = [
   { id: "pdf-rotate-crop",     cat: "pdf",   phase: 3, built: true , icon: "rotate",      accepts: ["pdf"] },
   { id: "pdf-page-numbers",    cat: "pdf",   phase: 4, built: true , icon: "hash",        accepts: ["pdf"] },
   { id: "pdf-watermark",       cat: "pdf",   phase: 4, built: true , icon: "droplet",     accepts: ["pdf"] },
-  { id: "pdf-fill-sign",       cat: "pdf",   phase: 5, built: false, icon: "pen",         accepts: ["pdf"] },
-  { id: "pdf-redact",          cat: "pdf",   phase: 5, built: false, icon: "square-fill", accepts: ["pdf"] },
+  { id: "pdf-fill-sign",       cat: "pdf",   phase: 5, built: true , icon: "pen",         accepts: ["pdf"] },
+  { id: "pdf-redact",          cat: "pdf",   phase: 5, built: true , icon: "square-fill", accepts: ["pdf"] },
   { id: "pdf-metadata",        cat: "pdf",   phase: 4, built: true , icon: "info",        accepts: ["pdf"] },
   { id: "pdf-password-add",    cat: "pdf",   phase: 4, built: true , icon: "lock",        accepts: ["pdf"] },
   { id: "pdf-password-remove", cat: "pdf",   phase: 4, built: true , icon: "unlock",      accepts: ["pdf"] },
@@ -50,7 +50,7 @@ export const TOOLS = [
   { id: "image-crop",          cat: "image", phase: 2, built: true , icon: "crop",        accepts: ["image", "heic"] },
   { id: "image-rotate",        cat: "image", phase: 2, built: true , icon: "rotate",      accepts: ["image", "heic"] },
   { id: "image-metadata",      cat: "image", phase: 2, built: true , icon: "map-pin",     accepts: ["image", "heic"] },
-  { id: "image-blur",          cat: "image", phase: 5, built: false, icon: "eye-off",     accepts: ["image", "heic"] },
+  { id: "image-blur",          cat: "image", phase: 5, built: true , icon: "eye-off",     accepts: ["image", "heic"] },
   { id: "image-watermark",     cat: "image", phase: 4, built: false, icon: "droplet",     accepts: ["image", "heic"] },
   { id: "image-combine",       cat: "image", phase: 6, built: false, icon: "grid",        accepts: ["image", "heic"] },
   { id: "icon-generator",      cat: "image", phase: 6, built: false, icon: "app",         accepts: ["image"] },
@@ -67,7 +67,7 @@ export const TOOLS = [
   /* ---- File utilities ----------------------------------- */
   { id: "zip",                 cat: "files", phase: 6, built: false, icon: "package",     accepts: ["any"] },
   { id: "checksum",            cat: "files", phase: 6, built: false, icon: "fingerprint", accepts: ["any"] },
-  { id: "file-lock",           cat: "files", phase: 5, built: false, icon: "key",         accepts: ["any"] },
+  { id: "file-lock",           cat: "files", phase: 5, built: true , icon: "key",         accepts: ["any"] },
   { id: "file-compare",        cat: "files", phase: 6, built: false, icon: "compare",     accepts: ["any"] },
 
   /* ---- Optional, last ----------------------------------- */

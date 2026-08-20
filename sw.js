@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-14c497e631";
+const VERSION = "0.1.0-0e49fe910a";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -42,10 +42,13 @@ const PRECACHE = [
   "./assets/js/idb.js",
   "./assets/js/image/decode.js",
   "./assets/js/image/exif.js",
+  "./assets/js/image/obscure.js",
   "./assets/js/image/ops.js",
   "./assets/js/image/pipeline.js",
   "./assets/js/image/runner.js",
   "./assets/js/image/strip.js",
+  "./assets/js/lock.js",
+  "./assets/js/marker.js",
   "./assets/js/netguard.js",
   "./assets/js/page-home.js",
   "./assets/js/page-roadmap.js",
@@ -59,6 +62,7 @@ const PRECACHE = [
   "./assets/js/pdf/edit.js",
   "./assets/js/pdf/loader.js",
   "./assets/js/pdf/password.js",
+  "./assets/js/pdf/redact.js",
   "./assets/js/pdf/render.js",
   "./assets/js/pdf/stamp.js",
   "./assets/js/preboot.js",
@@ -70,6 +74,8 @@ const PRECACHE = [
   "./assets/js/strings/hi.js",
   "./assets/js/tool-page.js",
   "./assets/js/tools.js",
+  "./assets/js/tools/file-lock.js",
+  "./assets/js/tools/image-blur.js",
   "./assets/js/tools/image-compress.js",
   "./assets/js/tools/image-convert.js",
   "./assets/js/tools/image-crop.js",
@@ -78,6 +84,7 @@ const PRECACHE = [
   "./assets/js/tools/image-rotate.js",
   "./assets/js/tools/images-to-pdf.js",
   "./assets/js/tools/pdf-compress.js",
+  "./assets/js/tools/pdf-fill-sign.js",
   "./assets/js/tools/pdf-flatten.js",
   "./assets/js/tools/pdf-merge.js",
   "./assets/js/tools/pdf-metadata.js",
@@ -86,6 +93,7 @@ const PRECACHE = [
   "./assets/js/tools/pdf-page-numbers.js",
   "./assets/js/tools/pdf-password-add.js",
   "./assets/js/tools/pdf-password-remove.js",
+  "./assets/js/tools/pdf-redact.js",
   "./assets/js/tools/pdf-rotate-crop.js",
   "./assets/js/tools/pdf-split.js",
   "./assets/js/tools/pdf-to-images.js",
@@ -101,6 +109,8 @@ const PRECACHE = [
   "./privacy.html",
   "./roadmap.html",
   "./settings.html",
+  "./tools/file-lock.html",
+  "./tools/image-blur.html",
   "./tools/image-compress.html",
   "./tools/image-convert.html",
   "./tools/image-crop.html",
@@ -109,6 +119,7 @@ const PRECACHE = [
   "./tools/image-rotate.html",
   "./tools/images-to-pdf.html",
   "./tools/pdf-compress.html",
+  "./tools/pdf-fill-sign.html",
   "./tools/pdf-flatten.html",
   "./tools/pdf-merge.html",
   "./tools/pdf-metadata.html",
@@ -117,6 +128,7 @@ const PRECACHE = [
   "./tools/pdf-page-numbers.html",
   "./tools/pdf-password-add.html",
   "./tools/pdf-password-remove.html",
+  "./tools/pdf-redact.html",
   "./tools/pdf-rotate-crop.html",
   "./tools/pdf-split.html",
   "./tools/pdf-to-images.html",

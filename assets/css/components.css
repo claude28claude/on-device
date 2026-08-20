@@ -1233,3 +1233,72 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
   border-width: 0;
   pointer-events: none;
 }
+
+/* ---- Marking areas by dragging -------------------------- */
+.mark-stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-2);
+  overflow: hidden;
+  background: #fff;
+  touch-action: none;
+}
+.mark-stage img, .mark-stage canvas { max-width: 100%; height: auto; display: block; }
+
+.mark-surface {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+}
+
+.mark-box {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.82);
+  border: 2px solid var(--danger);
+  box-sizing: border-box;
+}
+.mark-box:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus);
+  outline-offset: 2px;
+}
+.mark-preview {
+  background: rgba(179, 38, 30, 0.35);
+  border-style: dashed;
+}
+
+.mark-page { margin-bottom: var(--s-4); }
+.mark-page-label {
+  font-size: var(--fs-sm);
+  color: var(--fg-muted);
+  margin-bottom: var(--s-2);
+  display: block;
+}
+
+/* Signature drawing area */
+.signature-pad {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  background: #fff;
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--r-2);
+  touch-action: none;
+  cursor: crosshair;
+  display: block;
+  margin-bottom: var(--s-2);
+}
+
+/* Placing items on a page */
+.place-stage { position: relative; display: inline-block; max-width: 100%; line-height: 0; cursor: copy; }
+.place-stage img { max-width: 100%; height: auto; display: block; border: var(--border-w) solid var(--border); }
+.placed-item {
+  position: absolute;
+  transform: translate(0, -100%);
+  pointer-events: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+.placed-item img { border: 0; }
