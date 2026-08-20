@@ -52,6 +52,13 @@ const ALLOWED = [
   {
     pattern: "https://example.com/on-device-test",
     reason: "The Trust page deliberately attempts this so the visitor can watch it be refused."
+  },
+  {
+    pattern: "https://${v",
+    reason:
+      "Not an address this site visits. The QR tool prefixes a scheme onto whatever the " +
+      "visitor typed so that “example.org” becomes a working link INSIDE the QR code. " +
+      "The text is drawn into an image; nothing fetches it."
   }
 ];
 

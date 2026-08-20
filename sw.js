@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-0e49fe910a";
+const VERSION = "0.1.0-5cf040bd95";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -37,6 +37,7 @@ const PRECACHE = [
   "./assets/js/app.js",
   "./assets/js/colour.js",
   "./assets/js/dropzone.js",
+  "./assets/js/hash.js",
   "./assets/js/home.js",
   "./assets/js/i18n.js",
   "./assets/js/idb.js",
@@ -66,6 +67,7 @@ const PRECACHE = [
   "./assets/js/pdf/render.js",
   "./assets/js/pdf/stamp.js",
   "./assets/js/preboot.js",
+  "./assets/js/qr.js",
   "./assets/js/queue.js",
   "./assets/js/search-terms.js",
   "./assets/js/sniff.js",
@@ -74,6 +76,8 @@ const PRECACHE = [
   "./assets/js/strings/hi.js",
   "./assets/js/tool-page.js",
   "./assets/js/tools.js",
+  "./assets/js/tools/checksum.js",
+  "./assets/js/tools/file-compare.js",
   "./assets/js/tools/file-lock.js",
   "./assets/js/tools/image-blur.js",
   "./assets/js/tools/image-compress.js",
@@ -83,6 +87,7 @@ const PRECACHE = [
   "./assets/js/tools/image-resize.js",
   "./assets/js/tools/image-rotate.js",
   "./assets/js/tools/images-to-pdf.js",
+  "./assets/js/tools/markdown.js",
   "./assets/js/tools/pdf-compress.js",
   "./assets/js/tools/pdf-fill-sign.js",
   "./assets/js/tools/pdf-flatten.js",
@@ -98,6 +103,10 @@ const PRECACHE = [
   "./assets/js/tools/pdf-split.js",
   "./assets/js/tools/pdf-to-images.js",
   "./assets/js/tools/pdf-watermark.js",
+  "./assets/js/tools/qr-generate.js",
+  "./assets/js/tools/spreadsheet.js",
+  "./assets/js/tools/text-workbench.js",
+  "./assets/js/tools/zip.js",
   "./assets/js/tray.js",
   "./assets/js/ui.js",
   "./assets/js/workers/image-worker.js",
@@ -109,6 +118,8 @@ const PRECACHE = [
   "./privacy.html",
   "./roadmap.html",
   "./settings.html",
+  "./tools/checksum.html",
+  "./tools/file-compare.html",
   "./tools/file-lock.html",
   "./tools/image-blur.html",
   "./tools/image-compress.html",
@@ -118,6 +129,7 @@ const PRECACHE = [
   "./tools/image-resize.html",
   "./tools/image-rotate.html",
   "./tools/images-to-pdf.html",
+  "./tools/markdown.html",
   "./tools/pdf-compress.html",
   "./tools/pdf-fill-sign.html",
   "./tools/pdf-flatten.html",
@@ -133,6 +145,10 @@ const PRECACHE = [
   "./tools/pdf-split.html",
   "./tools/pdf-to-images.html",
   "./tools/pdf-watermark.html",
+  "./tools/qr-generate.html",
+  "./tools/spreadsheet.html",
+  "./tools/text-workbench.html",
+  "./tools/zip.html",
   "./trust.html"
 ];
 /* --- END BUILD:PRECACHE --- */

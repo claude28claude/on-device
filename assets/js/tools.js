@@ -58,17 +58,17 @@ export const TOOLS = [
   { id: "screenshot-polish",   cat: "image", phase: 6, built: false, icon: "frame",       accepts: ["image"] },
 
   /* ---- Documents, data and text ------------------------- */
-  { id: "qr-generate",         cat: "data",  phase: 6, built: false, icon: "qr",          accepts: [] },
+  { id: "qr-generate",         cat: "data",  phase: 6, built: true , icon: "qr",          accepts: [] },
   { id: "qr-read",             cat: "data",  phase: 6, built: false, icon: "camera",      accepts: ["image"] },
-  { id: "text-workbench",      cat: "data",  phase: 6, built: false, icon: "type",        accepts: ["text"] },
-  { id: "spreadsheet",         cat: "data",  phase: 6, built: false, icon: "table",       accepts: ["csv", "json", "sheet"] },
-  { id: "markdown",            cat: "data",  phase: 6, built: false, icon: "markdown",    accepts: ["text"] },
+  { id: "text-workbench",      cat: "data",  phase: 6, built: true , icon: "type",        accepts: ["text"] },
+  { id: "spreadsheet",         cat: "data",  phase: 6, built: true , icon: "table",       accepts: ["csv", "json", "sheet"] },
+  { id: "markdown",            cat: "data",  phase: 6, built: true , icon: "markdown",    accepts: ["text"] },
 
   /* ---- File utilities ----------------------------------- */
-  { id: "zip",                 cat: "files", phase: 6, built: false, icon: "package",     accepts: ["any"] },
-  { id: "checksum",            cat: "files", phase: 6, built: false, icon: "fingerprint", accepts: ["any"] },
+  { id: "zip",                 cat: "files", phase: 6, built: true , icon: "package",     accepts: ["any"] },
+  { id: "checksum",            cat: "files", phase: 6, built: true , icon: "fingerprint", accepts: ["any"] },
   { id: "file-lock",           cat: "files", phase: 5, built: true , icon: "key",         accepts: ["any"] },
-  { id: "file-compare",        cat: "files", phase: 6, built: false, icon: "compare",     accepts: ["any"] },
+  { id: "file-compare",        cat: "files", phase: 6, built: true , icon: "compare",     accepts: ["any"] },
 
   /* ---- Optional, last ----------------------------------- */
   { id: "media-toolkit",       cat: "files", phase: 11, built: false, icon: "film",       accepts: ["audio", "video"], optional: true },

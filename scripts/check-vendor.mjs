@@ -54,6 +54,38 @@ export const SOURCES = [
     package: "pdfjs-dist@5.4.149",
     purpose: "Reading PDF files, drawing page previews, extracting text",
     files: ["pdfjs/pdf.min.mjs", "pdfjs/pdf.worker.min.mjs"]
+  },
+  {
+    name: "zip.js",
+    version: "2.7.57",
+    licence: "BSD-3-Clause",
+    package: "@zip.js/zip.js@2.7.57",
+    purpose: "Reading and writing zip archives, including encrypted ones",
+    files: ["zipjs/zip.min.js"]
+  },
+  {
+    name: "SheetJS (community)",
+    version: "0.18.5",
+    licence: "Apache-2.0",
+    package: "xlsx@0.18.5",
+    purpose: "Reading and writing Excel spreadsheets",
+    files: ["sheetjs/xlsx.full.min.js"]
+  },
+  {
+    name: "marked",
+    version: "15.0.7",
+    licence: "MIT",
+    package: "marked@15.0.7",
+    purpose: "Turning markdown into HTML",
+    files: ["marked/marked.esm.js"]
+  },
+  {
+    name: "DOMPurify",
+    version: "3.2.4",
+    licence: "Apache-2.0 (dual-licensed with MPL-2.0)",
+    package: "dompurify@3.2.4",
+    purpose: "Making markdown-produced HTML safe to display",
+    files: ["dompurify/purify.es.mjs"]
   }
 ];
 

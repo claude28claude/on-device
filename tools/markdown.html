@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Markdown preview &mdash; On Device</title>
+<meta name="description" content="Write markdown, see it live, and export it as a clean web page. Runs in your browser.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<script src="../assets/js/netguard.js"></script>
+<script src="../assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="../index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="../help.html" data-i18n="nav.help">Help</a>
+      <a href="../settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <nav aria-label="Breadcrumb" class="text-sm muted">
+      <a href="../index.html">Tools</a> &rsaquo; <span>Markdown preview</span>
+    </nav>
+
+    <div class="page-head">
+      <h1>Markdown preview</h1>
+      <p class="lede">Write markdown and see it as you type, then save it as a tidy web page.</p>
+    </div>
+
+    <div id="tool-status"></div>
+
+    <div class="note">
+      <strong class="note-title">What this tool cannot do</strong>
+      <p class="mb-0">Exporting to PDF is not built; use your browser's own Print to PDF on the exported page, which produces a better result anyway. The preview is cleaned before display, so any HTML you embed that could run code is stripped.</p>
+    </div>
+
+    <div class="tool-layout">
+      <div class="tool-main">
+        <div id="files-host"></div>
+        <div id="extra-host"></div>
+        <div id="queue-host"></div>
+      </div>
+
+      <aside class="tool-options" aria-label="Options">
+        <h2>Options</h2>
+        <div class="field">
+          <span class="field-label">View</span>
+          <div class="segmented" id="view-mode" role="group" aria-label="View">
+            <button type="button" data-view="split" aria-pressed="true">Split</button>
+            <button type="button" data-view="write" aria-pressed="false">Write</button>
+            <button type="button" data-view="read" aria-pressed="false">Preview</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <p class="field-hint" id="md-stats"></p>
+        </div>
+
+        <div class="field">
+          <div class="btn-row">
+            <button class="btn btn-sm" type="button" id="copy-html">Copy the HTML</button>
+            <button class="btn btn-sm" type="button" id="print-preview">Print or save as PDF</button>
+          </div>
+          <p class="field-hint">Printing uses your browser's own dialogue, which can save a PDF.</p>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" data-label="Export as a web page" disabled>Export as a web page</button>
+        <p class="field-hint">Finished files land in the results tray at the bottom of the screen.</p>
+      </aside>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="../credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="../assets/js/tools/markdown.js"></script>
+</body>
+</html>

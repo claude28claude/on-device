@@ -3,7 +3,7 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 5.
+Last updated: **20 August 2026**, end of Phase 6.
 
 Each phase section below describes the state **at the end of that phase**. Where a
 later phase changed something, it says so. The "Known imperfect" list at the bottom
@@ -21,14 +21,14 @@ is always current.
 | 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
 | 4 | PDF advanced: compress, watermark, numbers, metadata, passwords, flatten, n-up | **Done** |
 | 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
-| 6 | Text, data and utilities | Next |
-| 7 | Extraction (text + OCR) | Not started |
+| 6 | Text, data and utilities: QR, text, spreadsheets, markdown, zip, checksum, compare | **Done** — 7 of 8 |
+| 7 | Extraction (text + OCR) | Next |
 | 8 | Recipes and power features | Not started |
 | 9 | Customisation and languages | Not started |
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 24 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 31 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -515,6 +515,68 @@ page order.
 
 That is exactly the failure mode a redaction tool must never have, and it is only
 caught by checking what came out rather than what went in.
+
+
+---
+
+## Phase 6 — text, data and utilities
+
+Seven of the eight built. The eighth is deliberately not shipped, and that is the
+most important thing in this section.
+
+| Tool | State |
+|---|---|
+| Make a QR code | Working — text, links, wifi, contacts, email, phone |
+| Read a QR code | **Not shipped** — see below |
+| Text workbench | Working — case, tidying, sorting, dedupe, find and replace, counts |
+| CSV, JSON and Excel | Working — including encoding and delimiter repair |
+| Markdown preview | Working — live, sanitised, exports a self-contained page |
+| Zip and unzip | Working — including password-protected archives |
+| Checksum | Working — SHA-256/384/512, SHA-1 and MD5 |
+| Compare two files | Working — byte for byte, reports where they first differ |
+
+### The QR reader is not shipped, and why
+
+The QR **generator** was written for this project, because the usual library ships
+no ready-to-use browser build. It is verified as thoroughly as I know how:
+
+- Its Reed-Solomon error correction reproduces the **specification's own published
+  worked example** byte for byte (`a5 24 d4 c1 ed 36 c7 87 2c 55`).
+- Its generator polynomial matches the known coefficients for 10 check bytes.
+- Its format bits compute and place correctly, verified by reading them back.
+- Its rendering matches its matrix exactly — 0 mismatching modules.
+- A reader written independently recovers "HELLO" from the finished matrix, with
+  the right mode and length.
+
+The **reader** was to use jsQR (Apache 2.0). During testing jsQR decoded **nothing
+at all** — not one code, at any size, quiet zone, error-correction level or mask,
+with or without noise. Since the generator matches the specification's own test
+vectors, the weight of evidence says the fault is not in the codes.
+
+I could not determine why, and I will not ship a tool I have never seen work. The
+library was removed from the project rather than left in unused, and the QR reader
+stays marked "not built".
+
+**What this means for you:** the generator is very probably correct, but the one
+test that settles it is the one I cannot run here — point a phone camera at a code
+it produces. The tool says exactly that on the page. If a code does not scan, the
+generator should be pulled too.
+
+### Everything else
+
+- **Checksums verified against known values**: SHA-256, SHA-1 and MD5 of "abc" all
+  match their published digests. MD5 is written into the site because browsers no
+  longer provide it, and it passes **all seven RFC 1321 test vectors**. It is
+  labelled as broken for security, and offered only for checking downloads.
+- **Zip round-trips verified**, including a password-protected archive, with a
+  wrong password correctly rejected. 1600 bytes of text compressed to 450.
+- **Spreadsheets**: CSV → rows → XLSX → back again, intact. The tool works out the
+  delimiter itself, and detects when a file is not UTF-8 — reading it as
+  Windows-1252 instead, which is what older Excel produces, and saying so.
+- **Markdown is sanitised before display**: verified that a `<script>` tag in the
+  source is stripped and never reaches the page.
+- **The text workbench keeps an undo history** and reports honestly when a search
+  pattern is invalid instead of silently doing nothing.
 
 ---
 

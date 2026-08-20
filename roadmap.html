@@ -121,6 +121,14 @@
           measures the available memory and refuses before starting, with the real
           numbers, rather than crashing your tab.
         </li>
+        <li>
+          <strong>Reading QR codes &mdash; not shipped.</strong> The QR
+          <em>generator</em> is built and verified against the specification&rsquo;s own
+          published test data. The <em>reader</em> is not. The library chosen for it
+          would not decode a single code during testing, including codes there is strong
+          independent reason to believe are correct, so it was removed rather than
+          shipped. A tool nobody has seen work is not a tool.
+        </li>
       </ul>
     </section>
 

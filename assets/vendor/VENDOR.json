@@ -34,11 +34,55 @@
         "pdfjs/pdf.min.mjs",
         "pdfjs/pdf.worker.min.mjs"
       ]
+    },
+    {
+      "name": "zip.js",
+      "version": "2.7.57",
+      "licence": "BSD-3-Clause",
+      "package": "@zip.js/zip.js@2.7.57",
+      "purpose": "Reading and writing zip archives, including encrypted ones",
+      "files": [
+        "zipjs/zip.min.js"
+      ]
+    },
+    {
+      "name": "SheetJS (community)",
+      "version": "0.18.5",
+      "licence": "Apache-2.0",
+      "package": "xlsx@0.18.5",
+      "purpose": "Reading and writing Excel spreadsheets",
+      "files": [
+        "sheetjs/xlsx.full.min.js"
+      ]
+    },
+    {
+      "name": "marked",
+      "version": "15.0.7",
+      "licence": "MIT",
+      "package": "marked@15.0.7",
+      "purpose": "Turning markdown into HTML",
+      "files": [
+        "marked/marked.esm.js"
+      ]
+    },
+    {
+      "name": "DOMPurify",
+      "version": "3.2.4",
+      "licence": "Apache-2.0 (dual-licensed with MPL-2.0)",
+      "package": "dompurify@3.2.4",
+      "purpose": "Making markdown-produced HTML safe to display",
+      "files": [
+        "dompurify/purify.es.mjs"
+      ]
     }
   ],
-  "totalFiles": 202,
-  "totalBytes": 6075569,
+  "totalFiles": 210,
+  "totalBytes": 7330369,
   "fingerprints": {
+    "dompurify/LICENSE": "1b02e03c3fb4f87d476c128f0eb9def1f5a1709d28b180465228bd41574623b7",
+    "dompurify/purify.es.mjs": "3b024991882ccc83066a8f0e64f3ff2a84d7638e64591221f6b04f8c10cbb3c2",
+    "marked/LICENSE.md": "8e3a3f82f59a60958f56ca08f445647c32a4733dc7ca6c2c46f6eb898471ab9c",
+    "marked/marked.esm.js": "7a7d9a521ac9384e0c3a075120a7c486cbd0c3c32cc5601bbb79a23e97403690",
     "pdf-lib/LICENSE.md": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb",
     "pdf-lib/pdf-lib.esm.min.js": "72c052d97b4d5d9fa6cdbdcb7ad709f03d4ddb1122390cb3afeba4d88651d969",
     "pdfjs/LICENSE": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
@@ -240,6 +284,10 @@
     "qpdf/browser.js": "546deb1e8cca0bb91dae3bba5f50c535fbe8764e5528399ffaca6070cb4b7ad2",
     "qpdf/qpdf.js": "0129e94930f34f9b3b371db00427f9ae81502bc8be4873f9ad114fc353ae306f",
     "qpdf/qpdf.mjs": "134336f7b6b4fcef183c866ff3ea81bb06c452e712aab5f2f4d6b151fbcddb75",
-    "qpdf/qpdf.wasm": "cbd81a244d622a39e3cf16f2e589a9a0d7cc51f588d35b3dd6b425a677cc3f99"
+    "qpdf/qpdf.wasm": "cbd81a244d622a39e3cf16f2e589a9a0d7cc51f588d35b3dd6b425a677cc3f99",
+    "sheetjs/LICENSE": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
+    "sheetjs/xlsx.full.min.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
+    "zipjs/LICENSE": "1b7ebc8d7889ed25491484ab2b102370742ca6c0b26650a0c62cc2269b579b84",
+    "zipjs/zip.min.js": "074f2dfc7789c117eaed9d5def566b8cd61ee29d6f8d0e2137bfa61e1437af58"
   }
 }
