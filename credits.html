@@ -71,20 +71,92 @@
     <section class="prose">
       <h2>Bundled libraries</h2>
       <p>
-        At the end of Phase 2, the site still uses
-        <strong>no third-party code at all</strong>. Every line of HTML, CSS and
-        JavaScript here was written for this project &mdash; including the code that
-        reads a photograph's hidden information and the code that removes it without
-        re-saving the picture. That is not a boast; it simply turned out that writing
-        those two directly was better than borrowing, because doing it properly means
-        editing the file's own bytes rather than redrawing the image.
-      </p>
-      <p>
-        Libraries arrive as the tools that need them arrive. Each one will be listed
-        below with its version and licence before the tool using it ships. Only
-        permissive licences are used: MIT, Apache&nbsp;2.0 and BSD.
+        Everything through Phase 2 was written for this project. Phase 3 changed
+        that: working with PDFs needs two libraries that would be unreasonable to
+        write from scratch, so they are used, stored inside this site, and served
+        from the same address as the page.
       </p>
 
+      <table class="mb-4">
+        <thead>
+          <tr>
+            <th scope="col">Library</th>
+            <th scope="col">Version</th>
+            <th scope="col">Licence</th>
+            <th scope="col">Used for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>pdf-lib</td><td class="mono">1.17.1</td><td>MIT</td>
+            <td>Creating and editing PDF files</td>
+          </tr>
+          <tr>
+            <td>pdf.js</td><td class="mono">5.4.149</td><td>Apache&nbsp;2.0</td>
+            <td>Reading PDFs, drawing page previews, extracting text</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>How to check they have not been tampered with</h3>
+      <p>
+        Borrowed code is shipped compressed, which makes it unreadable &mdash; so
+        instead of asking you to read it, here is something better. Every borrowed
+        file has a fingerprint recorded in
+        <span class="mono">assets/vendor/VENDOR.json</span>. Download the same
+        version from the public npm registry, compute its SHA-256, and compare. If
+        they match, the file here is byte-for-byte the published release.
+      </p>
+
+      <table class="mb-4">
+        <thead>
+          <tr><th scope="col">File</th><th scope="col">SHA-256 (first 32 characters)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="mono">pdf-lib.esm.min.js</td><td class="mono">72c052d97b4d5d9fa6cdbdcb7ad709f0</td></tr>
+          <tr><td class="mono">pdf.min.mjs</td><td class="mono">a935133d4b2166e8e3cf28e288b1b889</td></tr>
+          <tr><td class="mono">pdf.worker.min.mjs</td><td class="mono">c964e291707ad492e6e90ff7f4f352b7</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note note-accent">
+        <strong class="note-title">Why borrowed code changes nothing about the promise</strong>
+        <p class="mb-0">
+          These libraries cannot contact anything, whatever they might contain. The
+          security policy at the top of every page permits requests to this site and
+          refuses every other address, and the browser enforces that before any of
+          this code runs. If one of them ever tried, the attempt would be blocked and
+          counted in red on the <a href="trust.html">How this works</a> page. That
+          protection does not depend on trusting the library, which is the point.
+        </p>
+      </div>
+
+      <h3>Also included, from pdf.js</h3>
+      <p>
+        Rendering a PDF faithfully sometimes needs more than the code: typefaces for
+        documents that did not embed their own, character maps for Chinese, Japanese
+        and Korean text, and two small WebAssembly decoders for JPEG&nbsp;2000 images
+        and colour profiles. All are part of the same Apache&nbsp;2.0 package and all
+        are stored here. Their own licences (Foxit, Liberation, OpenJPEG, QCMS) are in
+        <span class="mono">assets/vendor/pdfjs/</span>.
+      </p>
+      <p>
+        Altogether the borrowed files come to about 4.5&nbsp;MB. They are deliberately
+        <strong>not</strong> part of the first visit &mdash; somebody who only wants to
+        resize a photograph never downloads them. They arrive the first time a PDF tool
+        is opened, with a progress bar, and are kept from then on.
+      </p>
+
+      <h2>Still written here</h2>
+      <p>
+        Everything else, including all six image tools, the reader that pulls hidden
+        information out of a photograph, and the code that removes it without
+        re-compressing the picture. Those two were written from the format
+        specifications rather than borrowed, because doing the job properly means
+        editing the file&rsquo;s own bytes rather than redrawing the image.
+      </p>
+
+      <h2>Planned</h2>
       <table class="mb-5">
         <thead>
           <tr>
@@ -95,11 +167,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>pdf-lib</td><td>Building and editing PDFs</td><td>MIT</td><td>Phase 3</td></tr>
-          <tr><td>pdf.js</td><td>Drawing page previews, reading text</td><td>Apache 2.0</td><td>Phase 3</td></tr>
           <tr><td>qpdf (WebAssembly)</td><td>PDF passwords</td><td>Apache 2.0</td><td>Phase 4</td></tr>
-          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>Unresolved &mdash; see the note below</td><td>Still undecided</td></tr>
-          <tr><td><em>Not used</em> &mdash; written for this project instead</td><td>Reading and removing hidden photo information</td><td>&mdash;</td><td>Done in Phase 2</td></tr>
+          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>Unresolved &mdash; see below</td><td>Undecided</td></tr>
           <tr><td>zip.js</td><td>Zip and unzip</td><td>BSD 3-clause</td><td>Phase 6</td></tr>
           <tr><td>tesseract.js</td><td>Offline text recognition</td><td>Apache 2.0</td><td>Phase 7</td></tr>
           <tr><td>SheetJS (community)</td><td>Spreadsheets</td><td>Apache 2.0</td><td>Phase 6</td></tr>
@@ -116,8 +185,7 @@
           to stick to. Rather than quietly include it, Phase 2 shipped without any
           bundled decoder at all: On Device asks your browser to open HEIC photos, and
           says plainly when it will not. Safari usually can; Chrome, Edge and Firefox
-          usually cannot. Bundling a decoder is a decision still to be made, and it is
-          a licence decision rather than a technical one.
+          usually cannot. Bundling one is a licence decision still to be made.
         </p>
       </div>
 

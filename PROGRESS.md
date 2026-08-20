@@ -3,7 +3,11 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 2.
+Last updated: **20 August 2026**, end of Phase 3.
+
+Each phase section below describes the state **at the end of that phase**. Where a
+later phase changed something, it says so. The "Known imperfect" list at the bottom
+is always current.
 
 ---
 
@@ -14,8 +18,8 @@ Last updated: **20 August 2026**, end of Phase 2.
 | 0 | Plan, name, honest warnings | **Done** |
 | 1 | The shell: homepage, drop zone, results tray, settings, offline, trust page | **Done** — see below |
 | 2 | Images core: resize, convert, compress, crop, rotate, metadata | **Done** |
-| 3 | PDF core | Next |
-| 4 | PDF advanced | Not started |
+| 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
+| 4 | PDF advanced | Next |
 | 5 | Privacy specials | Not started |
 | 6 | Text, data and utilities | Not started |
 | 7 | Extraction (text + OCR) | Not started |
@@ -24,7 +28,7 @@ Last updated: **20 August 2026**, end of Phase 2.
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 6 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 12 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -221,7 +225,8 @@ opposite of the point.
   offering it and failing. On this machine: WebP yes, AVIF no — and the AVIF option
   is disabled and labelled, not hidden.
 - **Resize shows what will happen before it happens**, per file, with real numbers.
-- **Still no third-party code at all.** Zero dependencies after two phases.
+- **Still no third-party code at all** at this point. Zero dependencies after two
+  phases. (Phase 3 changed this: the PDF tools use pdf-lib and pdf.js.)
 
 ### What testing caught in Phase 2
 
@@ -277,6 +282,95 @@ all of it — with no server running at all. Zero external requests.
 - Compression at quality 45 / 70 / 90 gives **70% / 59% / 28%** smaller.
 - Resize to 800 px longest side: **78% smaller**; PNG stays PNG, JPEG stays JPEG.
 - Zero external requests and zero blocked attempts throughout.
+
+
+---
+
+## Phase 3 — PDFs
+
+Six tools, all tested against real PDFs with the results verified by reopening the
+output and counting what came back.
+
+| Tool | State |
+|---|---|
+| Merge PDFs | Working — PDFs and pictures, in any order |
+| Split and extract | Working — a range, every N pages, or one file per page |
+| Organise pages | Working — reorder, rotate, duplicate, delete, visually |
+| PDF to images | Working — PNG or JPG at 72, 150 or 300 dpi |
+| Images to PDF | Working — page size, orientation, margins |
+| Rotate and crop | Working — with a shaded preview of what gets trimmed |
+
+### The honest change: this phase uses borrowed code
+
+Phases 1 and 2 had no dependencies at all. Phase 3 does, and pretending otherwise
+would be worse than the dependency. Writing a PDF renderer from scratch is not a
+sensible thing to attempt, so two libraries are used:
+
+- **pdf-lib 1.17.1** (MIT) — creating and editing
+- **pdf.js 5.4.149** (Apache 2.0) — reading, drawing pages, extracting text
+
+Both are permissive, as promised. Neither is loaded from anyone else's server: they
+are stored in this repository and served from this site like every other file.
+
+**They are shipped compressed, so instead of asking anyone to read them, every
+borrowed file has a published SHA-256 fingerprint** (`assets/vendor/VENDOR.json`,
+and on the Credits page). Download the same version from npm, hash it, compare.
+Verified during this phase: all three files are byte-for-byte identical to the
+published npm releases.
+
+`node scripts/check-vendor.mjs` re-checks those fingerprints and fails if a
+borrowed file has changed. `check-no-external.mjs` now names the borrowed files it
+skips rather than skipping them quietly.
+
+And it changes nothing about the promise: borrowed code is bound by the same
+security policy, so it cannot reach anything either. That protection does not
+depend on trusting the library, which is the point of having it.
+
+### They are not part of the first visit
+
+The libraries come to about 4.5 MB. Downloading that onto somebody who only wants
+to resize a photograph would be rude, so they are **excluded from the first-visit
+cache entirely** and fetched the first time a PDF tool is opened, behind a progress
+bar that counts real bytes. After that they are kept, and work offline.
+
+First visit: 82 files. Borrowed files held back: 195.
+
+### Verified numbers
+
+Every one of these was checked by reopening the produced file, not by trusting the
+tool that made it:
+
+- **Merge**: a 3-page PDF + a 1-page PDF + one PNG produced exactly **5 pages**.
+- **Extract "1,3"** from a 3-page document produced a file with exactly **2 pages**.
+- **Burst** produced **3 single-page files**.
+- **Organise**: deleted page 2, duplicated page 1, turned everything right →
+  **3 pages, every one rotated 90°**.
+- **PDF to images** at 150 dpi produced **1239 × 1754** pixels, and the estimate
+  shown beforehand now says exactly that.
+- **Rotate and crop**: 10% off the top and 5% off the left of a 595 × 842 page
+  produced **565 × 758**, rotated 90°.
+- **Images to PDF**: two landscape pictures produced two landscape A4 pages, and
+  the HEIC in the same batch was refused with an explanation rather than failing
+  silently.
+
+### What testing caught in Phase 3
+
+1. **The page-range parser returned the wrong shape when the box was empty.** It
+   handed back a bare array instead of `{ pages, problems }`, so every tool that
+   read a range broke the moment someone left the field blank — which is the
+   default. Fixed, and covered by a run of twelve inputs including `5-2`, `abc`,
+   `12-` and `-3`.
+
+2. **"12-" on a 10-page document said "counts backwards".** It does not; it starts
+   past the end. Now says so.
+
+3. **The pixel-size estimate disagreed with the file produced** — 1240 predicted,
+   1239 delivered, because the estimate rounded where the renderer floors. Exactly
+   the same class of bug as Phase 2's rotated-photo preview, so the fix was to make
+   both call one shared function rather than to adjust a number.
+
+4. **Three pages of the site still claimed zero third-party code.** The Credits,
+   Privacy and Trust pages all had to be corrected the moment the libraries landed.
 
 ---
 

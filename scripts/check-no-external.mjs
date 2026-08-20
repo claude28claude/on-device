@@ -18,6 +18,18 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SKIP_DIRS = new Set([".git", "node_modules", "samples"]);
+
+/* Borrowed code (pdf-lib, pdf.js) is not scanned line by line. Minified
+   third-party source contains thousands of URL-looking strings, and reading
+   them tells you nothing useful.
+
+   It is handled differently, and more strictly: every borrowed file has a
+   recorded SHA-256 fingerprint (scripts/check-vendor.mjs) proving it is the
+   published release untouched, and at RUNTIME the Content Security Policy and
+   netguard.js refuse any outbound request it might attempt - which is exactly
+   the protection that matters. This scan counts and names those files so the
+   exclusion is visible rather than quiet. */
+const VENDOR_DIR = "assets/vendor";
 const SCAN_EXT = new Set([".html", ".js", ".mjs", ".css", ".json", ".webmanifest", ".svg"]);
 
 /* Documentation is never served to a visitor and never executed, so a
@@ -68,15 +80,23 @@ const GUARD_FILES = new Set([
 ]);
 
 const docs = [];
+const vendored = [];
 
 function walk(dir, out = []) {
   for (const entry of readdirSync(dir)) {
     if (SKIP_DIRS.has(entry)) continue;
     const full = join(dir, entry);
+    const rel = relative(ROOT, full).split("\\").join("/");
     const st = statSync(full);
-    if (st.isDirectory()) walk(full, out);
-    else if (SCAN_EXT.has(extname(entry))) out.push(full);
-    else if (DOC_EXT.has(extname(entry))) docs.push(full);
+    if (st.isDirectory()) {
+      walk(full, out);
+    } else if (rel.startsWith(VENDOR_DIR)) {
+      vendored.push(full);
+    } else if (SCAN_EXT.has(extname(entry))) {
+      out.push(full);
+    } else if (DOC_EXT.has(extname(entry))) {
+      docs.push(full);
+    }
   }
   return out;
 }

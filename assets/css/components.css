@@ -1151,3 +1151,85 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
 @media (hover: none), (max-width: 640px) {
   .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; padding-right: var(--s-2); }
 }
+
+/* ---- PDF page grids ------------------------------------- */
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--s-3);
+}
+.page-card {
+  position: relative;
+  display: block;
+  border: 2px solid var(--border);
+  border-radius: var(--r-2);
+  padding: var(--s-2);
+  background: var(--bg-sunken);
+  cursor: pointer;
+  text-align: center;
+}
+.page-card:hover { border-color: var(--border-strong); }
+.page-card[data-picked="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.page-card:focus-within { outline: var(--focus-ring-w) solid var(--focus); outline-offset: 2px; }
+.page-card img {
+  width: 100%;
+  height: auto;
+  background: #fff;
+  border: var(--border-w) solid var(--border);
+  display: block;
+  margin-bottom: var(--s-2);
+}
+.page-card input[type="checkbox"] {
+  position: absolute;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 1;
+}
+.page-card .page-number {
+  font-size: var(--fs-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-muted);
+}
+.page-card[data-picked="true"] .page-number { color: var(--accent); font-weight: var(--fw-semi); }
+
+/* Organise view: draggable, with per-page controls */
+.page-card[data-deleted="true"] { opacity: 0.35; border-style: dashed; }
+.page-card[data-deleted="true"] img { filter: grayscale(1); }
+.page-card .page-tools {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--s-1);
+}
+.page-card .page-tools button {
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  min-height: 30px;
+  min-width: 30px;
+  padding: 2px var(--s-1);
+  border: var(--border-w) solid var(--border-strong);
+  border-radius: var(--r-1);
+  background: var(--bg-raised);
+  color: var(--fg);
+  cursor: pointer;
+}
+.page-card .page-tools button:hover { background: var(--bg-hover); }
+.page-card img[data-rot="90"] { transform: rotate(90deg) scale(0.72); }
+.page-card img[data-rot="180"] { transform: rotate(180deg); }
+.page-card img[data-rot="270"] { transform: rotate(270deg) scale(0.72); }
+@media (hover: none) {
+  .page-card .page-tools button { min-height: 40px; min-width: 40px; }
+}
+
+/* Crop preview: shade what will be trimmed away. */
+.crop-preview { position: relative; display: block; line-height: 0; }
+.crop-preview img { width: 100%; height: auto; background: #fff; display: block; }
+.crop-veil {
+  position: absolute;
+  border-style: solid;
+  border-color: rgba(179, 38, 30, 0.45);
+  border-width: 0;
+  pointer-events: none;
+}

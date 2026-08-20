@@ -21,6 +21,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 /* Folders that are part of the site as served. */
 const INCLUDE_DIRS = ["assets"];
+
+/* The PDF libraries are several megabytes. Downloading them on a first visit,
+   to somebody who may only want to resize a photo, would be rude. They are
+   left out of this list and fetched the first time a PDF tool is opened, with
+   a progress bar - after which the service worker keeps them, so they are
+   downloaded exactly once and work offline from then on. */
+const LAZY_PREFIXES = ["assets/vendor/"];
 const SKIP_DIRS = new Set([".git", "node_modules", "scripts", "samples"]);
 const SKIP_EXT = new Set([".md", ".mjs"]);
 const SKIP_FILES = new Set(["sw.js", ".gitignore", "LICENSE"]);
@@ -56,10 +63,12 @@ for (const dir of [...INCLUDE_DIRS, "tools"]) {
   }
 }
 
-const urls = files
+const allUrls = files
   .map((f) => "./" + relative(ROOT, f).split("\\").join("/"))
-  .filter((u) => !SKIP_EXT.has(extname(u)))
-  .sort();
+  .filter((u) => !SKIP_EXT.has(extname(u)));
+
+const lazy = allUrls.filter((u) => LAZY_PREFIXES.some((p) => u.startsWith("./" + p)));
+const urls = allUrls.filter((u) => !lazy.includes(u)).sort();
 
 /* The homepage is also reachable as "./", so cache both. */
 const precache = ["./", ...urls];
@@ -102,5 +111,11 @@ writeFileSync(swPath, sw, "utf8");
 
 console.log(`Offline file list written into sw.js`);
 console.log(`  version:  ${version}`);
-console.log(`  files:    ${precache.length}`);
+console.log(`  files:    ${precache.length} saved on the first visit`);
+if (lazy.length) {
+  console.log(
+    `  lazy:     ${lazy.length} borrowed files kept out of the first visit ` +
+    `and cached when a PDF tool is first opened`
+  );
+}
 for (const u of precache) console.log(`    ${u}`);

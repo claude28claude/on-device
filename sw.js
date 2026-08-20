@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-fe67f5780c";
+const VERSION = "0.1.0-29557d3fd1";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -53,6 +53,11 @@ const PRECACHE = [
   "./assets/js/page-static.js",
   "./assets/js/page-trust.js",
   "./assets/js/palette.js",
+  "./assets/js/pdf-tool-page.js",
+  "./assets/js/pdf/doc.js",
+  "./assets/js/pdf/edit.js",
+  "./assets/js/pdf/loader.js",
+  "./assets/js/pdf/render.js",
   "./assets/js/preboot.js",
   "./assets/js/queue.js",
   "./assets/js/search-terms.js",
@@ -68,6 +73,12 @@ const PRECACHE = [
   "./assets/js/tools/image-metadata.js",
   "./assets/js/tools/image-resize.js",
   "./assets/js/tools/image-rotate.js",
+  "./assets/js/tools/images-to-pdf.js",
+  "./assets/js/tools/pdf-merge.js",
+  "./assets/js/tools/pdf-organise.js",
+  "./assets/js/tools/pdf-rotate-crop.js",
+  "./assets/js/tools/pdf-split.js",
+  "./assets/js/tools/pdf-to-images.js",
   "./assets/js/tray.js",
   "./assets/js/ui.js",
   "./assets/js/workers/image-worker.js",
@@ -85,6 +96,12 @@ const PRECACHE = [
   "./tools/image-metadata.html",
   "./tools/image-resize.html",
   "./tools/image-rotate.html",
+  "./tools/images-to-pdf.html",
+  "./tools/pdf-merge.html",
+  "./tools/pdf-organise.html",
+  "./tools/pdf-rotate-crop.html",
+  "./tools/pdf-split.html",
+  "./tools/pdf-to-images.html",
   "./trust.html"
 ];
 /* --- END BUILD:PRECACHE --- */

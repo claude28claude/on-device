@@ -24,13 +24,13 @@ export const KINDS = ["pdf", "image", "heic", "zip", "text", "csv", "json", "she
 
 export const TOOLS = [
   /* ---- PDF ---------------------------------------------- */
-  { id: "pdf-merge",           cat: "pdf",   phase: 3, built: false, icon: "layers",      accepts: ["pdf", "image"] },
-  { id: "pdf-split",           cat: "pdf",   phase: 3, built: false, icon: "scissors",    accepts: ["pdf"] },
-  { id: "pdf-organise",        cat: "pdf",   phase: 3, built: false, icon: "grid",        accepts: ["pdf"] },
+  { id: "pdf-merge",           cat: "pdf",   phase: 3, built: true , icon: "layers",      accepts: ["pdf", "image"] },
+  { id: "pdf-split",           cat: "pdf",   phase: 3, built: true , icon: "scissors",    accepts: ["pdf"] },
+  { id: "pdf-organise",        cat: "pdf",   phase: 3, built: true , icon: "grid",        accepts: ["pdf"] },
   { id: "pdf-compress",        cat: "pdf",   phase: 4, built: false, icon: "minimize",    accepts: ["pdf"] },
-  { id: "pdf-to-images",       cat: "pdf",   phase: 3, built: false, icon: "image",       accepts: ["pdf"] },
-  { id: "images-to-pdf",       cat: "pdf",   phase: 3, built: false, icon: "file-plus",   accepts: ["image", "heic"] },
-  { id: "pdf-rotate-crop",     cat: "pdf",   phase: 3, built: false, icon: "rotate",      accepts: ["pdf"] },
+  { id: "pdf-to-images",       cat: "pdf",   phase: 3, built: true , icon: "image",       accepts: ["pdf"] },
+  { id: "images-to-pdf",       cat: "pdf",   phase: 3, built: true , icon: "file-plus",   accepts: ["image", "heic"] },
+  { id: "pdf-rotate-crop",     cat: "pdf",   phase: 3, built: true , icon: "rotate",      accepts: ["pdf"] },
   { id: "pdf-page-numbers",    cat: "pdf",   phase: 4, built: false, icon: "hash",        accepts: ["pdf"] },
   { id: "pdf-watermark",       cat: "pdf",   phase: 4, built: false, icon: "droplet",     accepts: ["pdf"] },
   { id: "pdf-fill-sign",       cat: "pdf",   phase: 5, built: false, icon: "pen",         accepts: ["pdf"] },
