@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-5cf040bd95";
+const VERSION = "0.1.0-d856f03cc9";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -41,6 +41,7 @@ const PRECACHE = [
   "./assets/js/home.js",
   "./assets/js/i18n.js",
   "./assets/js/idb.js",
+  "./assets/js/image/compose.js",
   "./assets/js/image/decode.js",
   "./assets/js/image/exif.js",
   "./assets/js/image/obscure.js",
@@ -77,15 +78,19 @@ const PRECACHE = [
   "./assets/js/tool-page.js",
   "./assets/js/tools.js",
   "./assets/js/tools/checksum.js",
+  "./assets/js/tools/colour-palette.js",
   "./assets/js/tools/file-compare.js",
   "./assets/js/tools/file-lock.js",
+  "./assets/js/tools/icon-generator.js",
   "./assets/js/tools/image-blur.js",
+  "./assets/js/tools/image-combine.js",
   "./assets/js/tools/image-compress.js",
   "./assets/js/tools/image-convert.js",
   "./assets/js/tools/image-crop.js",
   "./assets/js/tools/image-metadata.js",
   "./assets/js/tools/image-resize.js",
   "./assets/js/tools/image-rotate.js",
+  "./assets/js/tools/image-watermark.js",
   "./assets/js/tools/images-to-pdf.js",
   "./assets/js/tools/markdown.js",
   "./assets/js/tools/pdf-compress.js",
@@ -104,6 +109,7 @@ const PRECACHE = [
   "./assets/js/tools/pdf-to-images.js",
   "./assets/js/tools/pdf-watermark.js",
   "./assets/js/tools/qr-generate.js",
+  "./assets/js/tools/screenshot-polish.js",
   "./assets/js/tools/spreadsheet.js",
   "./assets/js/tools/text-workbench.js",
   "./assets/js/tools/zip.js",
@@ -119,15 +125,19 @@ const PRECACHE = [
   "./roadmap.html",
   "./settings.html",
   "./tools/checksum.html",
+  "./tools/colour-palette.html",
   "./tools/file-compare.html",
   "./tools/file-lock.html",
+  "./tools/icon-generator.html",
   "./tools/image-blur.html",
+  "./tools/image-combine.html",
   "./tools/image-compress.html",
   "./tools/image-convert.html",
   "./tools/image-crop.html",
   "./tools/image-metadata.html",
   "./tools/image-resize.html",
   "./tools/image-rotate.html",
+  "./tools/image-watermark.html",
   "./tools/images-to-pdf.html",
   "./tools/markdown.html",
   "./tools/pdf-compress.html",
@@ -146,6 +156,7 @@ const PRECACHE = [
   "./tools/pdf-to-images.html",
   "./tools/pdf-watermark.html",
   "./tools/qr-generate.html",
+  "./tools/screenshot-polish.html",
   "./tools/spreadsheet.html",
   "./tools/text-workbench.html",
   "./tools/zip.html",

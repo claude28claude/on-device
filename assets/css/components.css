@@ -1366,3 +1366,17 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
   body[data-printing="preview"] .md-split { grid-template-columns: 1fr; }
   body[data-printing="preview"] .md-preview { border: 0; padding: 0; }
 }
+
+/* Colour palette */
+.palette-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s-3); }
+.palette-swatch {
+  display: block; width: 100%; text-align: left; cursor: pointer;
+  font: inherit; font-family: var(--font-body);
+  border: var(--border-w) solid var(--border); border-radius: var(--r-2);
+  background: var(--bg-raised); padding: 0; overflow: hidden;
+}
+.palette-swatch:hover { border-color: var(--border-strong); }
+.palette-colour { display: block; height: 78px; width: 100%; }
+.palette-hex { display: block; padding: var(--s-2) var(--s-3) 0; font-weight: var(--fw-semi); }
+.palette-swatch .field-hint { padding: 0 var(--s-3) var(--s-1); margin: 0; }
+.palette-swatch .field-hint:last-child { padding-bottom: var(--s-3); }

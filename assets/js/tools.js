@@ -51,11 +51,11 @@ export const TOOLS = [
   { id: "image-rotate",        cat: "image", phase: 2, built: true , icon: "rotate",      accepts: ["image", "heic"] },
   { id: "image-metadata",      cat: "image", phase: 2, built: true , icon: "map-pin",     accepts: ["image", "heic"] },
   { id: "image-blur",          cat: "image", phase: 5, built: true , icon: "eye-off",     accepts: ["image", "heic"] },
-  { id: "image-watermark",     cat: "image", phase: 4, built: false, icon: "droplet",     accepts: ["image", "heic"] },
-  { id: "image-combine",       cat: "image", phase: 6, built: false, icon: "grid",        accepts: ["image", "heic"] },
-  { id: "icon-generator",      cat: "image", phase: 6, built: false, icon: "app",         accepts: ["image"] },
-  { id: "colour-palette",      cat: "image", phase: 6, built: false, icon: "palette",     accepts: ["image", "heic"] },
-  { id: "screenshot-polish",   cat: "image", phase: 6, built: false, icon: "frame",       accepts: ["image"] },
+  { id: "image-watermark",     cat: "image", phase: 4, built: true , icon: "droplet",     accepts: ["image", "heic"] },
+  { id: "image-combine",       cat: "image", phase: 6, built: true , icon: "grid",        accepts: ["image", "heic"] },
+  { id: "icon-generator",      cat: "image", phase: 6, built: true , icon: "app",         accepts: ["image"] },
+  { id: "colour-palette",      cat: "image", phase: 6, built: true , icon: "palette",     accepts: ["image", "heic"] },
+  { id: "screenshot-polish",   cat: "image", phase: 6, built: true , icon: "frame",       accepts: ["image"] },
 
   /* ---- Documents, data and text ------------------------- */
   { id: "qr-generate",         cat: "data",  phase: 6, built: true , icon: "qr",          accepts: [] },

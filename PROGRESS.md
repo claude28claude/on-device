@@ -19,16 +19,16 @@ is always current.
 | 1 | The shell: homepage, drop zone, results tray, settings, offline, trust page | **Done** — see below |
 | 2 | Images core: resize, convert, compress, crop, rotate, metadata | **Done** |
 | 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
-| 4 | PDF advanced: compress, watermark, numbers, metadata, passwords, flatten, n-up | **Done** |
+| 4 | PDF advanced, plus image watermark | **Done** — 9 of 9 |
 | 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
-| 6 | Text, data and utilities: QR, text, spreadsheets, markdown, zip, checksum, compare | **Done** — 7 of 8 |
+| 6 | Text, data, utilities, plus the remaining image tools | **11 of 12** — only the QR reader missing, deliberately |
 | 7 | Extraction (text + OCR) | Next |
 | 8 | Recipes and power features | Not started |
 | 9 | Customisation and languages | Not started |
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 31 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 36 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -521,8 +521,15 @@ caught by checking what came out rather than what went in.
 
 ## Phase 6 — text, data and utilities
 
-Seven of the eight built. The eighth is deliberately not shipped, and that is the
-most important thing in this section.
+**A correction first.** When this section was first written it said "seven of
+eight". That was wrong: phase 6 has twelve tools, not eight — five image tools
+(watermark, combine, icon maker, colour palette, screenshot polish) were listed
+under phases 4 and 6 and had not been built. The miscount was found by counting
+the registry rather than trusting the note, the five tools were then built, and
+this paragraph is here rather than a quiet edit.
+
+**Eleven of the twelve are built.** The twelfth is deliberately not shipped, and
+that is the most important thing in this section.
 
 | Tool | State |
 |---|---|
@@ -561,6 +568,20 @@ stays marked "not built".
 test that settles it is the one I cannot run here — point a phone camera at a code
 it produces. The tool says exactly that on the page. If a code does not scan, the
 generator should be pulled too.
+
+### The five image tools that were missed
+
+Built after the miscount was found, and verified:
+
+- **Watermark**: a corner watermark changes 1.28% of a 1600 x 1200 photo, a tiled
+  one 3.96% — measured by comparing every pixel against the original.
+- **Combine**: four pictures into a 1830 x 1380 grid, two into a 1830 x 695 row.
+- **Icon maker**: all nine sizes produced (16 to 512), plus maskable versions and
+  the HTML and manifest lines to reference them.
+- **Colour palette**: on a test image containing exactly two colours it reported
+  exactly those two — `#faf9f7` at 56.5% and `#1750c8` at 43%.
+- **Screenshot polish**: 900 x 600 becomes 1020 x 720 at 10% padding, with rounded
+  corners and a shadow.
 
 ### Everything else
 
