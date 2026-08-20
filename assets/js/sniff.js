@@ -10,6 +10,8 @@
    using the browser's own file reader. It is not sent anywhere.
    ============================================================ */
 
+import { orientationFromBytes } from "./image/exif.js";
+
 const HEIC_BRANDS = new Set([
   "heic", "heix", "hevc", "hevx", "heim", "heis", "hevm", "hevs", "mif1", "msf1", "avci"
 ]);
@@ -159,6 +161,78 @@ function looksLikeText(bytes) {
 }
 
 /* ---------------------------------------------------------
+   How big is this picture?
+
+   Read from the file's own header rather than by decoding it, so
+   listing forty photographs costs almost nothing. Decoding forty
+   photographs just to print their dimensions would use hundreds
+   of megabytes.
+   --------------------------------------------------------- */
+export function readDimensions(bytes, format) {
+  const b = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const be32 = (at) => ((b[at] << 24) | (b[at + 1] << 16) | (b[at + 2] << 8) | b[at + 3]) >>> 0;
+  const le32 = (at) => ((b[at + 3] << 24) | (b[at + 2] << 16) | (b[at + 1] << 8) | b[at]) >>> 0;
+  const be16 = (at) => (b[at] << 8) | b[at + 1];
+  const le16 = (at) => (b[at + 1] << 8) | b[at];
+
+  try {
+    if (format === "png") {
+      /* IHDR always comes first, at a fixed place. */
+      if (ascii(b, 12, 4) !== "IHDR") return null;
+      return { width: be32(16), height: be32(20) };
+    }
+
+    if (format === "gif") {
+      return { width: le16(6), height: le16(8) };
+    }
+
+    if (format === "bmp") {
+      return { width: le32(18), height: Math.abs(le32(22) | 0) };
+    }
+
+    if (format === "jpg") {
+      /* Walk the markers to the frame header, which carries the size. */
+      let at = 2;
+      while (at < b.length - 9) {
+        if (b[at] !== 0xff) { at++; continue; }
+        const marker = b[at + 1];
+        if (marker === 0xd8 || marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) { at += 2; continue; }
+        if (marker === 0xda || marker === 0xd9) break;
+        const length = be16(at + 2);
+        const isFrame = marker >= 0xc0 && marker <= 0xcf &&
+          marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc;
+        if (isFrame) return { width: be16(at + 7), height: be16(at + 5) };
+        at += 2 + length;
+      }
+      return null;
+    }
+
+    if (format === "webp") {
+      const kind = ascii(b, 12, 4);
+      if (kind === "VP8X") {
+        const w = 1 + (b[24] | (b[25] << 8) | (b[26] << 16));
+        const h = 1 + (b[27] | (b[28] << 8) | (b[29] << 16));
+        return { width: w, height: h };
+      }
+      if (kind === "VP8 ") {
+        return { width: le16(26) & 0x3fff, height: le16(28) & 0x3fff };
+      }
+      if (kind === "VP8L") {
+        const bits = b[21] | (b[22] << 8) | (b[23] << 16) | (b[24] << 24);
+        return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
+      }
+      return null;
+    }
+  } catch (err) {
+    return null;
+  }
+
+  /* HEIC, AVIF and TIFF keep their size somewhere that needs a full
+     container parser. We simply do not claim to know. */
+  return null;
+}
+
+/* ---------------------------------------------------------
    The main entry point.
    --------------------------------------------------------- */
 export async function identify(file) {
@@ -203,6 +277,24 @@ export async function identify(file) {
   const resolved = format || "unknown";
   const kind = KIND_OF[resolved] || "unknown";
 
+  /* Picture size, read straight from the header we already have.
+
+     A photograph can be stored one way round and carry a flag saying
+     "actually, turn me". Browsers honour that flag, so the size a
+     visitor sees is the turned one. We report what they will see,
+     not what is on disk - otherwise every preview would be wrong for
+     any photo taken in portrait. */
+  let dimensions = (kind === "image" || kind === "heic")
+    ? readDimensions(head, resolved)
+    : null;
+  let orientation = 1;
+  if (dimensions && (resolved === "jpg" || resolved === "tiff")) {
+    orientation = orientationFromBytes(head, resolved);
+    if (orientation >= 5 && orientation <= 8) {
+      dimensions = { width: dimensions.height, height: dimensions.width };
+    }
+  }
+
   /* Did the name lie? We only call it a mismatch when both are
      known and they disagree in a way that matters. */
   let mismatch = null;
@@ -228,6 +320,9 @@ export async function identify(file) {
     label: LABELS[resolved] || LABELS.unknown,
     claimedFormat,
     mismatch,
+    width: dimensions ? dimensions.width : null,
+    height: dimensions ? dimensions.height : null,
+    orientation,
     /* An empty file is a common and confusing failure; call it out. */
     empty: file.size === 0
   };

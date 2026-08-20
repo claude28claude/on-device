@@ -71,10 +71,13 @@
     <section class="prose">
       <h2>Bundled libraries</h2>
       <p>
-        At this stage &mdash; the end of Phase 1 &mdash; the site uses
+        At the end of Phase 2, the site still uses
         <strong>no third-party code at all</strong>. Every line of HTML, CSS and
-        JavaScript here was written for this project. That is not a boast, it is just
-        what the shell needed.
+        JavaScript here was written for this project &mdash; including the code that
+        reads a photograph's hidden information and the code that removes it without
+        re-saving the picture. That is not a boast; it simply turned out that writing
+        those two directly was better than borrowing, because doing it properly means
+        editing the file's own bytes rather than redrawing the image.
       </p>
       <p>
         Libraries arrive as the tools that need them arrive. Each one will be listed
@@ -95,8 +98,8 @@
           <tr><td>pdf-lib</td><td>Building and editing PDFs</td><td>MIT</td><td>Phase 3</td></tr>
           <tr><td>pdf.js</td><td>Drawing page previews, reading text</td><td>Apache 2.0</td><td>Phase 3</td></tr>
           <tr><td>qpdf (WebAssembly)</td><td>PDF passwords</td><td>Apache 2.0</td><td>Phase 4</td></tr>
-          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>To be confirmed &mdash; see the note below</td><td>Phase 2</td></tr>
-          <tr><td>exifr</td><td>Reading hidden photo information</td><td>MIT</td><td>Phase 2</td></tr>
+          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>Unresolved &mdash; see the note below</td><td>Still undecided</td></tr>
+          <tr><td><em>Not used</em> &mdash; written for this project instead</td><td>Reading and removing hidden photo information</td><td>&mdash;</td><td>Done in Phase 2</td></tr>
           <tr><td>zip.js</td><td>Zip and unzip</td><td>BSD 3-clause</td><td>Phase 6</td></tr>
           <tr><td>tesseract.js</td><td>Offline text recognition</td><td>Apache 2.0</td><td>Phase 7</td></tr>
           <tr><td>SheetJS (community)</td><td>Spreadsheets</td><td>Apache 2.0</td><td>Phase 6</td></tr>
@@ -110,9 +113,11 @@
         <p class="mb-0">
           The best-known HEIC decoder for browsers is built on a library released under
           the LGPL, which is not one of the permissive licences this project promised
-          to stick to. Before Phase 2 ships, either a permissively licensed decoder
-          will be used instead, or the licence position will be stated here plainly so
-          the choice is yours. It will not be quietly included and hoped for the best.
+          to stick to. Rather than quietly include it, Phase 2 shipped without any
+          bundled decoder at all: On Device asks your browser to open HEIC photos, and
+          says plainly when it will not. Safari usually can; Chrome, Edge and Firefox
+          usually cannot. Bundling a decoder is a decision still to be made, and it is
+          a licence decision rather than a technical one.
         </p>
       </div>
 

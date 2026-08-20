@@ -195,7 +195,11 @@ export function renderFiles() {
         el("span", { class: "file-thumb", text: (f.format || "?").slice(0, 4) }),
         el("span", { class: "file-main" }, [
           el("span", { class: "file-name", text: f.name }),
-          el("span", { class: "file-meta", text: `${f.label} · ${formatBytes(f.size)}` }),
+          el("span", {
+            class: "file-meta",
+            text: `${f.label} · ${formatBytes(f.size)}` +
+                  (f.width && f.height ? ` · ${f.width} × ${f.height}` : "")
+          }),
           f.mismatch
             ? el("span", {
                 class: "badge badge-warn",

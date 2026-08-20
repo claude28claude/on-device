@@ -10,8 +10,8 @@ import { t } from "./i18n.js";
 const PHASES = [
   { n: 0,  title: "Plan",                 covers: "The plan, the name, the honest warnings.",                      state: "done" },
   { n: 1,  title: "The shell",            covers: "Homepage, drop zone, results tray, settings, offline, trust page.", state: "done" },
-  { n: 2,  title: "Images core",          covers: "Resize, convert including HEIC, compress, crop, rotate, metadata.", state: "next" },
-  { n: 3,  title: "PDF core",             covers: "Merge, split, organise, images to PDF, PDF to images, rotate and crop." },
+  { n: 2,  title: "Images core",          covers: "Resize, convert, compress, crop, rotate, metadata view and strip.", state: "done" },
+  { n: 3,  title: "PDF core",             covers: "Merge, split, organise, images to PDF, PDF to images, rotate and crop.", state: "next" },
   { n: 4,  title: "PDF advanced",         covers: "Compress, watermark, page numbers, metadata, passwords, flatten, booklets." },
   { n: 5,  title: "Privacy specials",     covers: "True redaction, blur and pixelate, fill and sign, lock a file." },
   { n: 6,  title: "Text, data, utilities", covers: "QR codes, text workbench, spreadsheets, markdown, zip, checksum, compare." },

@@ -1014,3 +1014,140 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
   /* The whole labelled row is the tap target, not just the box. */
   .check-row { min-height: 44px; align-items: center; }
 }
+
+/* ---- Tool pages ----------------------------------------- */
+.tool-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: var(--s-5);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .tool-layout { grid-template-columns: 1fr; }
+  .tool-options { position: static !important; }
+}
+
+.tool-options {
+  position: sticky;
+  top: 76px;
+  background: var(--bg-raised);
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-3);
+  padding: var(--s-5);
+}
+.tool-options h2 { font-size: var(--fs-md); margin-bottom: var(--s-4); }
+.tool-options .field:last-of-type { margin-bottom: var(--s-5); }
+
+.tool-main > * + * { margin-top: var(--s-4); }
+
+.q-error {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--danger);
+  line-height: var(--lh-snug);
+  margin-top: var(--s-1);
+}
+
+.file-list > li[data-state="done"] { border-color: var(--ok); }
+.file-list > li[data-state="error"] { border-color: var(--danger); background: var(--danger-soft); }
+.file-list > li[data-state="running"] { border-color: var(--accent); }
+.file-list > li .progress { margin-top: var(--s-2); }
+
+/* Before-and-after comparison */
+.compare-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--s-4);
+}
+.compare-pane {
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-2);
+  overflow: hidden;
+  background: var(--bg-sunken);
+}
+.compare-pane figcaption {
+  padding: var(--s-2) var(--s-3);
+  font-size: var(--fs-sm);
+  border-bottom: var(--border-w) solid var(--border);
+  background: var(--bg-raised);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+}
+.compare-pane .pane-image {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  background:
+    repeating-conic-gradient(var(--bg-sunken) 0% 25%, var(--bg-raised) 0% 50%) 50% / 18px 18px;
+}
+.compare-zoom .pane-image { object-fit: none; object-position: center; image-rendering: pixelated; }
+
+/* Metadata report */
+.meta-section { margin-bottom: var(--s-5); }
+.meta-section h3 { font-size: var(--fs-md); margin-bottom: var(--s-3); }
+.meta-table td:first-child { width: 40%; color: var(--fg-muted); }
+.meta-table { font-size: var(--fs-sm); }
+
+.gps-callout {
+  border: 2px solid var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--r-3);
+  padding: var(--s-5);
+  margin-bottom: var(--s-5);
+}
+.gps-callout h3 { margin-top: 0; color: var(--danger); }
+.gps-coords {
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semi);
+  display: block;
+  margin: var(--s-3) 0;
+  word-break: break-all;
+}
+
+/* Crop area */
+.crop-stage {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  background:
+    repeating-conic-gradient(var(--bg-sunken) 0% 25%, var(--bg-raised) 0% 50%) 50% / 18px 18px;
+  border: var(--border-w) solid var(--border);
+  border-radius: var(--r-2);
+  touch-action: none;
+}
+.crop-stage canvas { max-width: 100%; height: auto; display: block; }
+.crop-box {
+  position: absolute;
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+  cursor: move;
+}
+.crop-handle {
+  position: absolute;
+  width: 18px; height: 18px;
+  background: var(--accent);
+  border: 2px solid var(--accent-fg);
+  border-radius: var(--r-1);
+}
+.crop-handle[data-corner="nw"] { left: -9px; top: -9px; cursor: nwse-resize; }
+.crop-handle[data-corner="ne"] { right: -9px; top: -9px; cursor: nesw-resize; }
+.crop-handle[data-corner="sw"] { left: -9px; bottom: -9px; cursor: nesw-resize; }
+.crop-handle[data-corner="se"] { right: -9px; bottom: -9px; cursor: nwse-resize; }
+@media (hover: none) {
+  .crop-handle { width: 26px; height: 26px; }
+  .crop-handle[data-corner="nw"] { left: -13px; top: -13px; }
+  .crop-handle[data-corner="ne"] { right: -13px; top: -13px; }
+  .crop-handle[data-corner="sw"] { left: -13px; bottom: -13px; }
+  .crop-handle[data-corner="se"] { right: -13px; bottom: -13px; }
+}
+
+/* Breadcrumb on a tool page: comfortable to tap on a phone. */
+.breadcrumb { padding: var(--s-3) 0 0; }
+@media (hover: none), (max-width: 640px) {
+  .breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; padding-right: var(--s-2); }
+}

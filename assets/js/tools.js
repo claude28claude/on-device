@@ -44,12 +44,12 @@ export const TOOLS = [
   { id: "pdf-flatten",         cat: "pdf",   phase: 4, built: false, icon: "layers-flat", accepts: ["pdf"] },
 
   /* ---- Images ------------------------------------------- */
-  { id: "image-resize",        cat: "image", phase: 2, built: false, icon: "resize",      accepts: ["image", "heic"] },
-  { id: "image-convert",       cat: "image", phase: 2, built: false, icon: "shuffle",     accepts: ["image", "heic"] },
-  { id: "image-compress",      cat: "image", phase: 2, built: false, icon: "minimize",    accepts: ["image", "heic"] },
-  { id: "image-crop",          cat: "image", phase: 2, built: false, icon: "crop",        accepts: ["image", "heic"] },
-  { id: "image-rotate",        cat: "image", phase: 2, built: false, icon: "rotate",      accepts: ["image", "heic"] },
-  { id: "image-metadata",      cat: "image", phase: 2, built: false, icon: "map-pin",     accepts: ["image", "heic"] },
+  { id: "image-resize",        cat: "image", phase: 2, built: true , icon: "resize",      accepts: ["image", "heic"] },
+  { id: "image-convert",       cat: "image", phase: 2, built: true , icon: "shuffle",     accepts: ["image", "heic"] },
+  { id: "image-compress",      cat: "image", phase: 2, built: true , icon: "minimize",    accepts: ["image", "heic"] },
+  { id: "image-crop",          cat: "image", phase: 2, built: true , icon: "crop",        accepts: ["image", "heic"] },
+  { id: "image-rotate",        cat: "image", phase: 2, built: true , icon: "rotate",      accepts: ["image", "heic"] },
+  { id: "image-metadata",      cat: "image", phase: 2, built: true , icon: "map-pin",     accepts: ["image", "heic"] },
   { id: "image-blur",          cat: "image", phase: 5, built: false, icon: "eye-off",     accepts: ["image", "heic"] },
   { id: "image-watermark",     cat: "image", phase: 4, built: false, icon: "droplet",     accepts: ["image", "heic"] },
   { id: "image-combine",       cat: "image", phase: 6, built: false, icon: "grid",        accepts: ["image", "heic"] },

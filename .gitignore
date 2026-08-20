@@ -3,6 +3,10 @@
 # part of the published site.
 samples/
 
+# ...except this one. It is a real JPEG produced by a browser, which Node
+# cannot recreate without an image library, and scripts/add-exif.mjs needs it.
+!samples/photo-plain.jpg
+
 node_modules/
 .DS_Store
 Thumbs.db

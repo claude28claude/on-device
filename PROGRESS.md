@@ -3,7 +3,7 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 1.
+Last updated: **20 August 2026**, end of Phase 2.
 
 ---
 
@@ -13,8 +13,8 @@ Last updated: **20 August 2026**, end of Phase 1.
 |---|---|---|
 | 0 | Plan, name, honest warnings | **Done** |
 | 1 | The shell: homepage, drop zone, results tray, settings, offline, trust page | **Done** — see below |
-| 2 | Images core: resize, convert (incl. HEIC), compress, crop, rotate, metadata | Next |
-| 3 | PDF core | Not started |
+| 2 | Images core: resize, convert, compress, crop, rotate, metadata | **Done** |
+| 3 | PDF core | Next |
 | 4 | PDF advanced | Not started |
 | 5 | Privacy specials | Not started |
 | 6 | Text, data and utilities | Not started |
@@ -24,9 +24,9 @@ Last updated: **20 August 2026**, end of Phase 1.
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 0 of 41.** Phase 1 deliberately contains no tools. Every tool on the
-homepage is marked "Not built yet" with the phase it arrives in, and pressing one
-says so rather than doing nothing.
+**Tools built: 6 of 41.** Every unbuilt tool on the homepage is marked "Not built
+yet" with the phase it arrives in, and pressing one says so rather than doing
+nothing.
 
 ---
 
@@ -170,6 +170,116 @@ failure. Zero external requests throughout.
 
 ---
 
+## Phase 2 — images
+
+Six tools, all tested against real files in Chrome on Windows.
+
+| Tool | State |
+|---|---|
+| Resize images | Working — by longest side, percentage, width, height or exact size |
+| Convert images | Working — JPEG, PNG, WebP; AVIF where the browser can write it |
+| Compress images | Working — with a magnified three-level before-and-after |
+| Crop images | Working — freehand, fixed ratios, official photo sizes |
+| Rotate and flip | Working — turn, mirror, straighten a crooked scan |
+| Photo metadata | Working — reads everything, removes it without re-saving |
+
+### The part worth caring about
+
+**Metadata is removed losslessly, and this is proven rather than claimed.** Most
+sites that "remove EXIF" redraw the picture and save it again, which re-compresses
+your photograph and costs quality every time. On Device cuts the metadata sections
+out of the file and leaves the compressed picture data alone.
+
+Measured on a real 374,115-byte JPEG: 704 bytes of metadata removed, GPS gone, and
+**372,486 bytes of picture data verified byte-for-byte identical** to the original.
+Not "looks the same" — the same bytes.
+
+**The metadata reader was written for this project**, from the format
+specifications, rather than borrowed. To test it honestly, a JPEG was built with
+known values (`scripts/add-exif.mjs`) and the reader was asked to recover them. It
+returned every one exactly: GPS to six decimal places, altitude, camera make and
+model, lens, camera serial number, all three timestamps, exposure 1/250, f/2.8,
+ISO 400, 35 mm.
+
+**The location warning is blunt on purpose.** A photo carrying GPS gets a red
+panel with the coordinates as plain numbers, a copy button, and a sentence saying
+that if it was taken at home, anyone you send it to can find your front door. No
+map is loaded — that would tell a mapping company where you live, which is the
+opposite of the point.
+
+### Everything else built
+
+- **Batch mode on every tool.** A queue that runs one file at a time deliberately
+  (four large photographs decoded at once is how a browser tab dies), with per-file
+  progress and per-file skip, retry and cancel, plus "retry all failed".
+- **The work runs on a background thread**, so the interface never freezes. Where a
+  browser will not provide one, the page says so and carries on.
+- **The results tray is now genuinely exercised** — Phase 1 could only show it
+  empty. Finished files land in it with sensible names and download correctly.
+- **Capability detection is honest.** The site asks the browser what it can
+  actually decode and encode, and switches off what it cannot deliver instead of
+  offering it and failing. On this machine: WebP yes, AVIF no — and the AVIF option
+  is disabled and labelled, not hidden.
+- **Resize shows what will happen before it happens**, per file, with real numbers.
+- **Still no third-party code at all.** Zero dependencies after two phases.
+
+### What testing caught in Phase 2
+
+Four real defects, all found by looking and all fixed:
+
+1. **The capability probe was blocked by our own security policy.** It used
+   `fetch()` on a `data:` URL to test WebP support, which `connect-src 'self'`
+   correctly refuses — so the site always concluded the browser could not read
+   WebP, *and* those refusals were counted on the Trust page as blocked attempts.
+   The probe now decodes the bytes directly and touches nothing.
+
+2. **Previews lied about rotated photos.** A portrait photo is often stored
+   sideways with a flag saying "turn me". The size shown came from the file header,
+   so resize predicted 800 × 600 while actually producing 600 × 800. Reported sizes
+   now account for the rotation flag; prediction and result were re-tested and match
+   exactly.
+
+3. **Crop distorted official photos.** The selection is held as fractions of the
+   width and of the height — different lengths — so a 35 × 45 mm passport shape was
+   applied as though those fractions were pixels. The selection came out the wrong
+   shape and the face inside it would have been stretched. Now converted into pixel
+   space: a passport crop measures 0.7775 against a target of 0.7778, and a square
+   is exactly 1.0000.
+
+4. **`-metadata.jpg` was a terrible name** for a file with the metadata removed.
+   Outputs are now named `-clean`, `-resized`, `-cropped` and so on.
+
+### One scare that turned out to be my own testing
+
+While checking Phase 2, the offline cache appeared to contain **nothing** after a
+fresh visit, which would have meant offline was broken. It was chased properly
+rather than waved away, and the cause was the test, not the site: after
+registering and unregistering a byte-identical worker many times in one browser
+profile, Chrome stops re-installing it, so no install ever ran and nothing was
+cached.
+
+Proved by changing one file so the worker genuinely differed, then watching the
+whole sequence — installing, installed, activating, activated — and confirming
+all 65 files cached. Recorded here because "it turned out to be fine" is only
+worth anything if you say how you know.
+
+### Offline, re-proved with images
+
+The web server was stopped completely, then a tool page was loaded and a
+photograph was resized from 600 × 400 to 200 × 133 — decode, resize, re-encode,
+all of it — with no server running at all. Zero external requests.
+
+### Verified numbers
+
+- Passport preset produces exactly **413 × 531 pixels** (35 × 45 mm at 300 dpi).
+- Rotate 90° plus 5° straighten on a 1600 × 1200 photo produces **1335 × 1699**,
+  matching the trigonometry exactly.
+- Compression at quality 45 / 70 / 90 gives **70% / 59% / 28%** smaller.
+- Resize to 800 px longest side: **78% smaller**; PNG stays PNG, JPEG stays JPEG.
+- Zero external requests and zero blocked attempts throughout.
+
+---
+
 ## Known imperfect — read this part
 
 1. **The Hindi translation has not been checked by a native speaker.** It is
@@ -177,10 +287,12 @@ failure. Zero external requests throughout.
    prove the mechanism, which it does. If Hindi is not the second language you
    want, swapping it is a one-file change.
 
-2. **The results tray can only be seen empty.** It is fully built — add, remove,
-   download, persistence, auto-download — but nothing produces a result until
-   Phase 2, so the only state you can see today is "Finished files will appear
-   here." Its real behaviour gets verified in Phase 2.
+2. **HEIC photos depend entirely on your browser.** On Device does not bundle a
+   HEIC decoder, so it asks the browser to open them. Safari usually can; Chrome,
+   Edge and Firefox usually cannot. When it cannot, that file fails with a specific
+   explanation and the rest of the batch carries on. **This is the biggest gap in
+   Phase 2**, and it is a licence decision rather than a technical one — see
+   item 11.
 
 3. **"Download all as zip" is disabled**, with a tooltip saying it arrives with the
    Zip tool in Phase 6. Better than a button that fails.
@@ -209,23 +321,36 @@ failure. Zero external requests throughout.
 8. **Rebindable keyboard shortcuts** are Phase 8. The cheat sheet is there and
    accurate; the keys are fixed for now.
 
-9. **Tool defaults (image quality, page size, DPI, units, filename pattern) save
-   but nothing reads them yet**, because no tool exists. The Settings page says
-   exactly this rather than implying they do something.
+9. **Some tool defaults are still unread.** Image quality and format are now used
+   by the image tools. Page size, DPI and units are saved but nothing reads them
+   until the PDF tools exist. The Settings page says so.
 
-10. **The HEIC sample file is signature-only.** It has a genuine HEIC header, so it
-    proves identification works, but it contains no real encoded image, so it
-    cannot prove decoding. **Phase 2 must not be signed off without a real photo
-    straight off an iPhone.**
+10. **No real iPhone photo has ever been tested.** The HEIC sample has a genuine
+    header, so it proves the site identifies HEIC and produces the right error —
+    but it contains no real encoded image, so nothing here proves On Device can
+    *decode* a real one. **A photo straight off an iPhone is still needed.** Until
+    then the honest claim is only "we ask your browser, and report what it says".
 
-11. **The licence for the HEIC decoder is unresolved.** The best-known browser
-    decoder is LGPL, which breaks the permissive-licences-only promise. This is
-    flagged on the Credits page and must be settled before Phase 2 ships.
+11. **The licence for a bundled HEIC decoder is still unresolved.** The best-known
+    browser decoder is LGPL, which breaks the permissive-licences-only promise.
+    Phase 2 shipped without bundling anything rather than quietly including it.
+    Bundling one remains your decision.
 
-12. **No accessibility audit with a real screen reader yet.** Live regions,
-    labels, focus order and contrast are all built in and contrast is
-    machine-verified, but nobody has driven it with NVDA or VoiceOver. That is
-    Phase 10.
+12. **AVIF cannot be saved in every browser.** This machine's Chrome cannot. The
+    option is disabled and labelled rather than hidden, so the limitation is
+    visible and is the browser's, not ours.
+
+13. **Crop shows the first image when several are selected.** The same framing is
+    applied proportionally to all of them, which is genuinely useful for a series,
+    but you cannot frame each one individually within a batch.
+
+14. **There is no "undo" or "revert to original".** Originals are never modified —
+    every tool writes a new file to the results tray — so nothing is ever
+    destroyed. But there is no button that walks a change back.
+
+15. **No accessibility audit with a real screen reader yet.** Live regions, labels,
+    focus order and contrast are all built in, and contrast is machine-verified,
+    but nobody has driven it with NVDA or VoiceOver. That is Phase 10.
 
 ---
 
@@ -243,6 +368,12 @@ node scripts/check-contrast.mjs
 node scripts/make-samples.mjs
 ```
 
+```bash
+node scripts/add-exif.mjs
+```
+
 The first fails if anything in the project points at another computer. The second
 fails if any colour pairing in any theme falls below the accessibility standard.
-The third writes real test files into `samples/`.
+The third writes real test files into `samples/`. The fourth builds a JPEG whose
+hidden information is known in advance, so the metadata reader can be checked
+against a correct answer rather than merely observed not to crash.

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Crop images &mdash; On Device</title>
+<meta name="description" content="Crop by hand, to a fixed shape, or to an exact passport or visa size. Runs in your browser; nothing is uploaded.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<script src="../assets/js/netguard.js"></script>
+<script src="../assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="../index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="../help.html" data-i18n="nav.help">Help</a>
+      <a href="../settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <nav aria-label="Breadcrumb" class="text-sm muted breadcrumb">
+      <a href="../index.html">Tools</a> &rsaquo; <span>Crop images</span>
+    </nav>
+
+    <div class="page-head">
+      <h1>Crop images</h1>
+      <p class="lede">Trim a picture by hand, to a fixed shape, or to the exact measurements an official photo needs.</p>
+    </div>
+
+    <div id="tool-status"></div>
+
+    <div class="note">
+      <strong class="note-title">What this tool cannot do</strong>
+      <p class="mb-0">Official photo sizes are set by each country and do change. The presets here are the common published measurements, and the tool produces the right pixel size at the stated resolution &mdash; but it cannot judge whether your face is positioned acceptably. Check the requirements before you rely on it.</p>
+    </div>
+
+    <div class="tool-layout">
+      <div class="tool-main">
+        <div id="files-host"></div>
+        <div id="extra-host"></div>
+        <div id="queue-host"></div>
+      </div>
+
+      <aside class="tool-options" aria-label="Options">
+        <h2>Options</h2>
+        <div class="field">
+          <label for="ratio">Shape</label>
+          <select id="ratio">
+            <option value="free">Freehand</option>
+            <option value="1:1">Square (1:1)</option>
+            <option value="4:3">4:3</option>
+            <option value="3:2">3:2</option>
+            <option value="16:9">16:9</option>
+            <option value="3:4">Portrait 3:4</option>
+            <option value="2:3">Portrait 2:3</option>
+            <option value="9:16">Portrait 9:16</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="id-preset">Official photo size</label>
+          <select id="id-preset">
+            <option value="">Not an official photo</option>
+            <option value="35x45|300">Passport &mdash; UK, EU, India, Australia (35 &times; 45 mm)</option>
+            <option value="51x51|300">Passport &mdash; United States (2 &times; 2 in)</option>
+            <option value="33x48|300">Visa &mdash; China (33 &times; 48 mm)</option>
+            <option value="35x35|300">ID &mdash; square 35 &times; 35 mm</option>
+            <option value="25x35|300">Stamp size (25 &times; 35 mm)</option>
+          </select>
+          <p class="field-hint" id="id-hint">Sets the shape and the exact output size.</p>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Selection</span>
+          <p class="field-hint mono" id="crop-readout">Choose an image first.</p>
+          <div class="btn-row">
+            <button class="btn btn-sm" type="button" id="reset-crop">Reset</button>
+            <button class="btn btn-sm" type="button" id="centre-crop">Centre</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="format">Save as</label>
+          <select id="format">
+            <option value="keep">Keep the original format</option>
+            <option value="jpg">JPEG</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+
+        <div class="field" id="quality-field">
+          <label for="quality">Quality</label>
+          <input type="range" id="quality" min="40" max="100" value="90">
+          <p class="field-hint" id="quality-hint">90 out of 100.</p>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" data-label="Crop" disabled>Crop</button>
+        <p class="field-hint">Finished files land in the results tray at the bottom of the screen.</p>
+      </aside>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="../credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="../assets/js/tools/image-crop.js"></script>
+</body>
+</html>

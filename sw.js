@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-255b3158c0";
+const VERSION = "0.1.0-fe67f5780c";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -40,6 +40,12 @@ const PRECACHE = [
   "./assets/js/home.js",
   "./assets/js/i18n.js",
   "./assets/js/idb.js",
+  "./assets/js/image/decode.js",
+  "./assets/js/image/exif.js",
+  "./assets/js/image/ops.js",
+  "./assets/js/image/pipeline.js",
+  "./assets/js/image/runner.js",
+  "./assets/js/image/strip.js",
   "./assets/js/netguard.js",
   "./assets/js/page-home.js",
   "./assets/js/page-roadmap.js",
@@ -48,14 +54,23 @@ const PRECACHE = [
   "./assets/js/page-trust.js",
   "./assets/js/palette.js",
   "./assets/js/preboot.js",
+  "./assets/js/queue.js",
   "./assets/js/search-terms.js",
   "./assets/js/sniff.js",
   "./assets/js/store.js",
   "./assets/js/strings/en.js",
   "./assets/js/strings/hi.js",
+  "./assets/js/tool-page.js",
   "./assets/js/tools.js",
+  "./assets/js/tools/image-compress.js",
+  "./assets/js/tools/image-convert.js",
+  "./assets/js/tools/image-crop.js",
+  "./assets/js/tools/image-metadata.js",
+  "./assets/js/tools/image-resize.js",
+  "./assets/js/tools/image-rotate.js",
   "./assets/js/tray.js",
   "./assets/js/ui.js",
+  "./assets/js/workers/image-worker.js",
   "./assets/js/workspace.js",
   "./credits.html",
   "./help.html",
@@ -64,6 +79,12 @@ const PRECACHE = [
   "./privacy.html",
   "./roadmap.html",
   "./settings.html",
+  "./tools/image-compress.html",
+  "./tools/image-convert.html",
+  "./tools/image-crop.html",
+  "./tools/image-metadata.html",
+  "./tools/image-resize.html",
+  "./tools/image-rotate.html",
   "./trust.html"
 ];
 /* --- END BUILD:PRECACHE --- */

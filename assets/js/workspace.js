@@ -151,6 +151,8 @@ export async function add(fileList) {
       label: info.label,
       claimedFormat: info.claimedFormat,
       mismatch: info.mismatch,
+      width: info.width,
+      height: info.height,
       addedAt: Date.now(),
       blob: file
     };
@@ -244,6 +246,8 @@ async function persist() {
       label: record.label,
       claimedFormat: record.claimedFormat,
       mismatch: record.mismatch,
+      width: record.width,
+      height: record.height,
       addedAt: record.addedAt,
       blob: record.blob
     });
