@@ -72,6 +72,19 @@ export const SOURCES = [
     files: ["sheetjs/xlsx.full.min.js"]
   },
   {
+    name: "tesseract.js",
+    version: "5.1.1 (engine 5.1.1, English data 4.0.0)",
+    licence: "Apache-2.0",
+    package: "tesseract.js@5.1.1 + tesseract.js-core@5.1.1 + @tesseract.js-data/eng@1.0.0",
+    purpose: "Reading text out of scans and photographs, offline",
+    files: [
+      "tesseract/tesseract.esm.min.js",
+      "tesseract/worker.min.js",
+      "tesseract/core/tesseract-core-simd-lstm.wasm",
+      "tesseract/lang/eng.traineddata.gz"
+    ]
+  },
+  {
     name: "marked",
     version: "15.0.7",
     licence: "MIT",

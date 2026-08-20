@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-d856f03cc9";
+const VERSION = "0.1.0-e17dadf95a";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -63,6 +63,7 @@ const PRECACHE = [
   "./assets/js/pdf/doc.js",
   "./assets/js/pdf/edit.js",
   "./assets/js/pdf/loader.js",
+  "./assets/js/pdf/ocr.js",
   "./assets/js/pdf/password.js",
   "./assets/js/pdf/redact.js",
   "./assets/js/pdf/render.js",
@@ -94,11 +95,13 @@ const PRECACHE = [
   "./assets/js/tools/images-to-pdf.js",
   "./assets/js/tools/markdown.js",
   "./assets/js/tools/pdf-compress.js",
+  "./assets/js/tools/pdf-extract-text.js",
   "./assets/js/tools/pdf-fill-sign.js",
   "./assets/js/tools/pdf-flatten.js",
   "./assets/js/tools/pdf-merge.js",
   "./assets/js/tools/pdf-metadata.js",
   "./assets/js/tools/pdf-nup.js",
+  "./assets/js/tools/pdf-ocr.js",
   "./assets/js/tools/pdf-organise.js",
   "./assets/js/tools/pdf-page-numbers.js",
   "./assets/js/tools/pdf-password-add.js",
@@ -141,11 +144,13 @@ const PRECACHE = [
   "./tools/images-to-pdf.html",
   "./tools/markdown.html",
   "./tools/pdf-compress.html",
+  "./tools/pdf-extract-text.html",
   "./tools/pdf-fill-sign.html",
   "./tools/pdf-flatten.html",
   "./tools/pdf-merge.html",
   "./tools/pdf-metadata.html",
   "./tools/pdf-nup.html",
+  "./tools/pdf-ocr.html",
   "./tools/pdf-organise.html",
   "./tools/pdf-page-numbers.html",
   "./tools/pdf-password-add.html",

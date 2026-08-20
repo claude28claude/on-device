@@ -56,6 +56,19 @@
       ]
     },
     {
+      "name": "tesseract.js",
+      "version": "5.1.1 (engine 5.1.1, English data 4.0.0)",
+      "licence": "Apache-2.0",
+      "package": "tesseract.js@5.1.1 + tesseract.js-core@5.1.1 + @tesseract.js-data/eng@1.0.0",
+      "purpose": "Reading text out of scans and photographs, offline",
+      "files": [
+        "tesseract/tesseract.esm.min.js",
+        "tesseract/worker.min.js",
+        "tesseract/core/tesseract-core-simd-lstm.wasm",
+        "tesseract/lang/eng.traineddata.gz"
+      ]
+    },
+    {
       "name": "marked",
       "version": "15.0.7",
       "licence": "MIT",
@@ -76,8 +89,8 @@
       ]
     }
   ],
-  "totalFiles": 210,
-  "totalBytes": 7330369,
+  "totalFiles": 219,
+  "totalBytes": 24081715,
   "fingerprints": {
     "dompurify/LICENSE": "1b02e03c3fb4f87d476c128f0eb9def1f5a1709d28b180465228bd41574623b7",
     "dompurify/purify.es.mjs": "3b024991882ccc83066a8f0e64f3ff2a84d7638e64591221f6b04f8c10cbb3c2",
@@ -287,6 +300,15 @@
     "qpdf/qpdf.wasm": "cbd81a244d622a39e3cf16f2e589a9a0d7cc51f588d35b3dd6b425a677cc3f99",
     "sheetjs/LICENSE": "4d2a38ac35cda06a555c84074a819d413339cd3691b822cae50f8f322fe01f64",
     "sheetjs/xlsx.full.min.js": "c9506197caf809a075b6dee1da0d36fb19da7158ffe8a88e7b0c96c5d8623c99",
+    "tesseract/LICENSE": "cdf963ced7d25a0f98901a547647b4d6e2dbe0197fd78c87a059a87b0e542fe2",
+    "tesseract/core/LICENSE": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
+    "tesseract/core/tesseract-core-lstm.wasm": "5db58ea4d1bd4256be81e8ae3b4fa226c4625dfba1850b1b3308dbf3700e9929",
+    "tesseract/core/tesseract-core-lstm.wasm.js": "8f04aa0cc81e7bde33f80e92fa01a7a665f0b4884d098acf5de9c7104a11dfaa",
+    "tesseract/core/tesseract-core-simd-lstm.wasm": "66b601224a0c4a8977bc9d92dd39841189f9ca22cc4122fcd7208cdb0961eeef",
+    "tesseract/core/tesseract-core-simd-lstm.wasm.js": "ce20eda9533cbed1e6c2b4276fbae1e0adc61b6754b5513084be601787b457cf",
+    "tesseract/lang/eng.traineddata.gz": "45b4cb346724ac1774f1c36f42f182b887bcdb28ebe63e6fff90ac41f3fcff91",
+    "tesseract/tesseract.esm.min.js": "2537be686335e4b2637e933cdc85a52dd80267a592689c1bd63235c8591540ae",
+    "tesseract/worker.min.js": "aca1229639fc9907d86f96e825955a2b7c5716d17f3bc3acd71f9c7ab66181fc",
     "zipjs/LICENSE": "1b7ebc8d7889ed25491484ab2b102370742ca6c0b26650a0c62cc2269b579b84",
     "zipjs/zip.min.js": "074f2dfc7789c117eaed9d5def566b8cd61ee29d6f8d0e2137bfa61e1437af58"
   }

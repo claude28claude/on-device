@@ -15,8 +15,8 @@ const PHASES = [
   { n: 4,  title: "PDF advanced",         covers: "Compress, watermark, page numbers, metadata, passwords, flatten, booklets.", state: "done" },
   { n: 5,  title: "Privacy specials",     covers: "True redaction, blur and pixelate, fill and sign, lock a file.", state: "done" },
   { n: 6,  title: "Text, data, utilities", covers: "QR codes, text workbench, spreadsheets, markdown, zip, checksum, compare.", state: "done" },
-  { n: 7,  title: "Extraction",           covers: "PDF text extraction and offline text recognition.", state: "next" },
-  { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, import and export." },
+  { n: 7,  title: "Extraction",           covers: "PDF text extraction and offline text recognition.", state: "done" },
+  { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, import and export.", state: "next" },
   { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming and reordering, the second language." },
   { n: 10, title: "Hardening",            covers: "Accessibility, mobile, error messages, memory, browsers, help content." },
   { n: 11, title: "Optional extras",      covers: "Video and audio, background removal - only if everything else is perfect." }

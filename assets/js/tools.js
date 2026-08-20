@@ -38,8 +38,8 @@ export const TOOLS = [
   { id: "pdf-metadata",        cat: "pdf",   phase: 4, built: true , icon: "info",        accepts: ["pdf"] },
   { id: "pdf-password-add",    cat: "pdf",   phase: 4, built: true , icon: "lock",        accepts: ["pdf"] },
   { id: "pdf-password-remove", cat: "pdf",   phase: 4, built: true , icon: "unlock",      accepts: ["pdf"] },
-  { id: "pdf-extract-text",    cat: "pdf",   phase: 7, built: false, icon: "type",        accepts: ["pdf"] },
-  { id: "pdf-ocr",             cat: "pdf",   phase: 7, built: false, icon: "scan",        accepts: ["pdf", "image"] },
+  { id: "pdf-extract-text",    cat: "pdf",   phase: 7, built: true , icon: "type",        accepts: ["pdf"] },
+  { id: "pdf-ocr",             cat: "pdf",   phase: 7, built: true , icon: "scan",        accepts: ["pdf", "image"] },
   { id: "pdf-nup",             cat: "pdf",   phase: 4, built: true , icon: "columns",     accepts: ["pdf"] },
   { id: "pdf-flatten",         cat: "pdf",   phase: 4, built: true , icon: "layers-flat", accepts: ["pdf"] },
 

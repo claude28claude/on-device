@@ -3,7 +3,7 @@
 An honest record of what is built, what is verified, and what is known to be
 imperfect. Updated at the end of every phase.
 
-Last updated: **20 August 2026**, end of Phase 6.
+Last updated: **20 August 2026**, end of Phase 7.
 
 Each phase section below describes the state **at the end of that phase**. Where a
 later phase changed something, it says so. The "Known imperfect" list at the bottom
@@ -22,13 +22,13 @@ is always current.
 | 4 | PDF advanced, plus image watermark | **Done** — 9 of 9 |
 | 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
 | 6 | Text, data, utilities, plus the remaining image tools | **11 of 12** — only the QR reader missing, deliberately |
-| 7 | Extraction (text + OCR) | Next |
-| 8 | Recipes and power features | Not started |
+| 7 | Extraction: PDF text, and offline text recognition | **Done** |
+| 8 | Recipes and power features | Next |
 | 9 | Customisation and languages | Not started |
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
-**Tools built: 36 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 38 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -598,6 +598,53 @@ Built after the miscount was found, and verified:
   source is stripped and never reaches the page.
 - **The text workbench keeps an undo history** and reports honestly when a search
   pattern is invalid instead of silently doing nothing.
+
+
+---
+
+## Phase 7 — extraction
+
+| Tool | State |
+|---|---|
+| Extract text | Working — and honest when a PDF has no text to extract |
+| Read a scanned document | Working — offline text recognition, English |
+
+### Text extraction
+
+Verified against the three-page sample: each page returns its own text, correctly.
+
+When a PDF turns out to be a scan — a picture of words rather than words — the tool
+says exactly that instead of returning an empty file, and points at the recognition
+tool. It also counts how many pages had no text, so a mixed document is not
+silently half-extracted.
+
+### Text recognition, entirely offline
+
+Uses Tesseract (Apache 2.0) compiled to WebAssembly. **The English language data is
+stored in this site**, because by default the library fetches it from someone else's
+server — which is exactly what this site does not do, and which the security policy
+would refuse anyway. That is why it is a 10 MB one-time download.
+
+Verified by rendering text of known content and asking the engine to read it back:
+
+- "The quick brown fox jumps" — read exactly
+- "over the lazy dog." — read exactly
+- "Invoice number 12345" — read exactly, digits included
+- "Total: 47.90 pounds" — read exactly, decimal included
+
+Four out of four, nothing missed, **95% confident, in 0.6 seconds**.
+
+The tool reports its own confidence rather than presenting a guess as a transcript:
+above 85% it says the read is good, between 65 and 85 it warns that there will be
+mistakes in numbers and names, and below that it says to treat the result as a rough
+guess and explains what would scan better.
+
+### One defect found and fixed
+
+The vendored Tesseract build puts everything on its default export rather than
+exporting names, so the first attempt failed with "createWorker is not a function".
+The loader now accepts either shape, and says plainly that a mismatch is a bug here
+rather than a problem with the visitor's file.
 
 ---
 
