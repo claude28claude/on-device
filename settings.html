@@ -242,11 +242,14 @@
 
           <div class="setting-row">
             <div class="setting-text">
-              <strong><label for="sidebar-toggle">Show a sidebar on the homepage</label></strong>
+              <strong>Sidebar on the homepage</strong>
               <span>A column down the side with the categories, your pinned tools and your recipes. On a narrow screen it sits above the tools instead.</span>
             </div>
             <div class="setting-control">
-              <input type="checkbox" id="sidebar-toggle">
+              <label class="check-row">
+                <input type="checkbox" id="sidebar-toggle">
+                <span class="check-text"><span>Show the sidebar</span></span>
+              </label>
             </div>
           </div>
 
@@ -480,7 +483,7 @@
           <div class="btn-row mb-5">
             <button class="btn" type="button" id="export-settings" data-i18n="settings.export">Export settings to a file</button>
             <button class="btn" type="button" id="import-settings" data-i18n="settings.import">Import settings from a file</button>
-            <input type="file" id="import-input" accept=".json,application/json" class="sr-only">
+            <input type="file" id="import-input" accept=".json,application/json" class="sr-only" aria-label="Choose a settings file to import">
           </div>
 
           <div class="note note-danger">

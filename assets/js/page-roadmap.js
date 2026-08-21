@@ -18,7 +18,7 @@ const PHASES = [
   { n: 7,  title: "Extraction",           covers: "PDF text extraction and offline text recognition.", state: "done" },
   { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, rebindable shortcuts, import and export.", state: "done" },
   { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming, reordering and hiding tools, the sidebar, the second language.", state: "done" },
-  { n: 10, title: "Hardening",            covers: "Accessibility, mobile, error messages, memory, browsers, help content.", state: "next" },
+  { n: 10, title: "Hardening",            covers: "Accessibility checks, the phone pass, error messages, background-tab rendering, help content.", state: "done" },
   { n: 11, title: "Optional extras",      covers: "Video and audio, background removal - only if everything else is perfect." }
 ];
 

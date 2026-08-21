@@ -9,6 +9,29 @@
 import { openForReading } from "./doc.js";
 import { makeCanvas, toBlob, releaseCanvas } from "../image/ops.js";
 
+/* Why every page here is drawn with the "print" intent.
+
+   The PDF library draws a page in chunks, and between chunks it asks
+   to be scheduled again. With its normal "display" intent it asks the
+   browser's PAINTING clock - which browsers slow right down, or stop
+   altogether, for a tab you are not looking at. Start a long export,
+   switch tabs, and the job crawls, or never finishes at all.
+
+   The "print" intent is the one case where the library schedules
+   itself instead of waiting for the screen, which makes sense: a
+   document being printed is not being watched. Measured here with the
+   painting clock deliberately stopped, "display" and "any" both never
+   finished, and "print" finished in 16 milliseconds.
+
+   What this changes about the picture: an annotation the file marks
+   as "do not print" will not appear, and one marked "print only"
+   will. Ordinary page content, scans, text and filled-in form values
+   are all unaffected - on a real document all three intents produced
+   a byte-for-byte identical picture. For a tool whose job is turning
+   a page into a picture, "what it would look like printed" is also
+   the more useful answer. */
+const RENDER_INTENT = "print";
+
 /* PDFs measure in points, 72 to the inch, so the scale needed for a
    given resolution is simply dpi / 72. */
 export function scaleForDpi(dpi) {
@@ -52,7 +75,13 @@ export async function renderPage(page, { scale = 1, background = "#ffffff" } = {
     ctx.fillRect(0, 0, width, height);
   }
 
-  await page.render({ canvasContext: ctx, viewport, background: "rgba(0,0,0,0)" }).promise;
+  await page.render({
+    canvasContext: ctx,
+    viewport,
+    background: "rgba(0,0,0,0)",
+    intent: RENDER_INTENT
+  }).promise;
+
   return canvas;
 }
 

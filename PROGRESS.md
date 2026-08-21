@@ -25,8 +25,8 @@ is always current.
 | 7 | Extraction: PDF text, and offline text recognition | **Done** |
 | 8 | Recipes and power features | **Done** |
 | 9 | Customisation and languages | **Done** |
-| 10 | Hardening | Next |
-| 11 | Optional extras | Not started |
+| 10 | Hardening | **Done** |
+| 11 | Optional extras | Not started — deliberately |
 
 **Tools built: 38 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -895,6 +895,115 @@ it is not pretended otherwise.
 
 ---
 
+## Phase 10 — hardening
+
+### The background-tab defect, found in Phase 8 and fixed here
+
+Drawing a PDF page used to stop when you switched tabs. Limitation 16
+described it honestly and left it. This phase fixed it.
+
+The cause: the PDF library draws a page in chunks and asks the
+browser's **painting clock** to schedule each one. Browsers slow that
+clock right down, or stop it altogether, for a tab nobody is looking
+at. A long export would crawl or never finish.
+
+Two wrong turns before the right one, both worth recording:
+
+1. **Taking over the scheduling.** The library exposes an
+   `onContinue` hook that looks made for this. It is not: what it
+   hands you is the library's own scheduler, so calling it goes
+   straight back to the painting clock. This made things **worse**,
+   not better, and only testing showed it.
+
+2. **Posting a message instead of setting a timer.** Timers really are
+   slowed to about one a second in a hidden tab, and a posted message
+   is not — so this looked like the answer. It made no difference,
+   because the wait was never on a timer to begin with.
+
+The fix that worked: the library has three drawing intents, and the
+“print” one schedules itself rather than waiting for the screen —
+which makes sense, since a document being printed is not being
+watched. Measured with the painting clock deliberately stopped:
+
+| Intent | Result |
+|---|---|
+| display | never finished |
+| any | never finished |
+| print | finished in 16 ms |
+
+Three pages at 150 dots per inch, in a tab that was not being painted:
+**18,713 ms before, 186 ms after**, with byte-for-byte identical
+output. The one real consequence — an annotation the file marks “do
+not print” will not appear, and one marked “print only” will — is
+written next to the code. Filled-in form values were checked
+specifically and do still appear.
+
+Redaction was re-tested afterwards, because it is the one place where
+losing content would matter most: blacking out page one removed its
+text entirely, left pages two and three untouched, and the built-in
+verification confirmed the words were gone.
+
+### A fifth check: `check-a11y.mjs`
+
+The site could already prove it contacts nobody and that its colours
+are readable. It can now also prove, across all 46 pages, that:
+
+- there is exactly one first-level heading and no skipped levels;
+- every control has something that names it;
+- every label points at a control that exists, and every `aria-`
+  reference points at something real;
+- no identifier is used twice;
+- every drawing is either marked as decoration or given a name;
+- the landmarks and the skip link are present and correct;
+- nothing is forced out of the natural tab order.
+
+It found three real faults, now fixed: an unnamed drawing on the
+homepage, an unnamed file picker in Settings, and — from Phase 9, my
+own — a sidebar switch that was the only checkbox on the site not
+wrapped in a label, making it an 18-pixel tap target on a phone.
+
+**Writing the check found a fault in the check twice**, which is worth
+saying: first it did not understand that a checkbox inside a label is
+properly named, and reported thirty things that were fine. The rule is
+the same as everywhere else here — a test that cries wolf is worse
+than no test, because you learn to ignore it.
+
+It prints, every time it passes, that it checks structure only and is
+not a substitute for a real screen reader. Which still has not
+happened.
+
+### The phone pass
+
+Every page was measured at 375 pixels wide, the width of a small
+phone:
+
+- **Nothing scrolls sideways** on any page checked.
+- **Every tap target is at least 32 pixels**, and the checkbox rows
+  are 44 — except one, now fixed.
+- Links inside a sentence are left as they are: they are text, not
+  buttons, and stretching them would be worse.
+
+An attempt to check every page at once by loading them into a frame
+was refused — by our own security policy, which forbids this site
+being framed at all. That is the policy working.
+
+### No silent failures
+
+The brief forbids swallowing an error quietly. Every `catch` in the
+project was checked by machine: **none is empty and unexplained**.
+Where one deliberately does nothing — storage being unavailable, a
+tidy-up that does not matter — there is a comment saying why.
+
+### Help that matches what was built
+
+The Help page now covers recipes, changing the keyboard shortcuts, and
+arranging the tool list, including the parts that do not work the
+obvious way: that passwords are never saved into a recipe, that
+sixteen tools cannot be steps, and that a renamed tool is still found
+under the name it came with.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -993,22 +1102,17 @@ With the server dead, in the same browser:
     every tool writes a new file to the results tray — so nothing is ever
     destroyed. But there is no button that walks a change back.
 
-15. **No accessibility audit with a real screen reader yet.** Live regions, labels,
-    focus order and contrast are all built in, and contrast is machine-verified,
-    but nobody has driven it with NVDA or VoiceOver. That is Phase 10.
+15. **No accessibility audit with a real screen reader yet.** Structure is now
+    machine-checked on every page as well as contrast — see Phase 10 — and three
+    real faults were found and fixed that way. But nobody has still driven this
+    site with NVDA or VoiceOver, and a passing structural check is not the same
+    thing. This is the largest honest gap that remains.
 
-16. **PDF page-drawing pauses while the tab is in the background.** Anything that
-    turns a PDF page into a picture — page thumbnails, “PDF to images”, the
-    rasterising half of redaction, and reading a scanned PDF — is drawn by the
-    PDF library on the browser's painting clock. Browsers stop that clock for a
-    tab you cannot see, so if you start one of those jobs and switch to another
-    tab, the job stops where it is and continues the moment you come back.
-    Nothing is lost and nothing is corrupted, but a long export will not finish
-    while you are away, which is not what most people expect. Tools that never
-    draw a page — merging, splitting, rotating, passwords, text extraction,
-    recognising text in an ordinary image, zip, spreadsheets, QR codes, and every
-    image tool — are unaffected and run happily in a background tab. Fixing this
-    means moving page-drawing off the painting clock; it is on the Phase 10 list.
+16. ~~**PDF page-drawing pauses while the tab is in the background.**~~
+    **Fixed in Phase 10.** It was real, it is written up above, and a
+    three-page export in a tab that is not being painted went from
+    18,713 milliseconds to 186. Left here rather than deleted, so the
+    record of what was once broken stays honest.
 
 17. **A recipe is a straight line, with no choices in it.** Steps run in order,
     every file goes through every step, and there is no “if this one is a PDF do
@@ -1034,9 +1138,8 @@ With the server dead, in the same browser:
     may not match your keycap. The key you pressed is always the key that works;
     only the label can be wrong.
 
-22. **“Turn pages into pictures” inside a recipe inherits limitation 16** — it
-    pauses while the tab is in the background, like every other operation that
-    draws a PDF page.
+22. ~~**“Turn pages into pictures” inside a recipe inherits limitation 16.**~~
+    **Fixed in Phase 10** along with limitation 16 itself.
 
 23. **The tool list is arranged in Settings, not on the homepage.** There is no
     right-click menu on a tool card to rename or hide it where you are standing.
@@ -1063,6 +1166,17 @@ With the server dead, in the same browser:
     language file before the page draws — which would slow every page down for
     everybody to fix something small.
 
+29. **The three intents are not identical on documents with annotations.** Drawing
+    a page now asks for it as it would print. On ordinary content, scans, text and
+    filled-in forms this changes nothing, and that was measured. On a document
+    with an annotation marked “do not print”, that annotation will not appear in
+    an exported picture. No such document was to hand to test with.
+
+30. **The phone pass was measured, not held.** Every page was checked at 375
+    pixels in a desktop browser told to be that size. Nobody has used this on an
+    actual phone, where the keyboard covers half the screen and the memory runs
+    out sooner.
+
 ---
 
 ## How to check any of this yourself
@@ -1076,6 +1190,10 @@ node scripts/check-contrast.mjs
 ```
 
 ```bash
+node scripts/check-a11y.mjs
+```
+
+```bash
 node scripts/make-samples.mjs
 ```
 
@@ -1085,6 +1203,8 @@ node scripts/add-exif.mjs
 
 The first fails if anything in the project points at another computer. The second
 fails if any colour pairing in any theme falls below the accessibility standard.
-The third writes real test files into `samples/`. The fourth builds a JPEG whose
+The third checks that every page can be read out and moved through without a mouse
+or without sight — structure only, which it says so itself every time it passes.
+The fourth writes real test files into `samples/`. The fifth builds a JPEG whose
 hidden information is known in advance, so the metadata reader can be checked
 against a correct answer rather than merely observed not to crash.

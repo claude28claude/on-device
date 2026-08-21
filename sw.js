@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-99506f8c45";
+const VERSION = "0.1.0-645093a74d";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
