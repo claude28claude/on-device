@@ -648,6 +648,36 @@ rather than a problem with the visitor's file.
 
 ---
 
+## The offline check — run with the server switched off
+
+The whole point of On Device is that it does not need a server once you have it.
+That was tested properly rather than assumed.
+
+A fresh visit was made with nothing saved, and the site saved itself: **145 files**
+on the first visit, growing to **155** after two tools had pulled in the extra
+libraries they need. The web server was then **stopped completely** — a request to
+it from outside the browser gets no answer at all.
+
+With the server dead, in the same browser:
+
+- The scanned-document page loaded, with its correct title, its correct
+  heading and its file drop area in place. (It was checked by reading the
+  page's own contents rather than by eye: the preview window was not being
+  displayed at the time, so no screenshot was possible.)
+- The homepage, Trust, Help, Settings, the QR maker, the zip tool and the
+  spreadsheet tool all loaded from the copy on the device.
+- Text recognition read a picture of the words *Nothing leaves this page* back
+  correctly, at 95% confidence — with no server and no network.
+- Merging a one-page PDF with a three-page PDF produced a genuine four-page PDF
+  of 1,535 bytes, beginning with the `%PDF-` marker that says it is a real
+  document — again with no server.
+- Asking for something that had never been saved returned the honest message the
+  site is meant to give: *"This part of On Device is not saved on your device yet,
+  and there is no connection to fetch it with. Reconnect once and it will be saved
+  for good."* No fake success, no blank screen.
+
+---
+
 ## Known imperfect — read this part
 
 1. **The Hindi translation has not been checked by a native speaker.** It is
@@ -719,6 +749,19 @@ rather than a problem with the visitor's file.
 15. **No accessibility audit with a real screen reader yet.** Live regions, labels,
     focus order and contrast are all built in, and contrast is machine-verified,
     but nobody has driven it with NVDA or VoiceOver. That is Phase 10.
+
+16. **PDF page-drawing pauses while the tab is in the background.** Anything that
+    turns a PDF page into a picture — page thumbnails, "PDF to images", the
+    rasterising half of redaction, and reading a scanned PDF — is drawn by the
+    PDF library on the browser's painting clock. Browsers stop that clock for a
+    tab you cannot see, so if you start one of those jobs and switch to another
+    tab, the job stops where it is and continues the moment you come back.
+    Nothing is lost and nothing is corrupted, but a long export will not finish
+    while you are away, which is not what most people expect. Tools that never
+    draw a page — merging, splitting, rotating, passwords, text extraction,
+    recognising text in an ordinary image, zip, spreadsheets, QR codes, and every
+    image tool — are unaffected and run happily in a background tab. Fixing this
+    means moving page-drawing off the painting clock; it is on the Phase 10 list.
 
 ---
 
