@@ -10,8 +10,15 @@ The promise is enforced by the browser, not by us. Every page carries a Content
 Security Policy that permits requests to this site's own address and refuses
 every other address in the world.
 
-Current state: **Phase 1 of 12 complete.** See [PROGRESS.md](PROGRESS.md) for an
-honest account of what works, what does not, and what has not been tested.
+**Live at <https://claude28claude.github.io/on-device/>**
+
+Current state: **39 of 41 tools built; 11 of 12 phases complete.** See
+[PROGRESS.md](PROGRESS.md) for an honest account of what works, what does not,
+and what has not been tested — including a numbered list of 32 known
+limitations, two of them struck through because they have since been fixed.
+
+The two tools that are not built are listed on the site itself, with the reason.
+Neither is missing by accident.
 
 ---
 
@@ -32,7 +39,7 @@ internet switched off.
 
 ---
 
-## The three checks before every commit
+## The five checks before every commit
 
 ```bash
 node scripts/check-no-external.mjs
@@ -48,6 +55,25 @@ node scripts/check-contrast.mjs
 
 Reads the real colours out of `assets/css/tokens.css` and checks 23 pairings in
 each of the 5 themes against WCAG AA. Fails if any pairing falls short.
+
+```bash
+node scripts/check-a11y.mjs
+```
+
+Checks every page for one first-level heading and no skipped levels, controls
+that have something naming them, labels and `aria-` references that point at
+things which exist, no repeated identifiers, the landmarks and skip link, and
+nothing forced out of natural tab order. It checks structure only, and says so
+itself every time it passes: nobody has yet driven this site with a real screen
+reader.
+
+```bash
+node scripts/check-vendor.mjs
+```
+
+Re-hashes every borrowed file and compares it against the fingerprint recorded
+in `assets/vendor/VENDOR.json`. Fails if a single byte of a bundled library has
+changed.
 
 ```bash
 node scripts/build-sw.mjs
@@ -98,8 +124,16 @@ git add -A && git commit -m "Publish"
 gh repo create on-device --public --source=. --push
 ```
 
-Then switch on GitHub Pages for the repository, serving from the `main` branch,
-root folder. The site appears at `https://<your-username>.github.io/on-device/`.
+Then switch GitHub Pages on for the repository, serving from the branch you
+pushed, root folder. From the command line that is:
+
+```bash
+gh api -X POST repos/OWNER/on-device/pages -f "source[branch]=master" -f "source[path]=/"
+```
+
+The site appears at `https://<your-username>.github.io/on-device/` a minute or
+two later. The `.nojekyll` file in the root matters: without it Pages runs
+everything through Jekyll, which skips files beginning with an underscore.
 
 **Every time after that:**
 
