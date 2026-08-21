@@ -4,12 +4,23 @@ import { setupPdfTool, toolError, describeWithPassword } from "../pdf-tool-page.
 import { pagesToImages, pixelSizeFor } from "../pdf/render.js";
 import { parsePageRange, describeRange } from "../pdf/doc.js";
 import { el, toast, announce, formatBytes } from "../ui.js";
+import { adopt } from "../defaults.js";
+import { describePageSize } from "../measure.js";
 
 const $ = (id) => document.getElementById(id);
 let current = null;
 let stop = false;
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ dpi: "defaults.dpi", format: "defaults.imageFormat", quality: "defaults.imageQuality" });
+
+  /* Paint it once now: the slider may have started from a saved
+     default, and a caption that disagrees with the control under it
+     is worse than no caption. */
+  $("quality-hint").textContent = `${$("quality").value} out of 100.`;
+
   const tool = await setupPdfTool({
     toolId: "pdf-to-images",
     toolLabel: "Page image",
@@ -49,8 +60,7 @@ async function openDocument(tool, record) {
     current = { record, info: opened.info, password: opened.password };
 
     const first = opened.info.pages[0];
-    const mmWide = first ? Math.round((first.width / 72) * 25.4) : 0;
-    const mmTall = first ? Math.round((first.height / 72) * 25.4) : 0;
+    const pageSize = first ? describePageSize(first.width, first.height) : "";
 
     $("extra-host").append(
       el("div", { class: "panel" }, [
@@ -58,7 +68,7 @@ async function openDocument(tool, record) {
         el("p", {
           text:
             `${opened.info.pageCount} page${opened.info.pageCount === 1 ? "" : "s"}` +
-            (first ? `, about ${mmWide} by ${mmTall} millimetres each.` : ".")
+            (first ? `, about ${pageSize} each.` : ".")
         }),
         el("p", { class: "field-hint", id: "size-estimate" })
       ])

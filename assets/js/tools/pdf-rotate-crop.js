@@ -5,6 +5,7 @@ import { rotatePages, cropPages } from "../pdf/edit.js";
 import { parsePageRange, describeRange } from "../pdf/doc.js";
 import { renderThumbnails, releaseThumbnails } from "../pdf/render.js";
 import { el, toast, announce } from "../ui.js";
+import { describePageSize } from "../measure.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -69,8 +70,7 @@ function paintCropReadout() {
     const page = current.info.pages[0];
     const w = Math.round(page.width * (1 - m.left - m.right));
     const h = Math.round(page.height * (1 - m.top - m.bottom));
-    text += ` The first page becomes about ${Math.round((w / 72) * 25.4)} by ` +
-            `${Math.round((h / 72) * 25.4)} millimetres.`;
+    text += ` The first page becomes about ${describePageSize(w, h)}.`;
   }
   $("crop-readout").textContent = text;
 }

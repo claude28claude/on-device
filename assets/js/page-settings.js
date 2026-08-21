@@ -8,6 +8,8 @@ import { t } from "./i18n.js";
 import { el, icon, toast, announce, confirmDestructive, formatBytes } from "./ui.js";
 import { accentSet, contrastRatio, parseColour } from "./colour.js";
 import * as shortcuts from "./shortcuts.js";
+import * as layout from "./layout.js";
+import { CATEGORIES } from "./tools.js";
 
 const root = document.documentElement;
 
@@ -214,22 +216,171 @@ function wireAppearance() {
 /* ---- Layout --------------------------------------------- */
 function wireLayout() {
   bindSegmented("view-choice", "layout.view", (v) => root.setAttribute("data-view", v));
-  bindSelect("home-opens", "layout.homeOpensTo");
+  bindCheckbox("sidebar-toggle", "layout.sidebar");
 
-  const unhide = document.getElementById("unhide-all");
-  if (unhide) {
-    const hidden = store.get("layout.hidden", []);
-    unhide.disabled = hidden.length === 0;
-    unhide.textContent = hidden.length
-      ? `Show all ${hidden.length} hidden tools again`
-      : "Show all tools again";
-    unhide.addEventListener("click", () => {
-      store.set("layout.hidden", []);
-      unhide.disabled = true;
-      unhide.textContent = "Show all tools again";
-      toast("All tools are visible again.", { kind: "ok" });
+  /* "Open straight into one tool" needs to know which tool, so the
+     second menu appears only when that is chosen. */
+  const opens = document.getElementById("home-opens");
+  const whichTool = document.getElementById("home-tool");
+
+  if (whichTool) {
+    for (const tool of layout.orderedTools()) {
+      if (!tool.built) continue;
+      whichTool.append(el("option", { value: tool.id }, layout.labelFor(tool.id)));
+    }
+    whichTool.value = store.get("layout.homeTool", "") || whichTool.options[0].value;
+    whichTool.addEventListener("change", () => {
+      store.set("layout.homeTool", whichTool.value);
+      announce(`The homepage will open ${whichTool.selectedOptions[0].textContent}.`);
     });
   }
+
+  const syncOpens = () => {
+    const value = opens ? opens.value : "all";
+    if (whichTool) whichTool.hidden = value !== "tool";
+    if (value === "tool" && whichTool && !store.get("layout.homeTool", "")) {
+      store.set("layout.homeTool", whichTool.value);
+    }
+  };
+
+  if (opens) {
+    opens.value = String(store.get("layout.homeOpensTo", "all"));
+    opens.addEventListener("change", () => {
+      store.set("layout.homeOpensTo", opens.value);
+      syncOpens();
+    });
+    syncOpens();
+  }
+
+  wireArranger();
+}
+
+/* ---- Arranging the tool list ---------------------------- */
+/* One row per tool: a name you can type over, up and down buttons,
+   and a switch to hide it. Everything writes straight through to the
+   settings, so what you see here is what the homepage shows. */
+function wireArranger() {
+  const host = document.getElementById("tool-arranger");
+  const unhide = document.getElementById("unhide-all");
+  const resetList = document.getElementById("reset-tool-list");
+  const summary = document.getElementById("customise-summary");
+  if (!host) return;
+
+  const draw = () => {
+    host.textContent = "";
+
+    for (const cat of CATEGORIES) {
+      const inCat = layout.orderedIn(cat.id);
+      if (!inCat.length) continue;
+
+      const rows = el("div", { class: "arranger" });
+
+      inCat.forEach((tool, index) => {
+        const hidden = layout.isHidden(tool.id);
+        const nameField = el("input", {
+          type: "text",
+          class: "arranger-name",
+          value: layout.labelFor(tool.id),
+          maxlength: 60,
+          "aria-label": `Name for ${t(`tool.${tool.id}.name`)}`,
+          onchange: (e) => {
+            layout.rename(tool.id, e.target.value);
+            draw();
+            announce(`Renamed to ${layout.labelFor(tool.id)}.`);
+          }
+        });
+
+        rows.append(el("div", { class: "arranger-row", dataset: { hidden: String(hidden) } }, [
+          el("span", { class: "arranger-icon" }, icon(tool.icon, 16)),
+          nameField,
+          layout.isRenamed(tool.id)
+            ? el("button", {
+                class: "btn btn-sm btn-quiet", type: "button",
+                title: `Put the name back to “${t(`tool.${tool.id}.name`)}”`,
+                onclick: () => { layout.clearRename(tool.id); draw(); }
+              }, "Undo")
+            : null,
+          el("div", { class: "btn-row" }, [
+            el("button", {
+              class: "btn btn-sm btn-quiet", type: "button",
+              "aria-label": `Move ${layout.labelFor(tool.id)} up`,
+              disabled: index === 0,
+              onclick: () => { layout.move(tool.id, -1); draw(); }
+            }, "↑"),
+            el("button", {
+              class: "btn btn-sm btn-quiet", type: "button",
+              "aria-label": `Move ${layout.labelFor(tool.id)} down`,
+              disabled: index === inCat.length - 1,
+              onclick: () => { layout.move(tool.id, 1); draw(); }
+            }, "↓"),
+            el("button", {
+              class: "btn btn-sm", type: "button",
+              "aria-pressed": String(hidden),
+              onclick: () => {
+                layout.setHidden(tool.id, !hidden);
+                draw();
+                announce(hidden
+                  ? `${layout.labelFor(tool.id)} is shown again.`
+                  : `${layout.labelFor(tool.id)} is hidden.`);
+              }
+            }, hidden ? "Show" : "Hide")
+          ])
+        ]));
+      });
+
+      host.append(
+        el("h4", { class: "arranger-head", text: t(`cat.${cat.id}`) }),
+        rows
+      );
+    }
+
+    const counts = layout.customisedCount();
+    if (summary) {
+      const bits = [];
+      if (counts.renamed) bits.push(`${counts.renamed} renamed`);
+      if (counts.hidden) bits.push(`${counts.hidden} hidden`);
+      if (counts.reordered) bits.push("the order changed");
+      summary.textContent = bits.length
+        ? `You have ${bits.join(", ")}.`
+        : "Nothing has been changed from the way it ships.";
+    }
+
+    if (unhide) {
+      unhide.disabled = counts.hidden === 0;
+      unhide.textContent = counts.hidden
+        ? `Show all ${counts.hidden} hidden tools again`
+        : "Show all tools again";
+    }
+  };
+
+  if (unhide) {
+    unhide.addEventListener("click", () => {
+      const n = layout.unhideAll();
+      draw();
+      toast(`${n} tool${n === 1 ? "" : "s"} visible again.`, { kind: "ok" });
+    });
+  }
+
+  if (resetList) {
+    resetList.addEventListener("click", async () => {
+      const counts = layout.customisedCount();
+      if (!counts.hidden && !counts.renamed && !counts.reordered) {
+        toast("The list is already exactly as it ships.", { kind: "info" });
+        return;
+      }
+      const ok = await confirmDestructive({
+        title: "Put the whole list back to normal?",
+        body: "Every name, every hidden tool and the order all go back to the way On Device ships. Your pinned tools and everything else are left alone.",
+        confirmLabel: "Put it back"
+      });
+      if (!ok) return;
+      layout.resetList();
+      draw();
+      toast("The tool list is back to normal.", { kind: "ok" });
+    });
+  }
+
+  draw();
 }
 
 /* ---- Behaviour and defaults ----------------------------- */
@@ -323,6 +474,85 @@ async function wireLanguage() {
   });
 
   showLanguageNote(note, i18n.getLanguageMeta());
+  await reportCoverage();
+}
+
+/* ---- How much is really translated ---------------------- */
+/* Counted from the language files at the moment you look, rather
+   than written down once and left to go stale. It also says plainly
+   which parts are NOT covered, because "translated" usually gets
+   claimed for a great deal more than it is true of. */
+async function reportCoverage() {
+  const host = document.getElementById("language-coverage");
+  if (!host) return;
+  host.textContent = "";
+
+  let english;
+  try {
+    english = (await i18n.LANGUAGES.find((l) => l.code === "en").loader()).default;
+  } catch (err) {
+    host.append(el("p", { class: "muted", text: "The English text could not be read to compare against." }));
+    return;
+  }
+
+  const englishKeys = Object.keys(english);
+  const table = el("table", { class: "mb-4" }, [
+    el("thead", {}, el("tr", {}, [
+      el("th", { scope: "col", text: "Language" }),
+      el("th", { scope: "col", text: "Lines translated" }),
+      el("th", { scope: "col", text: "Checked by a native speaker" })
+    ])),
+  ]);
+  const body = el("tbody", {});
+
+  for (const lang of i18n.LANGUAGES) {
+    let strings, meta;
+    try {
+      const mod = await lang.loader();
+      strings = mod.default;
+      meta = mod.meta || {};
+    } catch (err) {
+      continue;
+    }
+
+    const present = englishKeys.filter((k) => strings[k] !== undefined);
+    /* A line copied straight from English is not a translation - except
+       for the handful that genuinely do not change, such as "PDF". */
+    const changed = present.filter((k) => strings[k] !== english[k]);
+    const percent = Math.round((present.length / englishKeys.length) * 100);
+
+    body.append(el("tr", {}, [
+      el("td", { text: meta.nativeName || lang.code }),
+      el("td", {
+        text: lang.code === "en"
+          ? `${englishKeys.length} — this is the original`
+          : `${present.length} of ${englishKeys.length} (${percent}%), of which ${changed.length} differ from the English`
+      }),
+      el("td", { text: lang.code === "en" ? "n/a" : (meta.reviewed ? "Yes" : "No") })
+    ]));
+  }
+
+  table.append(body);
+
+  host.append(
+    table,
+    el("div", { class: "note" }, [
+      el("strong", { class: "note-title", text: "What those lines cover, and what they do not" }),
+      el("p", {
+        text:
+          "They cover the menus, the buttons, the homepage, the settings, every tool's " +
+          "name, description and page heading, and the words used to say what went wrong."
+      }),
+      el("p", {
+        class: "mb-0",
+        text:
+          "They do NOT cover the explanatory writing inside each tool page — the options, " +
+          "the hints and the “what this tool cannot do” notes. That text is still English " +
+          "on every page. It is the largest remaining piece of translation work and it is " +
+          "not pretended otherwise."
+      })
+    ])
+  );
 }
 
 function showLanguageNote(host, meta) {

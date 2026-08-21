@@ -4,6 +4,7 @@ import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
 import { run as runJob } from "../image/runner.js";
 import * as workspace from "../workspace.js";
 import { el, toast, formatBytes, announce } from "../ui.js";
+import { adopt } from "../defaults.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -17,6 +18,15 @@ const LEVELS = [
 let previewUrls = [];
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ quality: "defaults.imageQuality", format: "defaults.imageFormat" });
+
+  /* Paint it once now: the slider may have started from a saved
+     default, and a caption that disagrees with the control under it
+     is worse than no caption. */
+  $("quality-hint").textContent = `${$("quality").value} out of 100.`;
+
   const tool = await setupImageTool({
     toolId: "image-compress",
     toolLabel: "Compressed",

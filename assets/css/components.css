@@ -1427,3 +1427,43 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
 /* Rebindable shortcuts */
 .shortcut-keys { display: inline-flex; gap: var(--s-1); align-items: center; margin-right: var(--s-2); }
 .shortcut-keys kbd { white-space: nowrap; }
+
+/* The optional homepage sidebar */
+.home-layout { display: block; }
+.home-layout > #tool-sidebar[hidden] { display: none; }
+@media (min-width: 60rem) {
+  :root[data-sidebar="on"] .home-layout {
+    display: grid;
+    grid-template-columns: 14rem minmax(0, 1fr);
+    gap: var(--s-6);
+    align-items: start;
+  }
+  :root[data-sidebar="on"] #tool-sidebar { position: sticky; top: var(--s-4); }
+}
+#tool-sidebar { display: grid; gap: var(--s-5); margin-bottom: var(--s-5); }
+.side-group { display: grid; gap: var(--s-1); }
+.side-head {
+  margin: 0 0 var(--s-1); font-size: 0.8rem; text-transform: uppercase;
+  letter-spacing: 0.06em; color: var(--fg-muted); font-weight: var(--fw-semi);
+}
+.side-link {
+  display: block; width: 100%; text-align: left;
+  padding: var(--s-1) var(--s-2);
+  border: var(--border-w) solid transparent; border-radius: var(--r-2);
+  background: none; color: var(--fg); font: inherit; font-family: var(--font-body);
+  cursor: pointer; text-decoration: none; overflow-wrap: anywhere;
+}
+.side-link:hover { background: var(--bg-sunken); }
+.side-link[aria-pressed="true"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-line); }
+
+/* Arranging the tool list in Settings */
+.arranger-head { margin: var(--s-5) 0 var(--s-2); font-size: 0.95rem; }
+.arranger { display: grid; gap: var(--s-2); }
+.arranger-row {
+  display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center;
+  border: var(--border-w) solid var(--border); border-radius: var(--r-2);
+  background: var(--bg-raised); padding: var(--s-2);
+}
+.arranger-row[data-hidden="true"] { opacity: 0.55; }
+.arranger-icon { display: inline-flex; flex: 0 0 auto; color: var(--fg-muted); }
+.arranger-name { flex: 1 1 10rem; min-width: 0; }

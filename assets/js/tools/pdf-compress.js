@@ -4,6 +4,7 @@ import { setupPdfTool, toolError, describeWithPassword } from "../pdf-tool-page.
 import { tidy, flattenToImages, hasSelectableText } from "../pdf/compress.js";
 import { el, toast, announce, formatBytes } from "../ui.js";
 import * as tray from "../tray.js";
+import { adopt } from "../defaults.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -19,6 +20,15 @@ const HINTS = {
 };
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ dpi: "defaults.dpi", quality: "defaults.imageQuality" });
+
+  /* Paint it once now: the slider may have started from a saved
+     default, and a caption that disagrees with the control under it
+     is worse than no caption. */
+  $("quality-hint").textContent = `${$("quality").value} out of 100.`;
+
   const tool = await setupPdfTool({
     toolId: "pdf-compress",
     toolLabel: "Compressed",

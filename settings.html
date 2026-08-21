@@ -234,29 +234,36 @@
               <select id="home-opens">
                 <option value="all" data-i18n="settings.homeOpensTo.all">All tools</option>
                 <option value="favourites" data-i18n="settings.homeOpensTo.favourites">Pinned tools only</option>
+                <option value="tool">Straight into one tool</option>
               </select>
+              <select id="home-tool" hidden aria-label="Which tool to open"></select>
             </div>
           </div>
 
           <div class="setting-row">
             <div class="setting-text">
-              <strong>Hidden tools</strong>
-              <span>Tools you have hidden do not appear anywhere. Nothing is hidden yet.</span>
+              <strong><label for="sidebar-toggle">Show a sidebar on the homepage</label></strong>
+              <span>A column down the side with the categories, your pinned tools and your recipes. On a narrow screen it sits above the tools instead.</span>
             </div>
             <div class="setting-control">
-              <button class="btn btn-sm" type="button" id="unhide-all" disabled>Show all tools again</button>
+              <input type="checkbox" id="sidebar-toggle">
             </div>
           </div>
 
-          <div class="note note-accent">
-            <strong class="note-title">Coming in a later phase</strong>
-            <p class="mb-0">
-              Renaming and reordering tools, and the optional sidebar, arrive with the
-              customisation phase. They are listed in the brief and have not been
-              forgotten — they are simply not built yet, and are not shown here
-              pretending to work.
-            </p>
+          <h3 class="h-lg">Your tool list</h3>
+          <p class="muted">
+            Rename anything to whatever you actually call it, move things up and down,
+            and hide the ones you never use. A hidden tool disappears from the homepage
+            and from the search box, and its page still works if you have it bookmarked.
+          </p>
+
+          <div class="btn-row mb-4">
+            <button class="btn btn-sm" type="button" id="unhide-all" disabled>Show all tools again</button>
+            <button class="btn btn-sm" type="button" id="reset-tool-list">Put the whole list back to normal</button>
           </div>
+
+          <p id="customise-summary" class="muted text-sm"></p>
+          <div id="tool-arranger"></div>
         </section>
 
         <!-- ================= Behaviour ================= -->
@@ -351,7 +358,7 @@
           <div class="setting-row">
             <div class="setting-text">
               <strong><label for="image-format" data-i18n="settings.imageFormat">Default image format</label></strong>
-              <span>What images are saved as unless you choose otherwise.</span>
+              <span>Where a tool offers this format, it starts here. Used by Convert an image, Make an image smaller and PDF to images. Changing it in a tool changes this too.</span>
             </div>
             <div class="setting-control">
               <select id="image-format">
@@ -366,7 +373,7 @@
           <div class="setting-row">
             <div class="setting-text">
               <strong><label for="page-size" data-i18n="settings.pageSize">Default page size</label></strong>
-              <span>Used when making a PDF.</span>
+              <span>Used by Images to PDF and Several pages per sheet.</span>
             </div>
             <div class="setting-control">
               <select id="page-size">
@@ -380,7 +387,7 @@
           <div class="setting-row">
             <div class="setting-text">
               <strong><label for="dpi" data-i18n="settings.dpi">Default resolution</label></strong>
-              <span>Used when turning PDF pages into pictures.</span>
+              <span>Used by PDF to images and Make a PDF smaller. A tool that does not offer the exact figure you pick keeps its own.</span>
             </div>
             <div class="setting-control">
               <select id="dpi">
@@ -394,7 +401,7 @@
           <div class="setting-row">
             <div class="setting-text">
               <strong><label for="units" data-i18n="settings.units">Units</label></strong>
-              <span>How sizes are shown and entered.</span>
+              <span>How page sizes are written out, in PDF to images and Rotate and crop a PDF. Photographs are always measured in pixels, because a photograph has no physical size until it is printed.</span>
             </div>
             <div class="setting-control">
               <select id="units">
@@ -456,6 +463,13 @@
             </div>
           </div>
           <div id="language-note"></div>
+
+          <h3 class="h-lg">What is actually translated</h3>
+          <p class="muted">
+            Counted from the language files themselves each time this page opens, so
+            it cannot drift away from the truth.
+          </p>
+          <div id="language-coverage"></div>
         </section>
 
         <!-- ================= Data ================= -->

@@ -17,8 +17,8 @@ const PHASES = [
   { n: 6,  title: "Text, data, utilities", covers: "QR codes, text workbench, spreadsheets, markdown, zip, checksum, compare.", state: "done" },
   { n: 7,  title: "Extraction",           covers: "PDF text extraction and offline text recognition.", state: "done" },
   { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, rebindable shortcuts, import and export.", state: "done" },
-  { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming and reordering, the second language.", state: "next" },
-  { n: 10, title: "Hardening",            covers: "Accessibility, mobile, error messages, memory, browsers, help content." },
+  { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming, reordering and hiding tools, the sidebar, the second language.", state: "done" },
+  { n: 10, title: "Hardening",            covers: "Accessibility, mobile, error messages, memory, browsers, help content.", state: "next" },
   { n: 11, title: "Optional extras",      covers: "Video and audio, background removal - only if everything else is perfect." }
 ];
 

@@ -329,6 +329,7 @@ export default {
   "tool.pdf-fill-sign.keys": "signature form complete write initial date tick",
 
   "tool.pdf-redact.name": "Redact - really",
+  "tool.pdf-redact.heading": "Redact — properly",
   "tool.pdf-redact.desc": "Black out text and genuinely destroy it, not just cover it up.",
   "tool.pdf-redact.keys": "black out hide censor remove sensitive private cover",
 
@@ -353,6 +354,7 @@ export default {
   "tool.pdf-ocr.keys": "ocr scan recognise handwriting searchable text photo of a document",
 
   "tool.pdf-nup.name": "Multiple pages per sheet",
+  "tool.pdf-nup.heading": "Several pages per sheet",
   "tool.pdf-nup.desc": "Two or four pages a sheet, booklet order, or one page across many sheets.",
   "tool.pdf-nup.keys": "n-up booklet poster print layout fold 2up 4up",
 
@@ -381,6 +383,7 @@ export default {
   "tool.image-rotate.keys": "turn sideways upside down mirror straighten level",
 
   "tool.image-metadata.name": "Photo metadata and location",
+  "tool.image-metadata.heading": "What your photo is hiding",
   "tool.image-metadata.desc": "See what a photo reveals - including where it was taken - and strip it.",
   "tool.image-metadata.keys": "exif gps location remove strip privacy camera date hidden",
 
@@ -477,6 +480,21 @@ export default {
   "recipes.cannot": "Tools that cannot be a step, and why",
   "recipes.cannot.lede":
     "A recipe replays itself on files it has never seen. Anything that needs you to look at a particular file and make a judgement cannot be replayed, so these stay tools you drive yourself.",
+
+  /* ---- The main pages ----------------------------------- */
+  "page.home.title": "Everyday file tools that never upload anything",
+  "page.home.lede": "PDFs, photos, QR codes, conversions. Every one of them runs inside this browser tab, on this machine. Your files are never sent anywhere, because there is nowhere to send them to — this site has no server behind it.",
+  "page.home.checkLink": "See how to check that for yourself.",
+  "page.trust.title": "How this works, and how to check",
+  "page.trust.lede": "Every site that handles your files says it respects your privacy. Saying it costs nothing. This page is here so you do not have to take our word for it.",
+  "page.help.title": "Help",
+  "page.help.lede": "Plain answers, no jargon. If something here is wrong or unclear, that is worth knowing — the whole point of this site is that you should not have to take anything on faith.",
+  "page.privacy.title": "Privacy",
+  "page.privacy.lede": "The short version: we collect nothing. There is no we. There is no server.",
+  "page.credits.title": "Credits and licences",
+  "page.credits.lede": "Everything this site uses is stored inside the site itself and served from the same address as the page. Nothing is fetched from anyone else's servers, which is both a privacy decision and the reason it works offline.",
+  "page.roadmap.title": "What is built, and what is not",
+  "page.roadmap.lede": "This site is being built one phase at a time. Nothing appears on the homepage pretending to work before it does. This page is the honest state of it, generated from the same list the homepage uses, so it cannot drift out of date.",
 
   /* ---- Units and formats -------------------------------- */
   "unit.bytes": "{n} B",

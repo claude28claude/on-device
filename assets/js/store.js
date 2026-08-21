@@ -34,7 +34,7 @@ export const DEFAULTS = {
     view: "grid",           /* grid | list */
     homeOpensTo: "all",     /* all | favourites | tool */
     homeTool: "",
-    sidebar: true,
+    sidebar: false,
     pinned: [],
     hidden: [],
     renames: {}

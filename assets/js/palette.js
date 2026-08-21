@@ -6,12 +6,12 @@
    "make smaller", "remove location", "iphone photo".
    ============================================================ */
 
-import { TOOLS, getTool } from "./tools.js";
 import { el, icon, dialogSupported, announce } from "./ui.js";
 import { t } from "./i18n.js";
 import * as store from "./store.js";
 import { matchScore } from "./search-terms.js";
 import { listNames } from "./recipes/names.js";
+import * as layout from "./layout.js";
 
 let dlg = null;
 let input = null;
@@ -29,13 +29,18 @@ export function setPathPrefix(prefix) {
 function buildIndex() {
   const entries = [];
 
-  for (const tool of TOOLS) {
+  for (const tool of layout.orderedTools()) {
+    /* A tool you have hidden is hidden here too, or the palette would
+       quietly undo the hiding. */
+    if (layout.isHidden(tool.id)) continue;
     entries.push({
       id: tool.id,
       group: "tools",
-      name: t(`tool.${tool.id}.name`),
+      name: layout.labelFor(tool.id),
       desc: t(`tool.${tool.id}.desc`),
-      keys: t(`tool.${tool.id}.keys`),
+      /* The name it ships with stays searchable, so renaming a tool
+         never makes it impossible to find again. */
+      keys: t(`tool.${tool.id}.keys`) + " " + t(`tool.${tool.id}.name`),
       icon: tool.icon,
       built: tool.built,
       phase: tool.phase,

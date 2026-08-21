@@ -3,11 +3,16 @@
 import { setupPdfTool, toolError } from "../pdf-tool-page.js";
 import { imagesToPdf } from "../pdf/edit.js";
 import { el, toast, announce, formatBytes } from "../ui.js";
+import { adopt } from "../defaults.js";
 
 const $ = (id) => document.getElementById(id);
 let order = [];
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ "page-size": "defaults.pageSize" });
+
   const tool = await setupPdfTool({
     toolId: "images-to-pdf",
     toolLabel: "Images to PDF",

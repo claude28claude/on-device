@@ -24,8 +24,8 @@ is always current.
 | 6 | Text, data, utilities, plus the remaining image tools | **11 of 12** — only the QR reader missing, deliberately |
 | 7 | Extraction: PDF text, and offline text recognition | **Done** |
 | 8 | Recipes and power features | **Done** |
-| 9 | Customisation and languages | Next |
-| 10 | Hardening | Not started |
+| 9 | Customisation and languages | **Done** |
+| 10 | Hardening | Next |
 | 11 | Optional extras | Not started |
 
 **Tools built: 38 of 41.** Every unbuilt tool on the homepage is marked "Not built
@@ -766,6 +766,135 @@ Every one of the 23 steps was run on real files.
 
 ---
 
+## Phase 9 — the site arranged your way, in your language
+
+Two things this phase had to fix, both of them promises the site was
+making and not keeping.
+
+### Your tool list
+
+Settings could hide a tool but gave you no way to hide one, and the
+homepage read a list of renamed tools that nothing could write to. All
+three are now real, in one place under Settings — Layout:
+
+- **Rename** anything. Type over the name and it changes on the
+  homepage, in the search box, and in the sidebar. The name it ships
+  with stays searchable, so renaming “Merge PDFs” to “Glue PDFs
+  together” does not make it impossible to find by typing “merge”.
+- **Reorder** within a category, with up and down buttons that work
+  from the keyboard. Moving a PDF tool under Images is not offered,
+  because the grid is grouped by category and it would simply look
+  like a bug.
+- **Hide** the ones you never use. A hidden tool disappears from the
+  homepage and from the command palette — the palette had to be taught
+  this, or it would have quietly undone the hiding — and its own page
+  still works if you have it bookmarked.
+- **Put it all back** with one button, which asks first.
+
+One file now answers “what is this tool called and should it be
+shown”, so a rename cannot show up in one place and not another.
+
+### The optional sidebar
+
+Off unless you turn it on. On a wide screen it is a column down the
+left with the categories, your pinned tools and your recipes; below
+about 960 pixels it stacks above the tools instead of squeezing them.
+
+### The homepage can step out of the way
+
+“The homepage opens to” now has a third choice: straight into one
+tool, for somebody who only ever uses one. It fires **once per browser
+session**, and that is not an arbitrary limit. This site sends no
+referrer by design, so there is no way to tell “I typed the address”
+from “I pressed Tools in the menu”. Without the once-only rule,
+pressing Tools would bounce you straight back into the tool and you
+could never reach the homepage again to switch the setting off. Coming
+back a second time is taken to mean you wanted the homepage.
+
+### Defaults that were doing nothing
+
+Four settings under “Behaviour and defaults” were saved and then
+never read by anything: resolution, page size, units, and picture
+format outside one tool. They now reach the tools that have a matching
+control — PDF to images, Make a PDF smaller, Images to PDF, Several
+pages per sheet, Convert an image, Make an image smaller — and changing
+one inside a tool writes it back as the new default.
+
+Each setting on that page now names the tools it actually reaches. A
+tool that does not offer the exact figure you picked keeps its own,
+rather than being forced to something it cannot do.
+
+**Units** was the awkward one. A PDF page has a real physical size, so
+“8.3 by 11.7 inches” is a true statement about it. A photograph does
+not — a 1600-pixel-wide picture is as big as whatever you print it on
+— so asking for its width in millimetres is a question with no answer.
+Units therefore applies to page sizes, and photographs are always
+measured in pixels, and the setting says so.
+
+### The second language, honestly measured
+
+Hindi was already complete as far as the language file went. What the
+language file did not cover was every page heading, which had been
+typed into the HTML by hand — so switching to Hindi translated the
+menus and left the page you were reading in English.
+
+Every tool page heading and breadcrumb, and the heading and opening
+paragraph of all six main pages, now come from the language files.
+Switching to Hindi renames all 38 tool pages.
+
+Settings now carries a **coverage table counted from the language files
+themselves** every time you open it, so it cannot drift into a lie. It
+currently reads: Hindi, 370 of 370 lines, of which 350 differ from the
+English — the other 20 are things like “PDF” and “KB” that do not
+change. Next to it, in as many words, is what those lines do **not**
+cover: the explanatory writing inside each tool page, which is still
+English everywhere. That is the largest remaining translation job and
+it is not pretended otherwise.
+
+### What testing caught in Phase 9
+
+1. **The escape hatch from “open straight into one tool” did not work.**
+   It checked whether you had arrived from inside the site — but the
+   site sets “no referrer” on every page on purpose, so that check
+   could never be true, and pressing Tools would have trapped you in
+   the tool forever. Replaced with the once-per-session rule above.
+   Found by testing it, not by reading it.
+
+2. **The quality caption disagreed with the quality slider.** The
+   caption was written into the HTML by hand and only matched by luck;
+   once the slider could start from a saved default it read “90 out of
+   100” above a slider sitting at 61. Four tools now paint it from the
+   control itself.
+
+3. **Translating the homepage would have deleted a link.** Translating
+   an element replaces its text outright, and the opening paragraph had
+   “See how to check that for yourself” as a link inside it. The link
+   is now its own element, and a check across all 46 pages confirms no
+   translated element contains anything that would be lost.
+
+### How this was proved
+
+- Renamed one tool, hid another and moved a third to the top, then
+  looked at the homepage: new name shown, hidden one gone, new order
+  kept. Searched the palette for the new name (found) and for the
+  shipped name (also found) and for the hidden tool (correctly absent).
+- Turned the sidebar on and measured the layout: a 224-pixel column
+  beside a 781-pixel grid at 1100 pixels wide, stacked below that.
+- Set the homepage to open into the QR tool, visited the homepage and
+  landed in the QR tool — then visited the homepage again and stayed
+  there, which is the escape hatch working.
+- Set resolution to 300, format to JPEG, quality to 61 and units to
+  inches, then opened PDF to images: all four had taken, and dropping a
+  real PDF in read “3 pages, about 8.3 by 11.7 inches each. At 300 dots
+  per inch each page comes out 2479 by 3508 pixels.”
+- Switched to Hindi and opened a tool page: heading, breadcrumb and
+  menus in Hindi, with the options panel still in English, exactly as
+  the coverage note says.
+- Pressed “Put the whole list back to normal” and confirmed every
+  setting returned to empty.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -908,6 +1037,31 @@ With the server dead, in the same browser:
 22. **“Turn pages into pictures” inside a recipe inherits limitation 16** — it
     pauses while the tab is in the background, like every other operation that
     draws a PDF page.
+
+23. **The tool list is arranged in Settings, not on the homepage.** There is no
+    right-click menu on a tool card to rename or hide it where you are standing.
+    Everything works, but it is a trip to Settings and back.
+
+24. **Reordering is up and down buttons, not dragging** — the same limit the
+    recipe steps have, for the same reason.
+
+25. **A tool can only move within its own category.** The grid is grouped by
+    category, so a PDF tool sitting under Images would look like a fault rather
+    than a preference.
+
+26. **The writing inside each tool page is English only.** Menus, headings,
+    breadcrumbs, tool names and descriptions, and the error messages are
+    translated; the options, hints and “what this tool cannot do” notes on all 38
+    tool pages are not. Settings says so in as many words, and counts what is
+    covered rather than claiming it.
+
+27. **The Hindi is still unchecked by a native speaker.** More of it exists now,
+    which makes that more important rather than less.
+
+28. **Page titles in the browser tab stay English** in every language. The tab
+    title is set before any translation runs, and moving it would mean loading a
+    language file before the page draws — which would slow every page down for
+    everybody to fix something small.
 
 ---
 

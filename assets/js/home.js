@@ -7,7 +7,9 @@ import * as store from "./store.js";
 import { el, icon, announce } from "./ui.js";
 import { t } from "./i18n.js";
 import { matchScore } from "./search-terms.js";
+import * as layout from "./layout.js";
 import { showNotBuilt } from "./app.js";
+import { listNames } from "./recipes/names.js";
 
 let query = "";
 let filter = "all";          /* all | pinned | recent | ready | <category id> */
@@ -18,7 +20,7 @@ let searchInput = null;
 function matches(tool) {
   if (!query) return true;
   return matchScore(query, {
-    name: t(`tool.${tool.id}.name`),
+    name: layout.labelFor(tool.id) + " " + t(`tool.${tool.id}.name`),
     desc: t(`tool.${tool.id}.desc`),
     keys: t(`tool.${tool.id}.keys`),
     extra: t(`cat.${tool.cat}`)
@@ -30,7 +32,7 @@ function visibleTools() {
   const pinned = store.get("layout.pinned", []);
   const recent = store.getRecent();
 
-  let list = TOOLS.filter((tool) => !hidden.includes(tool.id)).filter(matches);
+  let list = layout.orderedTools().filter((tool) => !hidden.includes(tool.id)).filter(matches);
 
   if (filter === "pinned") list = list.filter((x) => pinned.includes(x.id));
   else if (filter === "recent") list = list.filter((x) => recent.includes(x.id));
@@ -42,9 +44,7 @@ function visibleTools() {
 
 /* ---- One card ------------------------------------------- */
 function toolCard(tool) {
-  const name = t(`tool.${tool.id}.name`);
-  const renamed = store.get("layout.renames", {})[tool.id];
-  const label = renamed || name;
+  const label = layout.labelFor(tool.id);
   const pinned = store.isPinned(tool.id);
 
   const body = el("span", { class: "tool-body" }, [
@@ -149,6 +149,7 @@ export function render() {
         )
       ])
     );
+    renderSidebar();
     announce(t("home.empty.title"));
     return;
   }
@@ -173,6 +174,7 @@ export function render() {
     if (node) gridHost.append(node);
   }
 
+  renderSidebar();
   announce(`${list.length} tools shown.`);
 }
 
@@ -216,11 +218,80 @@ function buildChips() {
   }
 }
 
+/* ---- The optional sidebar -------------------------------- */
+/* Off by default. It repeats what the chips already do, which is
+   the point: on a wide screen some people would rather have a
+   standing list than a row of filters. */
+let sidebarHost = null;
+
+function renderSidebar() {
+  if (!sidebarHost) return;
+
+  const on = Boolean(store.get("layout.sidebar", false));
+  sidebarHost.hidden = !on;
+  document.documentElement.setAttribute("data-sidebar", on ? "on" : "off");
+  if (!on) return;
+
+  sidebarHost.textContent = "";
+
+  const link = (label, onClick, active) =>
+    el("button", {
+      class: "side-link",
+      type: "button",
+      "aria-pressed": String(Boolean(active)),
+      onclick: onClick
+    }, label);
+
+  const groups = [];
+
+  groups.push(el("div", { class: "side-group" }, [
+    el("h2", { class: "side-head", text: t("home.title") }),
+    link(t("home.filter.all"), () => { filter = "all"; syncChips(); render(); }, filter === "all"),
+    link(t("home.filter.ready"), () => { filter = "ready"; syncChips(); render(); }, filter === "ready"),
+    ...CATEGORIES.map((cat) =>
+      link(t(`cat.${cat.id}`), () => { filter = cat.id; syncChips(); render(); }, filter === cat.id))
+  ]));
+
+  const pinnedTools = store.get("layout.pinned", [])
+    .map(getTool)
+    .filter(Boolean)
+    .filter((tool) => !layout.isHidden(tool.id));
+
+  if (pinnedTools.length) {
+    groups.push(el("div", { class: "side-group" }, [
+      el("h2", { class: "side-head", text: t("home.section.pinned") }),
+      ...pinnedTools.map((tool) =>
+        el("a", {
+          class: "side-link",
+          href: tool.built ? `tools/${tool.id}.html` : "#",
+          onclick: (e) => {
+            if (tool.built) return;
+            e.preventDefault();
+            showNotBuilt(tool.id);
+          }
+        }, layout.labelFor(tool.id)))
+    ]));
+  }
+
+  const recipes = listNames();
+  groups.push(el("div", { class: "side-group" }, [
+    el("h2", { class: "side-head", text: t("nav.recipes") }),
+    ...(recipes.length
+      ? recipes.map((r) =>
+          el("a", { class: "side-link", href: `recipes.html?open=${encodeURIComponent(r.id)}` }, r.name))
+      : [el("p", { class: "field-hint mb-0", text: "None saved yet." })]),
+    el("a", { class: "side-link", href: "recipes.html" }, t("recipes.new"))
+  ]));
+
+  sidebarHost.append(...groups);
+}
+
 /* ---- Set-up --------------------------------------------- */
-export function mountHome({ grid, chips, search, viewToggle, countLabel }) {
+export function mountHome({ grid, chips, search, viewToggle, countLabel, sidebar }) {
   gridHost = grid;
   chipHost = chips;
   searchInput = search;
+  sidebarHost = sidebar || null;
 
   if (searchInput) {
     searchInput.addEventListener("input", () => {

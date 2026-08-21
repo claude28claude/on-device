@@ -3,10 +3,15 @@
 import { setupPdfTool, toolError } from "../pdf-tool-page.js";
 import { nUp } from "../pdf/stamp.js";
 import { toast } from "../ui.js";
+import { adopt } from "../defaults.js";
 
 const $ = (id) => document.getElementById(id);
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ "sheet-size": "defaults.pageSize" });
+
   const tool = await setupPdfTool({
     toolId: "pdf-nup",
     toolLabel: "Laid out",

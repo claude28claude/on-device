@@ -3,10 +3,20 @@
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
 import * as store from "../store.js";
 import { el } from "../ui.js";
+import { adopt } from "../defaults.js";
 
 const $ = (id) => document.getElementById(id);
 
 async function start() {
+  /* Start from whatever was chosen in Settings, and remember
+     any change made here as the new default. */
+  adopt({ format: "defaults.imageFormat", quality: "defaults.imageQuality" });
+
+  /* Paint it once now: the slider may have started from a saved
+     default, and a caption that disagrees with the control under it
+     is worse than no caption. */
+  $("quality-hint").textContent = `${$("quality").value} out of 100.`;
+
   const tool = await setupImageTool({
     toolId: "image-convert",
     toolLabel: "Convert",

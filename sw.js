@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-c6aeaa57cc";
+const VERSION = "0.1.0-99506f8c45";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -36,6 +36,7 @@ const PRECACHE = [
   "./assets/icons/social.png",
   "./assets/js/app.js",
   "./assets/js/colour.js",
+  "./assets/js/defaults.js",
   "./assets/js/dropzone.js",
   "./assets/js/hash.js",
   "./assets/js/home.js",
@@ -49,8 +50,10 @@ const PRECACHE = [
   "./assets/js/image/pipeline.js",
   "./assets/js/image/runner.js",
   "./assets/js/image/strip.js",
+  "./assets/js/layout.js",
   "./assets/js/lock.js",
   "./assets/js/marker.js",
+  "./assets/js/measure.js",
   "./assets/js/netguard.js",
   "./assets/js/page-home.js",
   "./assets/js/page-recipes.js",
