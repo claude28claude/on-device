@@ -79,6 +79,16 @@
       ]
     },
     {
+      "name": "jsQR",
+      "version": "1.4.0",
+      "licence": "Apache-2.0",
+      "package": "jsqr@1.4.0",
+      "purpose": "Reading QR codes out of a picture",
+      "files": [
+        "jsqr/jsQR.js"
+      ]
+    },
+    {
       "name": "DOMPurify",
       "version": "3.2.4",
       "licence": "Apache-2.0 (dual-licensed with MPL-2.0)",
@@ -89,11 +99,13 @@
       ]
     }
   ],
-  "totalFiles": 219,
-  "totalBytes": 24081715,
+  "totalFiles": 221,
+  "totalBytes": 24349958,
   "fingerprints": {
     "dompurify/LICENSE": "1b02e03c3fb4f87d476c128f0eb9def1f5a1709d28b180465228bd41574623b7",
     "dompurify/purify.es.mjs": "3b024991882ccc83066a8f0e64f3ff2a84d7638e64591221f6b04f8c10cbb3c2",
+    "jsqr/LICENSE": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",
+    "jsqr/jsQR.js": "bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859",
     "marked/LICENSE.md": "8e3a3f82f59a60958f56ca08f445647c32a4733dc7ca6c2c46f6eb898471ab9c",
     "marked/marked.esm.js": "7a7d9a521ac9384e0c3a075120a7c486cbd0c3c32cc5601bbb79a23e97403690",
     "pdf-lib/LICENSE.md": "f2c9fc00fdb66eb99ac156ba52d734af66d8d309f65753ae809ad34ee2883bcb",

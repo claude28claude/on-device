@@ -59,7 +59,7 @@ export const TOOLS = [
 
   /* ---- Documents, data and text ------------------------- */
   { id: "qr-generate",         cat: "data",  phase: 6, built: true , icon: "qr",          accepts: [] },
-  { id: "qr-read",             cat: "data",  phase: 6, built: false, icon: "camera",      accepts: ["image"] },
+  { id: "qr-read",             cat: "data",  phase: 6, built: true , icon: "camera",      accepts: ["image", "heic"] },
   { id: "text-workbench",      cat: "data",  phase: 6, built: true , icon: "type",        accepts: ["text"] },
   { id: "spreadsheet",         cat: "data",  phase: 6, built: true , icon: "table",       accepts: ["csv", "json", "sheet"] },
   { id: "markdown",            cat: "data",  phase: 6, built: true , icon: "markdown",    accepts: ["text"] },

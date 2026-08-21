@@ -26,6 +26,8 @@ export async function setupImageTool({
   onFilesChanged = null,
   singleFile = false,
   accept = "image/*,.heic,.heif",
+  /* Does this tool produce a picture at the end? A reader does not. */
+  savesPictures = true,
   /* Some tools - the ones where you mark, draw or point at something
      - do their own work rather than sending each file through the
        standard picture pipeline. They set this, and take the Run
@@ -45,7 +47,11 @@ export async function setupImageTool({
   const statusHost = document.getElementById("tool-status");
 
   const caps = await detectCapabilities();
-  reportCapabilities(caps, statusHost);
+  /* Only worth mentioning to a tool that actually saves pictures.
+     On a tool that only reads one, "this browser cannot save AVIF"
+     is true, irrelevant, and reads like a warning about the job in
+     hand. */
+  if (savesPictures) reportCapabilities(caps, statusHost);
 
   let chosen = [];
 

@@ -21,15 +21,16 @@ is always current.
 | 3 | PDF core: merge, split, organise, to images, from images, rotate and crop | **Done** |
 | 4 | PDF advanced, plus image watermark | **Done** — 9 of 9 |
 | 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
-| 6 | Text, data, utilities, plus the remaining image tools | **11 of 12** — only the QR reader missing, deliberately |
+| 6 | Text, data, utilities, plus the remaining image tools | **12 of 12** — the QR reader arrived in Phase 13 |
 | 7 | Extraction: PDF text, and offline text recognition | **Done** |
 | 8 | Recipes and power features | **Done** |
 | 9 | Customisation and languages | **Done** |
 | 10 | Hardening | **Done** |
 | 11 | Optional extras | **Background removal built.** Video and audio, deliberately not |
 | 12 | The QR generator, finally checked | **Done** — three real faults found and fixed |
+| 13 | The QR reader, un-cancelled | **Done** — it was cancelled for the wrong reason |
 
-**Tools built: 39 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -1181,6 +1182,110 @@ should work now, and if it does not I want to know.
 
 ---
 
+## Phase 13 — the QR reader was cancelled for the wrong reason
+
+### Reading Phase 6 again after Phase 12
+
+Phase 6 says, of the reader:
+
+> During testing jsQR decoded **nothing at all** — not one code, at any
+> size, quiet zone, error-correction level or mask, with or without
+> noise. Since the generator matches the specification's own test
+> vectors, the weight of evidence says the fault is not in the codes.
+
+Every word of that is accurate, and the conclusion is exactly wrong.
+
+jsQR decoded nothing because **there was nothing decodable**. It was
+being fed the broken codes from Phase 12 and correctly refusing them.
+The library was removed from the project, and a tool was struck off,
+on the strength of a conclusion drawn from a broken input.
+
+The tell was there in the same paragraph: “its format bits compute and
+place correctly, verified by reading them back” — read back by our own
+reader, which had the same fault in reverse. Two wrong things agreeing
+was mistaken for two right things agreeing.
+
+### So it is built
+
+jsQR 1.4.0 (Apache-2.0) is vendored like every other borrowed thing:
+served from this site, fingerprinted, excluded from the first visit,
+fetched once when the tool is first opened.
+
+The tool takes a screenshot or a photograph and shows what the code
+says. What it deliberately does **not** do is act on it:
+
+- **Nothing in the result is a link.** A phone camera reads a code and
+  offers to open it in one movement, so the first time you see where
+  it goes is after you have gone there. This shows you the address and
+  stops.
+- A code carrying a **web address** shows the host on its own line
+  above the full address, because “goes to: paypa1-secure.example” is
+  the bit worth reading.
+- A code carrying **wifi credentials** is broken out into network,
+  security and password, with a warning that scanning it joins a
+  network somebody else chose.
+- Contact cards, calendar events, email, telephone, and map locations
+  are each recognised and laid out rather than dumped as raw text.
+
+It tries the picture several ways before giving up — as it is,
+inverted for light-on-dark codes, then shrunk, which often rescues a
+large noisy photograph. When it still finds nothing it says how many
+ways it tried and lists the four usual causes, rather than a shrug.
+
+### What testing caught
+
+1. **jsQR crashes on some pictures that contain no code.** It is
+   supposed to return nothing; instead it threw from inside its own
+   pattern-locating code, which surfaced to the visitor as “That did
+   not work: Cannot read properties of undefined”. Its bug, but our
+   problem: each attempt is now wrapped, and a crash is treated as
+   “no code here”, which is the right answer anyway.
+
+2. **The tool's own description was a lie inherited from the plan.**
+   It shipped saying “Read a QR or barcode — from a picture or your
+   camera. The camera feed never leaves this device.” It reads QR
+   codes only, from a picture only, and there is no camera. Rewritten
+   in both languages to say what it does.
+
+3. **A warning about saving AVIF appeared on a tool that never saves a
+   picture.** The shared scaffolding reports what the browser cannot
+   do; on a reader that is true, irrelevant, and reads like a warning
+   about the job in hand. Tools now say whether they produce a picture
+   at all.
+
+### How it was proved
+
+- Eight kinds of code — link, wifi, contact card, email, telephone,
+  map location, plain text and Chinese — made by the generator and
+  read back by the reader: **all eight exact, all eight classified
+  correctly**.
+- Ten codes across versions 1 to 11 and all four correction levels
+  read back exactly.
+- A code embedded in a larger picture, as it would be in a photograph
+  of a sign, found and outlined in the right place.
+- A picture with no code in it: an honest “not found” with the reasons,
+  no crash, and nothing added to the results tray.
+- Checked at 320 and 375 pixels wide with nothing scrolling sideways.
+
+### While in there: the Credits page was lying
+
+It listed three bundled libraries and described zip.js, SheetJS,
+tesseract.js and the markdown libraries as “planned” — which stopped
+being true around Phase 4. On a page whose entire job is to be
+straight about what is inside this site, that is the worst thing to
+get wrong.
+
+It now **builds itself** from `assets/vendor/VENDOR.json`, the same
+file the fingerprint check re-hashes before every commit: nine
+libraries, all 221 borrowed files and their fingerprints, listed at
+the moment you look. If that file will not load it shows an error
+rather than a list typed out by hand that might be wrong.
+
+A new section lists what is deliberately **not** bundled and why: a
+HEIC decoder, a background-removal model, and ffmpeg.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1371,6 +1476,18 @@ With the server dead, in the same browser:
 34. **No camera has yet read a code from this tool.** Three separate programs
     agree the codes are correct, which is strong evidence and not the same as a
     phone in ordinary light.
+
+35. **The reader handles QR codes only.** Shop barcodes, Data Matrix and PDF417 all
+    look like codes and are not read. The page says so.
+
+36. **There is no live camera.** It reads a picture you already have. A camera view
+    would need a permission prompt and a lot of care to be worth trusting, and it
+    is not built.
+
+37. **Reading depends on a borrowed library that is no longer actively maintained.**
+    jsQR works, is permissively licensed and is fingerprinted, and it has at least
+    one crash we work around. If it ever needs replacing, the check that proves the
+    codes are right is already written.
 
 ---
 

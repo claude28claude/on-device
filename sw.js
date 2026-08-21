@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-689a7f2bf2";
+const VERSION = "0.1.0-2a611bc24e";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -57,6 +57,7 @@ const PRECACHE = [
   "./assets/js/marker.js",
   "./assets/js/measure.js",
   "./assets/js/netguard.js",
+  "./assets/js/page-credits.js",
   "./assets/js/page-home.js",
   "./assets/js/page-recipes.js",
   "./assets/js/page-roadmap.js",
@@ -75,6 +76,7 @@ const PRECACHE = [
   "./assets/js/pdf/render.js",
   "./assets/js/pdf/stamp.js",
   "./assets/js/preboot.js",
+  "./assets/js/qr-read.js",
   "./assets/js/qr.js",
   "./assets/js/queue.js",
   "./assets/js/recipes/names.js",
@@ -124,6 +126,7 @@ const PRECACHE = [
   "./assets/js/tools/pdf-to-images.js",
   "./assets/js/tools/pdf-watermark.js",
   "./assets/js/tools/qr-generate.js",
+  "./assets/js/tools/qr-read.js",
   "./assets/js/tools/screenshot-polish.js",
   "./assets/js/tools/spreadsheet.js",
   "./assets/js/tools/text-workbench.js",
@@ -175,6 +178,7 @@ const PRECACHE = [
   "./tools/pdf-to-images.html",
   "./tools/pdf-watermark.html",
   "./tools/qr-generate.html",
+  "./tools/qr-read.html",
   "./tools/screenshot-polish.html",
   "./tools/spreadsheet.html",
   "./tools/text-workbench.html",

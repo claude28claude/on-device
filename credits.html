@@ -78,30 +78,12 @@
         from the same address as the page.
       </p>
 
-      <table class="mb-4">
-        <thead>
-          <tr>
-            <th scope="col">Library</th>
-            <th scope="col">Version</th>
-            <th scope="col">Licence</th>
-            <th scope="col">Used for</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>pdf-lib</td><td class="mono">1.17.1</td><td>MIT</td>
-            <td>Creating and editing PDF files</td>
-          </tr>
-          <tr>
-            <td>pdf.js</td><td class="mono">5.4.149</td><td>Apache&nbsp;2.0</td>
-            <td>Reading PDFs, drawing page previews, extracting text</td>
-          </tr>
-          <tr>
-            <td>qpdf (WebAssembly)</td><td class="mono">0.0.2</td><td>Apache&nbsp;2.0</td>
-            <td>Adding and removing PDF passwords &mdash; the one job pdf-lib cannot do</td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Built at load time from assets/vendor/VENDOR.json, which is the
+           same file scripts/check-vendor.mjs verifies. A hand-written list
+           here went stale within two phases; this one cannot. -->
+      <div id="bundled-list">
+        <p class="muted">Reading the list of bundled libraries&hellip;</p>
+      </div>
 
       <h3>How to check they have not been tampered with</h3>
       <p>
@@ -113,17 +95,7 @@
         they match, the file here is byte-for-byte the published release.
       </p>
 
-      <table class="mb-4">
-        <thead>
-          <tr><th scope="col">File</th><th scope="col">SHA-256 (first 32 characters)</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="mono">pdf-lib.esm.min.js</td><td class="mono">72c052d97b4d5d9fa6cdbdcb7ad709f0</td></tr>
-          <tr><td class="mono">pdf.min.mjs</td><td class="mono">a935133d4b2166e8e3cf28e288b1b889</td></tr>
-          <tr><td class="mono">pdf.worker.min.mjs</td><td class="mono">c964e291707ad492e6e90ff7f4f352b7</td></tr>
-          <tr><td class="mono">qpdf.wasm</td><td class="mono">see assets/vendor/VENDOR.json</td></tr>
-        </tbody>
-      </table>
+      <div id="fingerprint-list"></div>
 
       <div class="note note-accent">
         <strong class="note-title">Why borrowed code changes nothing about the promise</strong>
@@ -162,23 +134,31 @@
         editing the file&rsquo;s own bytes rather than redrawing the image.
       </p>
 
-      <h2>Planned</h2>
+      <h2>Not bundled, and why</h2>
       <table class="mb-5">
         <thead>
           <tr>
             <th scope="col">Library</th>
-            <th scope="col">Used for</th>
-            <th scope="col">Licence</th>
-            <th scope="col">Arrives in</th>
+            <th scope="col">Would be used for</th>
+            <th scope="col">Why not</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>A HEIC decoder</td><td>Opening iPhone photos</td><td>Unresolved &mdash; see below</td><td>Undecided</td></tr>
-          <tr><td>zip.js</td><td>Zip and unzip</td><td>BSD 3-clause</td><td>Phase 6</td></tr>
-          <tr><td>tesseract.js</td><td>Offline text recognition</td><td>Apache 2.0</td><td>Phase 7</td></tr>
-          <tr><td>SheetJS (community)</td><td>Spreadsheets</td><td>Apache 2.0</td><td>Phase 6</td></tr>
-          <tr><td>qrcode / jsQR</td><td>QR codes out and in</td><td>MIT / Apache 2.0</td><td>Phase 6</td></tr>
-          <tr><td>marked + DOMPurify</td><td>Markdown</td><td>MIT</td><td>Phase 6</td></tr>
+          <tr>
+            <td>A HEIC decoder</td>
+            <td>Opening iPhone photos on browsers that cannot</td>
+            <td>The best-known one is LGPL, which is not one of the permissive licences this project promised to stick to. See below.</td>
+          </tr>
+          <tr>
+            <td>A background-removal model</td>
+            <td>Cutting a subject out of a busy photograph</td>
+            <td>Tens of megabytes of downloaded weights, and several of the good ones are licensed for non-commercial use only. The background remover works by colour instead, and says so.</td>
+          </tr>
+          <tr>
+            <td>ffmpeg (WebAssembly)</td>
+            <td>Trimming video and audio</td>
+            <td>Around 30&nbsp;MB, and the video tools are not built. Listed here so its absence is a decision rather than an oversight.</td>
+          </tr>
         </tbody>
       </table>
 
@@ -238,6 +218,6 @@
   </div>
 </footer>
 
-<script type="module" src="assets/js/page-static.js"></script>
+<script type="module" src="assets/js/page-credits.js"></script>
 </body>
 </html>

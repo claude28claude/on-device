@@ -415,9 +415,9 @@ export default {
   "tool.qr-generate.desc": "For a link, wifi network, contact card, email or plain text.",
   "tool.qr-generate.keys": "qr code wifi vcard contact link url generate barcode",
 
-  "tool.qr-read.name": "Read a QR or barcode",
-  "tool.qr-read.desc": "From a picture or your camera. The camera feed never leaves this device.",
-  "tool.qr-read.keys": "scan decode camera barcode qr read",
+  "tool.qr-read.name": "Read a QR code",
+  "tool.qr-read.desc": "See what a code says before you act on it, from a screenshot or a photograph.",
+  "tool.qr-read.keys": "scan decode qr read code contents check link safe before opening screenshot photo",
 
   "tool.text-workbench.name": "Text workbench",
   "tool.text-workbench.desc": "Case, spacing, find and replace, sort, deduplicate, count.",

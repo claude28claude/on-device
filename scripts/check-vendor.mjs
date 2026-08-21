@@ -93,6 +93,17 @@ export const SOURCES = [
     files: ["marked/marked.esm.js"]
   },
   {
+    name: "jsQR",
+    version: "1.4.0",
+    licence: "Apache-2.0",
+    package: "jsqr@1.4.0",
+    purpose: "Reading QR codes out of a picture",
+    /* The only borrowed file here that is not minified: upstream ships
+       no minified build. That makes it larger, and also readable, so
+       this one can be checked by eye as well as by fingerprint. */
+    files: ["jsqr/jsQR.js"]
+  },
+  {
     name: "DOMPurify",
     version: "3.2.4",
     licence: "Apache-2.0 (dual-licensed with MPL-2.0)",

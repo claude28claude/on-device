@@ -402,9 +402,9 @@ export default {
   "tool.qr-generate.desc": "लिंक, वाईफ़ाई, संपर्क कार्ड, ईमेल या सादे टेक्स्ट के लिए।",
   "tool.qr-generate.keys": "qr वाईफ़ाई लिंक संपर्क बारकोड",
 
-  "tool.qr-read.name": "QR या बारकोड पढ़ें",
-  "tool.qr-read.desc": "तस्वीर या कैमरे से। कैमरे का दृश्य इस डिवाइस से बाहर नहीं जाता।",
-  "tool.qr-read.keys": "स्कैन कैमरा बारकोड qr",
+  "tool.qr-read.name": "QR कोड पढ़ें",
+  "tool.qr-read.desc": "कोई कदम उठाने से पहले देखें कि कोड में क्या लिखा है।",
+  "tool.qr-read.keys": "स्कैन qr कोड पढ़ना लिंक",
 
   "tool.text-workbench.name": "टेक्स्ट कार्यशाला",
   "tool.text-workbench.desc": "अक्षर का रूप, खाली जगह, खोज-बदल, क्रम, दोहराव हटाना, गिनती।",

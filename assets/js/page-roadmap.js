@@ -14,7 +14,7 @@ const PHASES = [
   { n: 3,  title: "PDF core",             covers: "Merge, split, organise, images to PDF, PDF to images, rotate and crop.", state: "done" },
   { n: 4,  title: "PDF advanced",         covers: "Compress, watermark, page numbers, metadata, passwords, flatten, booklets.", state: "done" },
   { n: 5,  title: "Privacy specials",     covers: "True redaction, blur and pixelate, fill and sign, lock a file.", state: "done" },
-  { n: 6,  title: "Text, data, utilities", covers: "QR codes, text workbench, spreadsheets, markdown, zip, checksum, compare.", state: "done" },
+  { n: 6,  title: "Text, data, utilities", covers: "QR codes out and in, text workbench, spreadsheets, markdown, zip, checksum, compare.", state: "done" },
   { n: 7,  title: "Extraction",           covers: "PDF text extraction and offline text recognition.", state: "done" },
   { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, rebindable shortcuts, import and export.", state: "done" },
   { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming, reordering and hiding tools, the sidebar, the second language.", state: "done" },
