@@ -16,7 +16,8 @@ async function start() {
     fileToken: "icon",
     singleFile: true,
     onFilesChanged: (files) => check(files[0]),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   $("transparent").addEventListener("change", () => {

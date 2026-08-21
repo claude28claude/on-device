@@ -452,8 +452,8 @@ export default {
   "tool.media-toolkit.keys": "mp4 mp3 trim cut mute gif convert compress extract audio",
 
   "tool.background-remover.name": "Remove a background",
-  "tool.background-remover.desc": "Cut the subject out of a photo, offline.",
-  "tool.background-remover.keys": "cut out transparent subject remove background png",
+  "tool.background-remover.desc": "Cut a subject out by colour and save it with a see-through background. Best on plain backgrounds.",
+  "tool.background-remover.keys": "cut out transparent subject remove background png plain white backdrop product logo signature",
 
   /* ---- Recipes ------------------------------------------ */
   "recipes.title": "Recipes",

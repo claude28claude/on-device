@@ -19,7 +19,7 @@ const PHASES = [
   { n: 8,  title: "Recipes",              covers: "Saved chains of steps, batch pipelines, rebindable shortcuts, import and export.", state: "done" },
   { n: 9,  title: "Customisation",        covers: "Every theme and default, renaming, reordering and hiding tools, the sidebar, the second language.", state: "done" },
   { n: 10, title: "Hardening",            covers: "Accessibility checks, the phone pass, error messages, background-tab rendering, help content.", state: "done" },
-  { n: 11, title: "Optional extras",      covers: "Video and audio, background removal - only if everything else is perfect." }
+  { n: 11, title: "Optional extras",      covers: "Background removal, built. Video and audio, deliberately not.", state: "part" }
 ];
 
 function renderStats() {
@@ -52,6 +52,8 @@ function renderPhases() {
     const badge =
       phase.state === "done"
         ? el("span", { class: "badge badge-ready", text: "Finished" })
+        : phase.state === "part"
+        ? el("span", { class: "badge badge-warn", text: "Partly, on purpose" })
         : phase.state === "next"
         ? el("span", { class: "badge badge-warn", text: "Next" })
         : el("span", { class: "badge badge-soon", text: "Planned" });

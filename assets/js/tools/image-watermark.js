@@ -15,7 +15,8 @@ async function start() {
     toolLabel: "Watermarked",
     fileToken: "marked",
     onFilesChanged: (files) => preview(files[0]),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   pruneFormatOptions($("format"), tool.capabilities);

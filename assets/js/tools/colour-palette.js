@@ -15,7 +15,8 @@ async function start() {
     fileToken: "palette",
     singleFile: true,
     onFilesChanged: (files) => read(files[0]),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   $("count").addEventListener("input", () => {

@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-645093a74d";
+const VERSION = "0.1.0-77b2cf64bf";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -43,6 +43,7 @@ const PRECACHE = [
   "./assets/js/i18n.js",
   "./assets/js/idb.js",
   "./assets/js/image/compose.js",
+  "./assets/js/image/cutout.js",
   "./assets/js/image/decode.js",
   "./assets/js/image/exif.js",
   "./assets/js/image/obscure.js",
@@ -87,6 +88,7 @@ const PRECACHE = [
   "./assets/js/strings/hi.js",
   "./assets/js/tool-page.js",
   "./assets/js/tools.js",
+  "./assets/js/tools/background-remover.js",
   "./assets/js/tools/checksum.js",
   "./assets/js/tools/colour-palette.js",
   "./assets/js/tools/file-compare.js",
@@ -137,6 +139,7 @@ const PRECACHE = [
   "./recipes.html",
   "./roadmap.html",
   "./settings.html",
+  "./tools/background-remover.html",
   "./tools/checksum.html",
   "./tools/colour-palette.html",
   "./tools/file-compare.html",

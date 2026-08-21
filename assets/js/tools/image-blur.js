@@ -22,7 +22,8 @@ async function start() {
     fileToken: "hidden",
     singleFile: true,
     onFilesChanged: (files) => show(files[0]),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   for (const btn of $("method").querySelectorAll("button")) {

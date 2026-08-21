@@ -15,7 +15,8 @@ async function start() {
     toolLabel: "Polished",
     fileToken: "polished",
     onFilesChanged: () => preview(tool),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   for (const id of ["padding", "radius", "shadow", "background", "gradient", "gradient-to", "format"]) {

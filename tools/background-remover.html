@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Remove a background &mdash; On Device</title>
+<meta name="description" content="Cut a subject out of a picture by colour, entirely in your browser. Best on plain backgrounds, with a brush for the rest.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../assets/icons/icon-180.png">
+<link rel="manifest" href="../manifest.webmanifest">
+
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+
+<script src="../assets/js/netguard.js"></script>
+<script src="../assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="../index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+    <nav class="header-nav" aria-label="Main">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../recipes.html" data-i18n="nav.recipes">Recipes</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="../help.html" data-i18n="nav.help">Help</a>
+      <a href="../settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <nav aria-label="Breadcrumb" class="text-sm muted">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a> &rsaquo; <span data-i18n="tool.background-remover.name">Remove a background</span>
+    </nav>
+
+    <div class="page-head">
+      <h1 data-i18n="tool.background-remover.name">Remove a background</h1>
+      <p class="lede">Cut a subject out of a picture and save it with a see-through background &mdash; or drop it onto a colour of your choosing.</p>
+    </div>
+
+    <div id="tool-status"></div>
+
+    <div class="note note-warn">
+      <strong class="note-title">Read this first &mdash; it decides whether this tool is any use to you</strong>
+      <p>
+        This works by <strong>colour</strong>. You point at the background, and every pixel
+        close enough to that colour becomes see-through. It does not know what a person
+        or a dog or a chair looks like.
+      </p>
+      <p class="mb-0">
+        So: a product on a white sweep, a logo, a signature on paper, a passport photo &mdash;
+        excellent. A person against a busy street &mdash; it cannot, and it will say so when
+        you load the picture rather than handing you a mess. Hair and fur it will cut
+        straight through, because colour cannot tell a strand of hair from the wall behind
+        it. There is a brush for fixing the awkward parts by hand.
+      </p>
+    </div>
+
+    <div class="tool-layout">
+      <div class="tool-main">
+        <div id="files-host"></div>
+        <div id="extra-host"></div>
+        <div id="queue-host"></div>
+      </div>
+
+      <aside class="tool-options" aria-label="Options">
+        <h2>Options</h2>
+
+        <div class="field">
+          <span class="field-label">Which pixels to remove</span>
+          <div class="segmented" id="mode" role="group" aria-label="Which pixels to remove">
+            <button type="button" data-mode="touching" aria-pressed="true">Only the outside</button>
+            <button type="button" data-mode="anywhere" aria-pressed="false">Anywhere</button>
+          </div>
+          <p class="field-hint" id="mode-hint">Spreads inwards from the edges, so an enclosed area of the same colour &mdash; the hole in a letter O, a gap under an arm &mdash; is kept.</p>
+        </div>
+
+        <div class="field">
+          <label for="tolerance">Tolerance</label>
+          <input type="range" id="tolerance" min="1" max="60" value="12">
+          <p class="field-hint" id="tolerance-hint">12 out of 60. Higher removes more shades of the background, and eventually starts eating the subject.</p>
+        </div>
+
+        <div class="field">
+          <label for="softness">Edge softness</label>
+          <input type="range" id="softness" min="0" max="6" value="1">
+          <p class="field-hint" id="softness-hint">1 pixel.</p>
+        </div>
+
+        <div class="field">
+          <label for="edge-shift">Edge trim</label>
+          <input type="range" id="edge-shift" min="-4" max="4" value="-1">
+          <p class="field-hint" id="edge-shift-hint">Pulls the edge in by 1 pixel, which removes the halo of old background colour that otherwise clings to the subject.</p>
+        </div>
+
+        <div class="field">
+          <label class="check-row">
+            <input type="checkbox" id="tidy" checked>
+            <span class="check-text"><span>Tidy up stray pixels</span></span>
+          </label>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Background colours you have pointed at</span>
+          <div id="samples" class="sample-row"></div>
+          <p class="field-hint">Click the picture to add one. With none, the colour is guessed from the edges.</p>
+          <div class="btn-row">
+            <button class="btn btn-sm" type="button" id="clear-samples">Forget them</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Brush</span>
+          <div class="segmented" id="brush-mode" role="group" aria-label="Brush">
+            <button type="button" data-brush="off" aria-pressed="true">Off</button>
+            <button type="button" data-brush="erase" aria-pressed="false">Erase</button>
+            <button type="button" data-brush="restore" aria-pressed="false">Restore</button>
+          </div>
+          <label for="brush-size">Brush size</label>
+          <input type="range" id="brush-size" min="4" max="120" value="30">
+          <p class="field-hint" id="brush-hint">Turn the brush on, then drag on the picture. Erase makes things see-through; Restore brings them back.</p>
+          <div class="btn-row">
+            <button class="btn btn-sm" type="button" id="undo-stroke">Undo last stroke</button>
+            <button class="btn btn-sm" type="button" id="clear-strokes">Clear all strokes</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">What to put behind the subject</span>
+          <div class="segmented" id="output" role="group" aria-label="What to put behind the subject">
+            <button type="button" data-output="transparent" aria-pressed="true">Nothing &mdash; see-through</button>
+            <button type="button" data-output="colour" aria-pressed="false">A colour</button>
+          </div>
+          <div id="bg-colour-field" hidden>
+            <label for="bg-colour">Colour</label>
+            <input type="color" id="bg-colour" value="#ffffff">
+          </div>
+          <p class="field-hint" id="output-hint">See-through backgrounds are saved as PNG, because JPEG cannot store them.</p>
+        </div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" data-label="Remove the background" disabled>Remove the background</button>
+        <p class="field-hint">Finished files land in the results tray at the bottom of the screen.</p>
+      </aside>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../index.html" data-i18n="nav.tools">Tools</a>
+      <a href="../trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="../privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="../credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="../assets/js/tools/background-remover.js"></script>
+</body>
+</html>

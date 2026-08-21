@@ -26,9 +26,9 @@ is always current.
 | 8 | Recipes and power features | **Done** |
 | 9 | Customisation and languages | **Done** |
 | 10 | Hardening | **Done** |
-| 11 | Optional extras | Not started — deliberately |
+| 11 | Optional extras | **Background removal built.** Video and audio, deliberately not |
 
-**Tools built: 38 of 41.** Every unbuilt tool on the homepage is marked "Not built
+**Tools built: 39 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
 nothing.
 
@@ -1004,6 +1004,88 @@ under the name it came with.
 
 ---
 
+## Phase 11 — removing a background, and a bug it uncovered
+
+### What was built, and what it will not do
+
+The background remover works by **colour**. You point at the
+background and every pixel close enough to that colour becomes
+see-through. It does not know what a person or a dog is.
+
+That is a deliberate choice, not a shortcut. The tools that genuinely
+understand a photograph are neural networks of tens of megabytes, and
+bundling one would break two promises this site makes: that a first
+visit is small, and that every borrowed thing is permissively licensed
+with its fingerprint published. Several of the best background-removal
+models are licensed for non-commercial use only, which is worse than
+large.
+
+So the honest scope is:
+
+| Kind of picture | How it does |
+|---|---|
+| Product on a white sweep, a logo, a signature on paper | Excellent |
+| A studio backdrop, slightly uneven | Good, with the tolerance raised |
+| Hair, fur, smoke, glass | Cuts straight through them |
+| A person against a busy street | Cannot, and says so |
+
+**It says which of those you have before you touch anything.** On
+loading a picture it looks at the ring of pixels round the edge and
+reports “This should work well”, “This will need some help”, or “This
+is not a picture this tool can do on its own”. A real photograph from
+the samples folder is correctly told it is the third.
+
+Beyond that it has: two ways of choosing pixels (“only the outside”,
+which keeps the hole in a letter O, and “anywhere”, which is right for
+a logo); tolerance, edge softness and edge trim; a click on the picture
+to add a background colour, as many as you like; a brush to erase or
+restore by hand; and a choice of a see-through background or a flat
+colour.
+
+It also reports what it did. If 99% of the picture was removed, it says
+that the subject matched the background rather than pretending success.
+
+### The bug this uncovered, which mattered more than the feature
+
+While wiring the Run button, the shared scaffolding fought back: the
+button already had a handler that ran every chosen file through the
+standard picture pipeline. Investigating that turned up a real fault in
+**six tools that were already shipped**.
+
+Those tools — blur, watermark, combine, icons, colour palette, polish
+— do their own work and hand the shared pipeline a job that does
+nothing. But the shared handler still ran. So on the blur tool:
+
+**Load a photograph, mark nothing, press Run, and you got a file called
+`photo-plain-hidden.jpg` sitting in the results tray with nothing
+hidden in it.**
+
+On a privacy tool that is not a cosmetic bug. Somebody could have sent
+out a file whose name says it was redacted, and it was the original.
+
+Fixed at the source rather than six times over: a tool can now say it
+takes the Run button itself, and the shared handler stands aside.
+Verified both ways — pressing Run with nothing marked now saves
+nothing and says “Mark something first”; marking a box and pressing
+Run still produces exactly one correctly blurred file.
+
+### How the new tool was proved
+
+- On a made-up product shot: the corner of the saved PNG is fully
+  see-through, the subject keeps its exact colour at full opacity, and
+  the file comes out at the original 600 — 450 rather than the size of
+  the preview.
+- “Only the outside” keeps an enclosed hole; “anywhere” clears it;
+  the ring around it survives both.
+- The brush clears the hole by hand without touching the ring.
+- Replacing the background with a colour puts that exact colour in the
+  corner.
+- A white disc on a white background is correctly reported as a
+  failure rather than silently returning an empty picture.
+- A real photograph is correctly judged as one this tool cannot do.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1176,6 +1258,15 @@ With the server dead, in the same browser:
     pixels in a desktop browser told to be that size. Nobody has used this on an
     actual phone, where the keyboard covers half the screen and the memory runs
     out sooner.
+
+31. **The background remover cuts through hair, fur and glass.** Colour cannot
+    tell a strand of hair from the wall behind it. Nothing here will fix that;
+    it needs a tool that understands what it is looking at.
+
+32. **Video and audio are still not built, and that is the recommendation.** The
+    brief made Phase 11 conditional on everything else being perfect. It is not:
+    nobody has driven this site with a screen reader or used it on a real phone.
+    Two more tools would be worth less than closing either of those.
 
 ---
 

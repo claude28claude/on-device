@@ -16,7 +16,8 @@ async function start() {
     toolLabel: "Combined",
     fileToken: "combined",
     onFilesChanged: () => preview(tool),
-    buildJob: async () => ({ op: "noop" })
+    buildJob: async () => ({ op: "noop" }),
+    ownRun: true
   });
 
   for (const btn of $("layout").querySelectorAll("button")) {

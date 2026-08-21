@@ -1467,3 +1467,30 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
 .arranger-row[data-hidden="true"] { opacity: 0.55; }
 .arranger-icon { display: inline-flex; flex: 0 0 auto; color: var(--fg-muted); }
 .arranger-name { flex: 1 1 10rem; min-width: 0; }
+
+/* Removing a background */
+.cutout-stage {
+  /* The chequerboard behind the picture is how everyone recognises
+     "this part is see-through". Drawn with gradients so there is no
+     image file to fetch. */
+  --sq: 12px;
+  display: inline-block; max-width: 100%;
+  border: var(--border-w) solid var(--border); border-radius: var(--r-2);
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(45deg, #d8d8d8 25%, transparent 25%, transparent 75%, #d8d8d8 75%),
+    linear-gradient(45deg, #d8d8d8 25%, transparent 25%, transparent 75%, #d8d8d8 75%);
+  background-size: calc(var(--sq) * 2) calc(var(--sq) * 2);
+  background-position: 0 0, var(--sq) var(--sq);
+  overflow: hidden;
+}
+.cutout-canvas { display: block; max-width: 100%; height: auto; touch-action: none; }
+.cutout-canvas[data-brush="off"] { cursor: crosshair; }
+.cutout-canvas[data-brush="erase"], .cutout-canvas[data-brush="restore"] { cursor: cell; }
+
+.sample-row { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-2); }
+.sample-dot {
+  width: 28px; height: 28px; padding: 0; cursor: pointer;
+  border: var(--border-w) solid var(--border-strong); border-radius: var(--r-1);
+}
+.sample-dot:hover { outline: 2px solid var(--focus); outline-offset: 1px; }

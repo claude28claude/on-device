@@ -25,7 +25,17 @@ export async function setupImageTool({
   buildJob,
   onFilesChanged = null,
   singleFile = false,
-  accept = "image/*,.heic,.heif"
+  accept = "image/*,.heic,.heif",
+  /* Some tools - the ones where you mark, draw or point at something
+     - do their own work rather than sending each file through the
+       standard picture pipeline. They set this, and take the Run
+       button entirely.
+
+     This is not a nicety. Without it, the shared handler ALSO ran,
+     quietly saving an untouched copy of the picture under a name
+     that claimed something had been done to it. On the blur tool
+     that meant a file called "-hidden" with nothing hidden in it. */
+  ownRun = false
 }) {
   await initPage({ pathPrefix: "../" });
 
@@ -170,7 +180,7 @@ export async function setupImageTool({
     if (added.length) useFiles(added);
   }, true);
 
-  if (runButton) {
+  if (runButton && !ownRun) {
     runButton.addEventListener("click", async () => {
       if (!chosen.length) return;
       queue.reset();

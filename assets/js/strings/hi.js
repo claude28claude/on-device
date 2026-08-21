@@ -439,8 +439,8 @@ export default {
   "tool.media-toolkit.keys": "mp4 mp3 काटना gif ऑडियो",
 
   "tool.background-remover.name": "पृष्ठभूमि हटाएँ",
-  "tool.background-remover.desc": "तस्वीर से विषय को अलग करें, ऑफ़लाइन।",
-  "tool.background-remover.keys": "पृष्ठभूमि पारदर्शी काटना",
+  "tool.background-remover.desc": "रंग के आधार पर विषय को अलग करें और पारदर्शी पृष्ठभूमि के साथ सहेजें।",
+  "tool.background-remover.keys": "पृष्ठभूमि पारदर्शी काटना png लोगो",
 
   /* ---- Recipes ------------------------------------------ */
   "recipes.title": "रेसिपी",

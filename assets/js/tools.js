@@ -72,7 +72,7 @@ export const TOOLS = [
 
   /* ---- Optional, last ----------------------------------- */
   { id: "media-toolkit",       cat: "files", phase: 11, built: false, icon: "film",       accepts: ["audio", "video"], optional: true },
-  { id: "background-remover",  cat: "image", phase: 11, built: false, icon: "eraser",     accepts: ["image"], optional: true }
+  { id: "background-remover",  cat: "image", phase: 11, built: true , icon: "eraser",     accepts: ["image", "heic"], optional: true }
 ];
 
 export const TOOLS_BY_ID = new Map(TOOLS.map((t) => [t.id, t]));
