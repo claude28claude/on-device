@@ -59,11 +59,14 @@ export const DEFAULTS = {
     filenamePattern: "{name}-{tool}.{ext}"
   },
 
+  /* Alt+Shift is used because no major browser claims it, so a fresh
+     install never fights the browser for a key. See shortcuts.js. */
   shortcuts: {
     palette: "Ctrl+K",
-    home: "Ctrl+Shift+H",
-    tray: "Ctrl+Shift+T",
-    clearAll: "Ctrl+Shift+Backspace"
+    home: "Alt+Shift+H",
+    recipes: "Alt+Shift+R",
+    tray: "Alt+Shift+T",
+    clearAll: "Alt+Shift+Backspace"
   },
 
   /* Per-tool remembered options, filled in as tools are built. */

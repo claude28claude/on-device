@@ -23,8 +23,8 @@ is always current.
 | 5 | Privacy specials: redaction, blur, fill and sign, file locking | **Done** |
 | 6 | Text, data, utilities, plus the remaining image tools | **11 of 12** — only the QR reader missing, deliberately |
 | 7 | Extraction: PDF text, and offline text recognition | **Done** |
-| 8 | Recipes and power features | Next |
-| 9 | Customisation and languages | Not started |
+| 8 | Recipes and power features | **Done** |
+| 9 | Customisation and languages | Next |
 | 10 | Hardening | Not started |
 | 11 | Optional extras | Not started |
 
@@ -648,6 +648,124 @@ rather than a problem with the visitor's file.
 
 ---
 
+## Phase 8 — Recipes, and keys you can change
+
+The brief called recipes the headline feature: a visitor saves a named chain of
+steps, drops 40 photos on it, and gets 40 finished files in one action. That is
+what this phase builds, plus the two smaller power features that go with it:
+rebindable keyboard shortcuts, and recipes that can be carried to another device.
+
+### What a recipe is
+
+A recipe is a name and a list of steps. You drop files in at the top; whatever
+comes out of one step goes into the next; whatever comes out of the last step
+lands in the results tray. Nothing asks you anything while it runs — that is the
+whole point, and it is also the constraint that decides which tools can be a step
+and which cannot.
+
+There are **23 steps**, covering pictures, PDFs, and anything at all:
+
+- **Pictures** — resize, change format, make smaller, turn or mirror, remove
+  hidden information, stamp text on.
+- **PDFs** — join, split, keep only some pages, turn every page, add page
+  numbers, stamp text on, wipe the document details, freeze form fields, two or
+  four pages per sheet, tidy up, turn pages into pictures, make a PDF from
+  pictures, pull the text out, put a password on, take a password off.
+- **Anything** — rename to a pattern, bundle into a zip.
+
+Three examples ship with it, added as ordinary editable recipes rather than
+untouchable presets: *Photos for email*, *Scans into one numbered PDF*, and
+*Send this PDF safely*.
+
+### Sixteen tools deliberately cannot be a step
+
+A recipe replays itself on files it has never seen, so anything needing a human
+judgement about a particular file cannot be replayed. Cropping, blurring,
+redaction, filling in a form, reading a scan, combining pictures into a layout,
+and every tool that reports something rather than producing a file are all
+excluded — and the Recipes page lists all sixteen **with the reason for each**,
+rather than quietly leaving them out and letting you hunt for them.
+
+### Two decisions worth stating plainly
+
+**Passwords are never saved.** A step that needs one asks every time the recipe
+runs. The password never reaches this device's storage and never reaches an
+exported recipe file — and this is enforced where a recipe is saved, not merely
+avoided by the interface. It was tested by saving a recipe with a password typed
+into it, then reading the raw storage and the exported file back: neither
+contains it. That means a recipe file you send to somebody cannot leak a
+password, ever.
+
+**A recipe is checked before it runs, not during.** The chain is followed on
+paper first: what kind of file each step would be handed, and whether any
+required text has been left empty. A recipe that would fail at step four is
+refused at step zero, with the reason, rather than doing three minutes of work
+first. If a step does fail anyway, the run stops there and says which file and
+why — nothing half-finished is added to the tray, and your originals are never
+touched.
+
+### Keyboard shortcuts you can change
+
+Settings now has a row for each action: press Change, press the keys you want,
+done. Two guards sit behind it:
+
+- **Reserved combinations are refused.** Ctrl+Shift+T reopens a closed tab and
+  Ctrl+Shift+R forces a reload; somebody who has just lost a tab will not thank
+  us for showing them a results tray instead. About twenty browser-owned
+  combinations are refused by name, with an explanation rather than a shrug.
+- **Clashes are refused.** Binding a combination another action already uses says
+  which action has it, rather than silently stealing it.
+
+The shipped defaults moved into the **Alt+Shift** space, which no major browser
+claims, so a fresh install never fights the browser. Ctrl+K keeps the command
+palette, because that is what everybody's fingers already expect it to be.
+
+Which key was pressed is read from its **position** on the keyboard rather than
+from the character it produced. On a Mac, Option and H together produce a special
+character, not “H” — reading the character would record a shortcut that could
+never be typed again.
+
+### What testing caught in Phase 8
+
+1. **The finish time was a clock reading, not a duration.** "Finished in
+   05:30:00 AM" — the shared helper turns a moment into a time of day, and it had
+   been handed a number of milliseconds. There is now a separate one that says
+   “2.5 seconds” or “3 minutes 15 seconds”, and a comment on each explaining why
+   they are not the same function.
+
+2. **The step picker ran off the side of its own dialog.** Long descriptions did
+   not wrap, so the list of steps scrolled sideways.
+
+3. **The default shortcuts were fighting the browser.** Ctrl+Shift+R and
+   Ctrl+Shift+T were chosen before checking what they already do. Both are now
+   refused outright, and the defaults moved to Alt+Shift.
+
+4. **Reading the character rather than the key position** would have broken every
+   Alt-based shortcut on a Mac. Found by reasoning about it rather than by
+   testing, because there is no Mac here to test on — which is exactly why it is
+   worth writing down.
+
+### How this was proved
+
+Every one of the 23 steps was run on real files.
+
+- Through the interface, end to end: the *Photos for email* example on three real
+  photographs. Three files in, three out, 374 KB down to 200 KB each, and the
+  location, camera and timestamps confirmed **gone** from the output — checked by
+  reading the finished file's own metadata back, not by trusting the tool.
+- The other steps run individually on the sample PDFs and photographs, each
+  producing a file of a sensible size and a name that shows what happened to it.
+- The password steps round-tripped: lock a PDF, confirm it really is encrypted,
+  unlock it with the right password — and confirm the **wrong** password is
+  refused with a readable message rather than producing a broken file.
+- Saved recipes survive a reload, appear in the command palette, and open
+  straight from it.
+- Rebinding was driven with real key presses: Ctrl+Alt+P bound to the palette,
+  then pressed, and the palette opened. Ctrl+Shift+T was refused as already
+  taken by the results tray.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -727,7 +845,7 @@ With the server dead, in the same browser:
     header, so it proves the site identifies HEIC and produces the right error —
     but it contains no real encoded image, so nothing here proves On Device can
     *decode* a real one. **A photo straight off an iPhone is still needed.** Until
-    then the honest claim is only "we ask your browser, and report what it says".
+    then the honest claim is only “we ask your browser, and report what it says”.
 
 11. **The licence for a bundled HEIC decoder is still unresolved.** The best-known
     browser decoder is LGPL, which breaks the permissive-licences-only promise.
@@ -751,7 +869,7 @@ With the server dead, in the same browser:
     but nobody has driven it with NVDA or VoiceOver. That is Phase 10.
 
 16. **PDF page-drawing pauses while the tab is in the background.** Anything that
-    turns a PDF page into a picture — page thumbnails, "PDF to images", the
+    turns a PDF page into a picture — page thumbnails, “PDF to images”, the
     rasterising half of redaction, and reading a scanned PDF — is drawn by the
     PDF library on the browser's painting clock. Browsers stop that clock for a
     tab you cannot see, so if you start one of those jobs and switch to another
@@ -762,6 +880,34 @@ With the server dead, in the same browser:
     recognising text in an ordinary image, zip, spreadsheets, QR codes, and every
     image tool — are unaffected and run happily in a background tab. Fixing this
     means moving page-drawing off the painting clock; it is on the Phase 10 list.
+
+17. **A recipe is a straight line, with no choices in it.** Steps run in order,
+    every file goes through every step, and there is no “if this one is a PDF do
+    that instead”. A mixed pile of PDFs and photographs needs two recipes rather
+    than one clever one. That is a deliberate limit for now — branching is easy
+    to add and very easy to make incomprehensible.
+
+18. **Steps cannot be dragged into a new order.** There are up and down buttons,
+    which work with the keyboard, but no dragging.
+
+19. **The check before a run reads file types, not file contents.** It knows a
+    scanned-in PDF is a PDF, so it cannot warn you in advance that “pull the text
+    out” will find nothing in it. That failure is caught when the step runs, and
+    explained then.
+
+20. **Recipes live on one device in one browser.** There is no account and no
+    syncing, so a recipe travels the only way anything travels here: as a file
+    you export and import. Importing never overwrites — a recipe with a name you
+    already have arrives as “(2)”.
+
+21. **A shortcut is remembered by key position, not by the letter on the key.**
+    On anything other than a QWERTY layout, the name written beside the shortcut
+    may not match your keycap. The key you pressed is always the key that works;
+    only the label can be wrong.
+
+22. **“Turn pages into pictures” inside a recipe inherits limitation 16** — it
+    pauses while the tab is in the background, like every other operation that
+    draws a PDF page.
 
 ---
 

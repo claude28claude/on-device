@@ -11,6 +11,7 @@ import { el, icon, dialogSupported, announce } from "./ui.js";
 import { t } from "./i18n.js";
 import * as store from "./store.js";
 import { matchScore } from "./search-terms.js";
+import { listNames } from "./recipes/names.js";
 
 let dlg = null;
 let input = null;
@@ -49,9 +50,25 @@ function buildIndex() {
     { id: "page-roadmap", name: t("nav.roadmap"), desc: "Which tools exist and which are still to come.", icon: "info", href: `${pathPrefix}roadmap.html`, keys: "roadmap progress status phases plan built coming soon what works" },
     { id: "page-help", name: t("nav.help"), desc: "Plain answers to the common questions.", icon: "info", href: `${pathPrefix}help.html`, keys: "help faq questions support guide keyboard shortcuts phone mobile" },
     { id: "page-credits", name: t("nav.credits"), desc: "Every bundled library and its licence.", icon: "package", href: `${pathPrefix}credits.html`, keys: "credits licences libraries open source attribution mit apache" },
-    { id: "page-privacy", name: t("nav.privacy"), desc: "We collect nothing. There is no we.", icon: "shield", href: `${pathPrefix}privacy.html`, keys: "privacy policy data collection cookies tracking analytics" }
+    { id: "page-privacy", name: t("nav.privacy"), desc: "We collect nothing. There is no we.", icon: "shield", href: `${pathPrefix}privacy.html`, keys: "privacy policy data collection cookies tracking analytics" },
+    { id: "page-recipes", name: t("nav.recipes"), desc: t("recipes.lede"), icon: "sparkle", href: `${pathPrefix}recipes.html`, keys: "recipes recipe chain batch steps automate repeat pipeline bulk many files at once workflow" }
   ];
   for (const p of pages) entries.push({ ...p, group: "pages", built: true });
+
+  /* Your own saved recipes, so a recipe is as findable as a tool. */
+  for (const recipe of listNames()) {
+    entries.push({
+      id: `recipe-${recipe.id}`,
+      group: "pages",
+      built: true,
+      icon: "sparkle",
+      name: recipe.name,
+      desc: recipe.note ||
+        `Your recipe — ${recipe.stepCount} step${recipe.stepCount === 1 ? "" : "s"}.`,
+      keys: "recipe saved chain steps run batch",
+      href: `${pathPrefix}recipes.html?open=${encodeURIComponent(recipe.id)}`
+    });
+  }
 
   return entries;
 }
@@ -241,18 +258,14 @@ function mount() {
 }
 
 /* ---- The shortcut --------------------------------------- */
+/* The configurable combination lives in shortcuts.js, which owns
+   every key the visitor can change. This handles only "/", which is
+   fixed, because a single key with no modifier is not something
+   worth letting people rebind onto something else. */
 export function installShortcut() {
   window.addEventListener("keydown", (e) => {
-    const combo = store.get("shortcuts.palette", "Ctrl+K");
-    const wantsCtrl = combo.includes("Ctrl");
-    const key = combo.split("+").pop().toLowerCase();
     const pressedModifier = e.ctrlKey || e.metaKey;
-    if (wantsCtrl && pressedModifier && e.key.toLowerCase() === key) {
-      e.preventDefault();
-      if (isOpen()) close();
-      else open();
-    }
-    /* "/" opens it too, unless the visitor is typing in a field. */
+    /* "/" opens it, unless the visitor is typing in a field. */
     if (e.key === "/" && !pressedModifier) {
       const tag = (document.activeElement && document.activeElement.tagName) || "";
       const editing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" ||

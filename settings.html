@@ -36,6 +36,7 @@
     </a>
     <nav class="header-nav" aria-label="Main">
       <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="recipes.html" data-i18n="nav.recipes">Recipes</a>
       <a href="trust.html" data-i18n="nav.trust">How this works</a>
       <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
       <a href="help.html" data-i18n="nav.help">Help</a>
@@ -421,10 +422,17 @@
         <section class="setting-group" id="keyboard">
           <h2 data-i18n="settings.group.shortcuts">Keyboard</h2>
           <p>Everything on this site can be done with the keyboard alone.</p>
+          <h3 class="h-lg">Yours to change</h3>
+          <p class="muted">Press Change, then press the keys you want. On a Mac, Cmd counts as Ctrl.</p>
+          <div id="shortcut-rows" class="mb-4"></div>
+          <div class="btn-row mb-5">
+            <button class="btn" type="button" id="reset-shortcuts">Put the shortcuts back to normal</button>
+          </div>
+
+          <h3 class="h-lg">Fixed, because the browser or the screen reader needs them</h3>
           <table class="mb-4">
             <thead><tr><th scope="col">Shortcut</th><th scope="col">What it does</th></tr></thead>
             <tbody>
-              <tr><td><kbd>Ctrl</kbd> <kbd>K</kbd> <span class="muted">or</span> <kbd>Cmd</kbd> <kbd>K</kbd></td><td>Open the command palette</td></tr>
               <tr><td><kbd>/</kbd></td><td>Open the command palette (when not typing in a box)</td></tr>
               <tr><td><kbd>Tab</kbd></td><td>Move to the next control</td></tr>
               <tr><td><kbd>Shift</kbd> <kbd>Tab</kbd></td><td>Move to the previous control</td></tr>
@@ -433,9 +441,6 @@
               <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Move through palette results</td></tr>
             </tbody>
           </table>
-          <div class="note note-accent">
-            <p class="mb-0">Changing these to your own keys arrives with the power-features phase.</p>
-          </div>
         </section>
 
         <!-- ================= Language ================= -->

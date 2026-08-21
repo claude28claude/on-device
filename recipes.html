@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; font-src 'self'; media-src 'self' blob:; worker-src 'self' blob:; child-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; manifest-src 'self'">
+
+<title>Recipes &mdash; On Device</title>
+<meta name="description" content="Save a chain of steps once, then run it on a whole folder of files in one action. Entirely in your browser.">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+
+<script src="assets/js/netguard.js"></script>
+<script src="assets/js/preboot.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main" data-i18n="nav.skip">Skip to main content</a>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="wordmark" href="index.html">
+      <svg class="mark" width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" focusable="false">
+        <rect x="0" y="0" width="22" height="22" rx="5"></rect>
+        <circle cx="11" cy="11" r="4"></circle>
+      </svg>
+      <span>On Device</span>
+    </a>
+
+    <nav class="header-nav" aria-label="Main">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="recipes.html" data-i18n="nav.recipes">Recipes</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="roadmap.html" data-i18n="nav.roadmap">What is built</a>
+      <a href="help.html" data-i18n="nav.help">Help</a>
+      <a href="settings.html" data-i18n="nav.settings">Settings</a>
+      <button class="btn btn-quiet btn-sm" type="button" id="open-palette"
+              data-i18n-attr="aria-label:palette.open, title:palette.open">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14M20 20l-4-4"/></svg>
+        <kbd>Ctrl K</kbd>
+      </button>
+      <button class="btn btn-quiet btn-sm" type="button" id="clear-everything"
+              data-i18n-attr="title:action.clearEverything">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        <span data-i18n="action.clearEverything">Clear everything now</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<div class="status-strip" id="status-strip" hidden><div class="wrap"></div></div>
+
+<main id="main">
+  <div class="wrap">
+
+    <div class="page-head">
+      <h1 data-i18n="recipes.title">Recipes</h1>
+      <p class="lede" data-i18n="recipes.lede">Save a chain of steps once. Then drop a whole folder onto it and get every finished file back in one go, without clicking through a tool forty times.</p>
+    </div>
+
+    <div id="storage-warning"></div>
+
+    <div class="tool-layout">
+      <div class="tool-main">
+
+        <section class="tool-section" aria-labelledby="saved-heading">
+          <div class="tool-section-head">
+            <h2 id="saved-heading" data-i18n="recipes.saved">Your recipes</h2>
+            <div class="btn-row">
+              <button class="btn btn-sm" type="button" id="new-recipe">
+                <span data-i18n="recipes.new">New recipe</span>
+              </button>
+              <button class="btn btn-sm" type="button" id="import-recipes" data-i18n="recipes.import">Import</button>
+              <button class="btn btn-sm" type="button" id="export-recipes" data-i18n="recipes.exportAll">Export all</button>
+            </div>
+          </div>
+          <div id="recipe-list"></div>
+        </section>
+
+        <section class="tool-section" aria-labelledby="editor-heading" id="editor-section" hidden>
+          <div class="tool-section-head">
+            <h2 id="editor-heading" data-i18n="recipes.editor">The recipe</h2>
+            <div class="btn-row">
+              <button class="btn btn-sm btn-primary" type="button" id="save-recipe" data-i18n="recipes.save">Save</button>
+              <button class="btn btn-sm" type="button" id="close-editor" data-i18n="recipes.close">Close</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="recipe-name" data-i18n="recipes.name">Name</label>
+            <input type="text" id="recipe-name" maxlength="120" autocomplete="off" placeholder="Photos for email">
+          </div>
+
+          <div class="field">
+            <label for="recipe-note" data-i18n="recipes.note">Note to yourself</label>
+            <input type="text" id="recipe-note" maxlength="400" autocomplete="off" placeholder="optional">
+          </div>
+
+          <div id="steps-host"></div>
+
+          <div class="btn-row mt-0">
+            <button class="btn" type="button" id="add-step">
+              <span data-i18n="recipes.addStep">Add a step</span>
+            </button>
+          </div>
+
+          <div id="check-host"></div>
+        </section>
+
+        <section class="tool-section" aria-labelledby="files-heading">
+          <div class="tool-section-head">
+            <h2 id="files-heading" data-i18n="recipes.files">Files to run it on</h2>
+          </div>
+          <div id="drop-host"></div>
+          <div id="files-host"></div>
+        </section>
+
+        <div id="run-host"></div>
+      </div>
+
+      <aside class="tool-options" aria-label="Run">
+        <h2 data-i18n="recipes.run">Run</h2>
+
+        <div id="run-summary"></div>
+
+        <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" disabled
+                data-i18n="recipes.runNow">Run the recipe</button>
+        <button class="btn btn-block" type="button" id="stop-button" hidden data-i18n="recipes.stop">Stop</button>
+
+        <p class="field-hint" data-i18n="recipes.trayHint">Finished files land in the results tray at the bottom of the screen.</p>
+
+        <div class="note">
+          <strong class="note-title" data-i18n="recipes.passwordNote.title">Passwords are never saved</strong>
+          <p class="mb-0" data-i18n="recipes.passwordNote.body">A step that needs a password asks for it each time you run the recipe. Nothing about a password is written to this device or into an exported recipe file, so a recipe you send to somebody cannot carry one.</p>
+        </div>
+      </aside>
+    </div>
+
+    <section class="tool-section" aria-labelledby="cannot-heading">
+      <div class="tool-section-head">
+        <h2 id="cannot-heading" data-i18n="recipes.cannot">Tools that cannot be a step, and why</h2>
+      </div>
+      <p class="muted" data-i18n="recipes.cannot.lede">A recipe replays itself on files it has never seen. Anything that needs you to look at a particular file and make a judgement cannot be replayed, so these stay tools you drive yourself.</p>
+      <div id="cannot-host"></div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <span>On Device &mdash; <span data-i18n="app.tagline">Nothing leaves this page.</span></span>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="index.html" data-i18n="nav.tools">Tools</a>
+      <a href="trust.html" data-i18n="nav.trust">How this works</a>
+      <a href="privacy.html" data-i18n="nav.privacy">Privacy</a>
+      <a href="credits.html" data-i18n="nav.credits">Credits</a>
+    </nav>
+    <span class="footer-note">No accounts. No cookies. No analytics. No server.</span>
+  </div>
+</footer>
+
+<script type="module" src="assets/js/page-recipes.js"></script>
+</body>
+</html>

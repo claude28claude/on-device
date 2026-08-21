@@ -144,6 +144,12 @@ export async function restore() {
 }
 
 /* ---- The tray itself ------------------------------------ */
+/* Whether the tray is currently showing, so a keyboard shortcut can
+   toggle it rather than only ever opening it. */
+export function isTrayOpen() {
+  return openState;
+}
+
 export function openTray(open = true) {
   openState = open;
   if (!trayNode) return;

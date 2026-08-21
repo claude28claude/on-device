@@ -289,6 +289,21 @@ export function formatTime(ms) {
   return d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
+/* How long something took, as somebody would say it out loud.
+   Deliberately separate from formatTime above, which turns a moment
+   into a clock reading - passing a duration to that gives you a
+   time of day, which is nonsense dressed up as an answer. */
+export function formatDuration(ms) {
+  const total = Math.max(0, Math.round(ms));
+  if (total < 1000) return `${total} ms`;
+  const seconds = total / 1000;
+  if (seconds < 10) return `${seconds.toFixed(1)} seconds`;
+  if (seconds < 60) return `${Math.round(seconds)} seconds`;
+  const minutes = Math.floor(seconds / 60);
+  const rest = Math.round(seconds % 60);
+  return `${minutes} minute${minutes === 1 ? "" : "s"} ${rest} second${rest === 1 ? "" : "s"}`;
+}
+
 /* Escape a string for safe display. We never use innerHTML with
    anything that came from a file or from the visitor, but this is
    here for the rare places a string is put into an attribute. */

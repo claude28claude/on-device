@@ -1380,3 +1380,50 @@ dialog.palette::backdrop { background: rgba(0, 0, 0, 0.42); }
 .palette-hex { display: block; padding: var(--s-2) var(--s-3) 0; font-weight: var(--fw-semi); }
 .palette-swatch .field-hint { padding: 0 var(--s-3) var(--s-1); margin: 0; }
 .palette-swatch .field-hint:last-child { padding-bottom: var(--s-3); }
+
+/* Recipes */
+.recipe-list { display: grid; gap: var(--s-3); }
+.recipe-card {
+  display: flex; flex-wrap: wrap; gap: var(--s-3); align-items: flex-start;
+  border: var(--border-w) solid var(--border); border-radius: var(--r-3);
+  background: var(--bg-raised); padding: var(--s-4);
+}
+.recipe-card-main { flex: 1 1 18rem; min-width: 0; }
+.recipe-card-name { margin: 0 0 var(--s-1); font-size: 1.05rem; }
+.recipe-card-chain { margin: 0 0 var(--s-1); color: var(--fg-muted); overflow-wrap: anywhere; }
+.recipe-card-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+
+.recipe-steps { list-style: none; counter-reset: step; margin: 0 0 var(--s-4); padding: 0; display: grid; gap: var(--s-3); }
+.recipe-step {
+  counter-increment: step;
+  border: var(--border-w) solid var(--border); border-radius: var(--r-3);
+  background: var(--bg-raised); padding: var(--s-4);
+}
+.recipe-step-head { display: flex; gap: var(--s-3); align-items: flex-start; margin-bottom: var(--s-3); }
+.recipe-step-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; flex: 0 0 auto;
+  border-radius: var(--r-2); background: var(--accent-soft); color: var(--accent);
+}
+.recipe-step-title { margin: 0; font-size: 1rem; }
+.recipe-step-title::before { content: counter(step) ". "; color: var(--fg-muted); }
+.recipe-step-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: var(--s-3); }
+.recipe-step-options .field { margin: 0; }
+
+.recipe-log { margin: var(--s-3) 0 0; padding-left: var(--s-5); color: var(--fg-muted); }
+
+.step-picker { display: grid; gap: var(--s-2); margin-bottom: var(--s-4); }
+.step-pick {
+  display: flex; gap: var(--s-3); align-items: flex-start; text-align: left;
+  width: 100%; max-width: 100%; white-space: normal;
+}
+.step-pick > svg { flex: 0 0 auto; }
+.step-pick-body { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.step-pick-body .field-hint { margin: 0; white-space: normal; }
+
+.cannot-list { display: grid; gap: var(--s-2); padding-left: var(--s-5); color: var(--fg-muted); }
+.cannot-list strong { color: var(--fg); }
+
+/* Rebindable shortcuts */
+.shortcut-keys { display: inline-flex; gap: var(--s-1); align-items: center; margin-right: var(--s-2); }
+.shortcut-keys kbd { white-space: nowrap; }

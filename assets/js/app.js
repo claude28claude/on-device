@@ -13,6 +13,7 @@ import * as workspace from "./workspace.js";
 import * as tray from "./tray.js";
 import * as dropzone from "./dropzone.js";
 import * as palette from "./palette.js";
+import * as shortcuts from "./shortcuts.js";
 import { getTool } from "./tools.js";
 import { el, icon, toast, announce, openDialog, confirmDestructive } from "./ui.js";
 import { t } from "./i18n.js";
@@ -208,6 +209,17 @@ export async function initPage({ pathPrefix = "", withDropPanel = null } = {}) {
   watchConnection();
   watchSystemTheme();
   palette.installShortcut();
+  shortcuts.install(
+    {
+      palette: () => (palette.isOpen() ? palette.close() : palette.open()),
+      tray: () => tray.openTray(!tray.isTrayOpen()),
+      clearAll: () => {
+        const button = document.getElementById("clear-everything");
+        if (button) button.click();
+      }
+    },
+    { pathPrefix: prefix }
+  );
   workspace.installAutoClear();
 
   window.addEventListener("ondevice:show-not-built", (e) => showNotBuilt(e.detail.id));

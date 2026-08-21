@@ -33,6 +33,7 @@ export default {
   "nav.settings": "सेटिंग्स",
   "nav.help": "सहायता",
   "nav.roadmap": "क्या बन चुका है",
+  "nav.recipes": "रेसिपी",
   "nav.privacy": "निजता",
   "nav.credits": "श्रेय",
   "nav.menu": "मेन्यू",
@@ -437,6 +438,32 @@ export default {
   "tool.background-remover.name": "पृष्ठभूमि हटाएँ",
   "tool.background-remover.desc": "तस्वीर से विषय को अलग करें, ऑफ़लाइन।",
   "tool.background-remover.keys": "पृष्ठभूमि पारदर्शी काटना",
+
+  /* ---- Recipes ------------------------------------------ */
+  "recipes.title": "रेसिपी",
+  "recipes.lede":
+    "चरणों की एक शृंखला एक बार सहेजें। फिर पूरा फ़ोल्डर उस पर डालें और हर तैयार फ़ाइल एक ही बार में वापस पाएँ।",
+  "recipes.saved": "आपकी रेसिपी",
+  "recipes.new": "नई रेसिपी",
+  "recipes.import": "आयात करें",
+  "recipes.exportAll": "सब निर्यात करें",
+  "recipes.editor": "रेसिपी",
+  "recipes.save": "सहेजें",
+  "recipes.close": "बंद करें",
+  "recipes.name": "नाम",
+  "recipes.note": "अपने लिए टिप्पणी",
+  "recipes.addStep": "एक चरण जोड़ें",
+  "recipes.files": "जिन फ़ाइलों पर चलाना है",
+  "recipes.run": "चलाएँ",
+  "recipes.runNow": "रेसिपी चलाएँ",
+  "recipes.stop": "रोकें",
+  "recipes.trayHint": "तैयार फ़ाइलें स्क्रीन के नीचे परिणाम ट्रे में आती हैं।",
+  "recipes.passwordNote.title": "पासवर्ड कभी नहीं सहेजे जाते",
+  "recipes.passwordNote.body":
+    "जिस चरण को पासवर्ड चाहिए, वह हर बार चलाने पर पूछता है। पासवर्ड न इस डिवाइस पर लिखा जाता है और न निर्यात की गई रेसिपी फ़ाइल में, इसलिए किसी को भेजी गई रेसिपी उसे साथ नहीं ले जा सकती।",
+  "recipes.cannot": "जो उपकरण चरण नहीं बन सकते, और क्यों",
+  "recipes.cannot.lede":
+    "रेसिपी उन फ़ाइलों पर दोहराई जाती है जिन्हें उसने पहले कभी नहीं देखा। जिस काम में किसी ख़ास फ़ाइल को देखकर निर्णय लेना पड़ता है, वह दोहराया नहीं जा सकता।",
 
   "unit.bytes": "{n} B",
   "unit.kb": "{n} KB",

@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-e17dadf95a";
+const VERSION = "0.1.0-c6aeaa57cc";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -53,6 +53,7 @@ const PRECACHE = [
   "./assets/js/marker.js",
   "./assets/js/netguard.js",
   "./assets/js/page-home.js",
+  "./assets/js/page-recipes.js",
   "./assets/js/page-roadmap.js",
   "./assets/js/page-settings.js",
   "./assets/js/page-static.js",
@@ -71,7 +72,12 @@ const PRECACHE = [
   "./assets/js/preboot.js",
   "./assets/js/qr.js",
   "./assets/js/queue.js",
+  "./assets/js/recipes/names.js",
+  "./assets/js/recipes/run.js",
+  "./assets/js/recipes/steps.js",
+  "./assets/js/recipes/store.js",
   "./assets/js/search-terms.js",
+  "./assets/js/shortcuts.js",
   "./assets/js/sniff.js",
   "./assets/js/store.js",
   "./assets/js/strings/en.js",
@@ -125,6 +131,7 @@ const PRECACHE = [
   "./index.html",
   "./manifest.webmanifest",
   "./privacy.html",
+  "./recipes.html",
   "./roadmap.html",
   "./settings.html",
   "./tools/checksum.html",

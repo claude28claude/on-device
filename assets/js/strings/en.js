@@ -31,6 +31,7 @@ export default {
   "nav.settings": "Settings",
   "nav.help": "Help",
   "nav.roadmap": "What is built",
+  "nav.recipes": "Recipes",
   "nav.privacy": "Privacy",
   "nav.credits": "Credits",
   "nav.menu": "Menu",
@@ -450,6 +451,32 @@ export default {
   "tool.background-remover.name": "Remove a background",
   "tool.background-remover.desc": "Cut the subject out of a photo, offline.",
   "tool.background-remover.keys": "cut out transparent subject remove background png",
+
+  /* ---- Recipes ------------------------------------------ */
+  "recipes.title": "Recipes",
+  "recipes.lede":
+    "Save a chain of steps once. Then drop a whole folder onto it and get every finished file back in one go, without clicking through a tool forty times.",
+  "recipes.saved": "Your recipes",
+  "recipes.new": "New recipe",
+  "recipes.import": "Import",
+  "recipes.exportAll": "Export all",
+  "recipes.editor": "The recipe",
+  "recipes.save": "Save",
+  "recipes.close": "Close",
+  "recipes.name": "Name",
+  "recipes.note": "Note to yourself",
+  "recipes.addStep": "Add a step",
+  "recipes.files": "Files to run it on",
+  "recipes.run": "Run",
+  "recipes.runNow": "Run the recipe",
+  "recipes.stop": "Stop",
+  "recipes.trayHint": "Finished files land in the results tray at the bottom of the screen.",
+  "recipes.passwordNote.title": "Passwords are never saved",
+  "recipes.passwordNote.body":
+    "A step that needs a password asks for it each time you run the recipe. Nothing about a password is written to this device or into an exported recipe file, so a recipe you send to somebody cannot carry one.",
+  "recipes.cannot": "Tools that cannot be a step, and why",
+  "recipes.cannot.lede":
+    "A recipe replays itself on files it has never seen. Anything that needs you to look at a particular file and make a judgement cannot be replayed, so these stay tools you drive yourself.",
 
   /* ---- Units and formats -------------------------------- */
   "unit.bytes": "{n} B",

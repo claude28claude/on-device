@@ -7,6 +7,7 @@ import * as i18n from "./i18n.js";
 import { t } from "./i18n.js";
 import { el, icon, toast, announce, confirmDestructive, formatBytes } from "./ui.js";
 import { accentSet, contrastRatio, parseColour } from "./colour.js";
+import * as shortcuts from "./shortcuts.js";
 
 const root = document.documentElement;
 
@@ -431,6 +432,115 @@ function warnIfNoStorage() {
   );
 }
 
+/* ---- Keyboard shortcuts --------------------------------- */
+/* Recording works by listening for one key press and writing down
+   what was held at the time. While that is happening the live
+   shortcut handler stands aside, or recording Ctrl+Shift+T would
+   also open the results tray. */
+function wireShortcuts() {
+  const host = document.getElementById("shortcut-rows");
+  if (!host) return;
+
+  const render = () => {
+    host.textContent = "";
+    for (const action of shortcuts.ACTIONS) {
+      const combo = shortcuts.current(action.id);
+      const keys = el("span", { class: "shortcut-keys" });
+      for (const key of shortcuts.keysOf(combo)) keys.append(el("kbd", { text: key }));
+      if (!shortcuts.keysOf(combo).length) {
+        keys.append(el("span", { class: "muted", text: "none" }));
+      }
+
+      const change = el("button", { class: "btn btn-sm", type: "button" }, "Change");
+      const clear = el("button", { class: "btn btn-sm btn-quiet", type: "button" }, "Remove");
+
+      const row = el("div", { class: "setting-row" }, [
+        el("div", { class: "setting-text" }, [
+          el("strong", { text: action.label }),
+          el("span", { class: "muted", text: `Normally ${action.fallback.split("+").join(" ")}` })
+        ]),
+        el("div", { class: "setting-control" }, [keys, change, clear])
+      ]);
+
+      change.addEventListener("click", () => {
+        change.textContent = "Press the keys…";
+        change.disabled = true;
+        clear.disabled = true;
+        shortcuts.setCapturing(true);
+        announce("Press the key combination you want. Press Escape to leave it as it is.");
+
+        const finish = () => {
+          window.removeEventListener("keydown", onKey, true);
+          shortcuts.setCapturing(false);
+          render();
+        };
+
+        const onKey = (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+
+          if (event.key === "Escape") {
+            finish();
+            return;
+          }
+
+          const combo2 = shortcuts.comboFromEvent(event);
+          /* Only a modifier was pressed so far - keep waiting. */
+          if (!combo2) return;
+
+          if (shortcuts.isReserved(combo2)) {
+            toast(
+              `${combo2.split("+").join(" ")} belongs to the browser, so taking it over ` +
+              `would break something you rely on. Choose another combination.`,
+              { kind: "warn", timeout: 9000 }
+            );
+            finish();
+            return;
+          }
+
+          const clash = shortcuts.clashesWith(combo2, action.id);
+          if (clash) {
+            toast(
+              `${combo2.split("+").join(" ")} is already “${clash.label}”. ` +
+              `Change that one first, or pick another combination.`,
+              { kind: "warn", timeout: 9000 }
+            );
+            finish();
+            return;
+          }
+
+          shortcuts.setCombo(action.id, combo2);
+          toast(`“${action.label}” is now ${combo2.split("+").join(" ")}.`, { kind: "ok" });
+          announce(`${action.label} set to ${combo2.split("+").join(" ")}.`);
+          finish();
+        };
+
+        window.addEventListener("keydown", onKey, true);
+      });
+
+      clear.addEventListener("click", () => {
+        shortcuts.setCombo(action.id, "");
+        toast(`“${action.label}” now has no shortcut.`, { kind: "ok" });
+        render();
+      });
+
+      host.append(row);
+    }
+  };
+
+  render();
+
+  const reset = document.getElementById("reset-shortcuts");
+  if (reset) {
+    reset.addEventListener("click", () => {
+      shortcuts.resetAll();
+      render();
+      toast("The shortcuts are back to the ones On Device ships with.", { kind: "ok" });
+      announce("Shortcuts reset.");
+    });
+  }
+}
+
 /* ---- Start ---------------------------------------------- */
 async function start() {
   await initPage({ pathPrefix: "" });
@@ -438,6 +548,7 @@ async function start() {
   wireAppearance();
   wireLayout();
   wireBehaviour();
+  wireShortcuts();
   await wireLanguage();
   wireData();
   await reportStorage();
