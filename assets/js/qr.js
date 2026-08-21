@@ -77,15 +77,33 @@ const BLOCKS = {
   H: [[26,17,1,9,0,0],[44,28,1,16,0,0],[70,22,2,13,0,0],[100,16,4,9,0,0],[134,22,2,11,2,12],[172,28,4,15,0,0],[196,26,4,13,1,14],[242,26,4,14,2,15],[292,24,4,12,4,13],[346,28,6,15,2,16],[404,24,3,12,8,13],[466,28,7,14,4,15],[532,22,12,11,4,12],[581,24,11,12,5,13],[655,24,11,12,7,13],[733,30,3,15,13,16],[815,28,2,14,17,15],[901,28,2,14,19,15],[991,26,9,13,16,14],[1085,28,15,15,10,16],[1156,30,19,16,6,17],[1258,24,34,13,0,0],[1364,30,16,15,14,16],[1474,30,30,16,2,17],[1588,30,22,15,13,16],[1706,30,33,16,4,17],[1828,30,12,15,28,16],[1921,30,11,15,31,16],[2051,30,19,15,26,16],[2185,30,23,15,25,16],[2323,30,23,15,28,16],[2465,30,19,15,35,16],[2611,30,11,15,46,16],[2761,30,59,16,1,17],[2876,30,22,15,41,16],[3034,30,2,15,64,16],[3196,30,24,15,46,16],[3362,30,42,15,32,16],[3532,30,10,15,67,16],[3706,30,20,15,61,16]]
 };
 
-/* Where the alignment squares go, per version. */
+/* Where the alignment squares go, per version: ALIGNMENT[version - 1]
+   is the list of centre coordinates, and a square is drawn at every
+   crossing of two of them except where it would sit on a finder.
+
+   This table was wrong in two ways until Phase 12. It had an extra
+   empty row at the front, so every version from 2 upwards was given
+   the previous version's squares - and version 2 was given none at
+   all. Version 31's row was missing outright. The result still looked
+   like a QR code and our own reader still understood it; no real
+   scanner could. Every row below has been checked against a reference
+   encoder. */
 const ALIGNMENT = [
-  [], [], [6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],
-  [6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],
-  [6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],
-  [6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],
-  [6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,34,60,86,112,138],
-  [6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],
-  [6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]
+  [],                        [6, 18],                   [6, 22],
+  [6, 26],                   [6, 30],                   [6, 34],
+  [6, 22, 38],               [6, 24, 42],               [6, 26, 46],
+  [6, 28, 50],               [6, 30, 54],               [6, 32, 58],
+  [6, 34, 62],               [6, 26, 46, 66],           [6, 26, 48, 70],
+  [6, 26, 50, 74],           [6, 30, 54, 78],           [6, 30, 56, 82],
+  [6, 30, 58, 86],           [6, 34, 62, 90],           [6, 28, 50, 72, 94],
+  [6, 26, 50, 74, 98],       [6, 30, 54, 78, 102],      [6, 28, 54, 80, 106],
+  [6, 32, 58, 84, 110],      [6, 30, 58, 86, 114],      [6, 34, 62, 90, 118],
+  [6, 26, 50, 74, 98, 122],  [6, 30, 54, 78, 102, 126], [6, 26, 52, 78, 104, 130],
+  [6, 30, 56, 82, 108, 134], [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142],
+  [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150],
+  [6, 24, 50, 76, 102, 128, 154], [6, 28, 54, 80, 106, 132, 158],
+  [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166],
+  [6, 30, 58, 86, 114, 142, 170]
 ];
 
 /* The BCH generator polynomials used to protect the format and version
@@ -313,18 +331,36 @@ function writeFormat(modules, size, level, maskIndex) {
   }
   const bits = ((data << 10) | value) ^ FORMAT_MASK;
 
+  /* Where each of the 15 bits goes. Getting this wrong is invisible:
+     the code still looks like a QR code, and our own reader still
+     understood it, because it made the same mistake in reverse. Only a
+     real scanner notices - it reads the format, gets the wrong mask,
+     unmasks with it, and the error correction then fails.
+
+     The positions below were checked against a reference encoder, one
+     bit at a time. See PROGRESS.md, Phase 12. */
   for (let i = 0; i < 15; i++) {
     const bit = (bits >> i) & 1;
-    /* Around the top-left finder. */
-    if (i < 6) modules[8][i] = bit;
-    else if (i < 8) modules[8][i + 1] = bit;
-    else if (i === 8) modules[7][8] = bit;
-    else modules[14 - i][8] = bit;
 
-    /* The second copy. */
-    if (i < 8) modules[size - 1 - i][8] = bit;
-    else modules[8][size - 15 + i] = bit;
+    /* Copy one, wrapped round the top-left finder: bits 0 to 5 run
+       down column 8, then across row 8 to the left. */
+    if (i < 6) modules[i][8] = bit;
+    else if (i === 6) modules[7][8] = bit;
+    else if (i === 7) modules[8][8] = bit;
+    else if (i === 8) modules[8][7] = bit;
+    else modules[8][14 - i] = bit;
+
+    /* Copy two: bits 0 to 7 run leftwards along row 8 from the right
+       edge, then 8 to 14 run down column 8 to the bottom edge. Note
+       this is the opposite way round from copy one. */
+    if (i < 8) modules[8][size - 1 - i] = bit;
+    else modules[size - 15 + i][8] = bit;
   }
+
+  /* The "dark module" - one square that is always black, just above
+     the bottom-left copy of the format. It is not part of the format
+     itself, and the old code was overwriting it with a format bit. */
+  modules[size - 8][8] = 1;
 }
 
 /* How ugly is this masking? Lower is better. */

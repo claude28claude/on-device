@@ -14,7 +14,7 @@
    ============================================================ */
 
 /* --- BUILD:VERSION --- */
-const VERSION = "0.1.0-77b2cf64bf";
+const VERSION = "0.1.0-689a7f2bf2";
 /* --- END BUILD:VERSION --- */
 
 const CACHE = `ondevice-${VERSION}`;
@@ -22,6 +22,7 @@ const CACHE = `ondevice-${VERSION}`;
 /* --- BUILD:PRECACHE --- */
 const PRECACHE = [
   "./",
+  "./.nojekyll",
   "./assets/css/base.css",
   "./assets/css/components.css",
   "./assets/css/tokens.css",

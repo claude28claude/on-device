@@ -27,6 +27,7 @@ is always current.
 | 9 | Customisation and languages | **Done** |
 | 10 | Hardening | **Done** |
 | 11 | Optional extras | **Background removal built.** Video and audio, deliberately not |
+| 12 | The QR generator, finally checked | **Done** — three real faults found and fixed |
 
 **Tools built: 39 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1086,6 +1087,100 @@ Run still produces exactly one correctly blurred file.
 
 ---
 
+## Phase 12 — the QR codes did not work, and now do
+
+This one is uncomfortable, so it goes near the top of what to read.
+
+### What was wrong
+
+The QR generator was written here from the specification rather than
+borrowed. An earlier session tried to check it with a decoding library,
+the library read nothing, and the question was left open: was the
+generator wrong, or the reader? The note said a phone camera should be
+pointed at one, and if it failed, the generator should be pulled.
+
+It was the generator. **Every QR code this site produced was
+unreadable by a real scanner.** Three separate faults:
+
+1. **The format information had its rows and columns swapped.** The
+   fifteen bits that tell a scanner which mask and which
+   error-correction level were used were written transposed.
+
+2. **The second copy of the format information was written in the
+   opposite order to the first**, and one of its bits was written over
+   the “dark module” — a square the standard requires always to be
+   black.
+
+3. **The table of alignment-square positions had a spurious blank row
+   at the front.** So every version from 2 upwards used the positions
+   belonging to the version below it, and version 2 got none at all.
+   Version 31's row was missing from the table entirely.
+
+Any one of these is fatal. A scanner finds the code, reads the format,
+gets the wrong mask, unmasks the data with it, and the error correction
+then fails on nonsense.
+
+### Why nothing caught it
+
+Because the only thing that had ever read these codes was our own
+code, which made the same mistakes in reverse and therefore agreed
+with itself perfectly. The earlier session's “self-decode” passed for
+exactly that reason. It is the oldest trap in testing: a program
+compared against itself always agrees.
+
+### How it was found and fixed
+
+By decoding with **ZXing** — the library Android's camera and most
+scanning apps are built on — and separately by comparing our grid,
+one square at a time, against a second independent encoder.
+
+That turned a vague “it might be broken” into an exact answer within
+minutes: ZXing reported a checksum failure rather than “no code
+found”, which said the shape was right and the contents were wrong,
+which pointed straight at the format bits and the masking.
+
+Each fault was then fixed and re-checked in turn, and the fix for one
+exposed the next:
+
+| After fixing | Codes ZXing could read |
+|---|---|
+| nothing | 0 of 13 |
+| the transposed format bits | version 1 only |
+| the alignment table | 10 of 13 |
+| the second format copy | all of them |
+
+The last three “failures” turned out to be my own test harness: the
+reference encoder's own codes failed in exactly the same way at those
+sizes, which proved the harness was at fault and the codes were not.
+
+### Where it stands now
+
+- **Ten codes, covering versions 1 to 11, all four correction levels,
+  URLs, wifi credentials, a vCard, accented text and Chinese, all read
+  back correctly by ZXing.**
+- **All ten grids are identical, module for module, to a second
+  independent encoder.**
+- The code the tool actually draws on screen was checked against the
+  generator square by square: no difference, with a correct four-square
+  quiet zone.
+
+### A sixth check, so this cannot happen again
+
+`node scripts/check-qr.mjs` does all of the above on demand. It needs
+two packages that are deliberately not part of the site and never
+shipped with it, and if they are missing it **says so and stops**
+rather than passing quietly and letting you believe something was
+verified.
+
+### What I would still like
+
+A phone. Every check here is another program reading our output, and
+the programs agree. That is strong, and it is not the same as a camera
+in a hand in ordinary light. Point one at a code from the tool; it
+should work now, and if it does not I want to know.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1268,6 +1363,15 @@ With the server dead, in the same browser:
     nobody has driven this site with a screen reader or used it on a real phone.
     Two more tools would be worth less than closing either of those.
 
+33. **The QR codes made before this were all unreadable.** If you saved one from
+    this site before Phase 12, it does not scan. Make it again. This is written
+    here rather than quietly fixed because anyone who printed one deserves to
+    know.
+
+34. **No camera has yet read a code from this tool.** Three separate programs
+    agree the codes are correct, which is strong evidence and not the same as a
+    phone in ordinary light.
+
 ---
 
 ## How to check any of this yourself
@@ -1285,6 +1389,10 @@ node scripts/check-a11y.mjs
 ```
 
 ```bash
+node scripts/check-qr.mjs
+```
+
+```bash
 node scripts/make-samples.mjs
 ```
 
@@ -1296,6 +1404,8 @@ The first fails if anything in the project points at another computer. The secon
 fails if any colour pairing in any theme falls below the accessibility standard.
 The third checks that every page can be read out and moved through without a mouse
 or without sight — structure only, which it says so itself every time it passes.
-The fourth writes real test files into `samples/`. The fifth builds a JPEG whose
+The fourth decodes our QR codes with the library phone cameras use, and compares
+every square against a second encoder.
+The fifth writes real test files into `samples/`. The sixth builds a JPEG whose
 hidden information is known in advance, so the metadata reader can be checked
 against a correct answer rather than merely observed not to crash.

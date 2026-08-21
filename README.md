@@ -39,7 +39,7 @@ internet switched off.
 
 ---
 
-## The five checks before every commit
+## The six checks before every commit
 
 ```bash
 node scripts/check-no-external.mjs
@@ -66,6 +66,18 @@ things which exist, no repeated identifiers, the landmarks and skip link, and
 nothing forced out of natural tab order. It checks structure only, and says so
 itself every time it passes: nobody has yet driven this site with a real screen
 reader.
+
+```bash
+node scripts/check-qr.mjs
+```
+
+Decodes the QR codes this site makes using ZXing — the library Android's camera
+and most scanning apps are built on — and compares every square of every grid
+against a second, independent encoder. It needs two packages that are not part of
+the site (`npm install --no-save @zxing/library qrcode`) and, if they are absent,
+says so and stops rather than passing quietly.
+
+This check exists because the generator shipped broken. See PROGRESS.md, Phase 12.
 
 ```bash
 node scripts/check-vendor.mjs
