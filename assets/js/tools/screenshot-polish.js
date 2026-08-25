@@ -3,7 +3,7 @@
 import { setupImageTool } from "../tool-page.js";
 import { toCanvas, polish } from "../image/compose.js";
 import { toBlob, releaseCanvas } from "../image/ops.js";
-import { el, toast, formatBytes } from "../ui.js";
+import { el, toast } from "../ui.js";
 import * as tray from "../tray.js";
 
 const $ = (id) => document.getElementById(id);

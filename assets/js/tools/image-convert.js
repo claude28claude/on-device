@@ -1,7 +1,6 @@
 /* On Device - Convert images */
 
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
-import * as store from "../store.js";
 import { el } from "../ui.js";
 import { adopt } from "../defaults.js";
 

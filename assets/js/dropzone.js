@@ -11,10 +11,9 @@
    ============================================================ */
 
 import * as workspace from "./workspace.js";
-import { toolsForKind, getTool } from "./tools.js";
+import { toolsForKind } from "./tools.js";
 import { el, icon, toast, announce, formatBytes } from "./ui.js";
 import { t, tn } from "./i18n.js";
-import * as store from "./store.js";
 
 let veil = null;
 let dragDepth = 0;

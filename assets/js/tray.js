@@ -12,7 +12,7 @@
 import * as idb from "./idb.js";
 import * as store from "./store.js";
 import { el, icon, toast, announce, formatBytes, formatTime } from "./ui.js";
-import { t, tn } from "./i18n.js";
+import { t } from "./i18n.js";
 
 const results = [];
 const listeners = new Set();
@@ -81,6 +81,81 @@ export async function addResult({ blob, name, fromTool = "", fromFile = "", note
 }
 
 /* ---- Downloading ---------------------------------------- */
+/* Everything at once. */
+/* This button sat disabled for seven phases, with a tooltip saying
+   the feature "arrives with the Zip tool in Phase 6". The zip library
+   arrived in Phase 6 and the button was never connected to it, so the
+   site went on promising something it had been able to do all along.
+
+   The zip is written straight to the downloads folder rather than
+   being put back in the tray, which would leave you looking at a zip
+   of your files sitting next to your files. */
+async function downloadAllAsZip(button) {
+  if (!results.length) {
+    toast("There is nothing in the tray to download.", { kind: "warn" });
+    return;
+  }
+
+  const original = button.textContent;
+  button.disabled = true;
+  button.textContent = "Zipping…";
+
+  try {
+    const zip = await import("../vendor/zipjs/zip.min.js");
+    if (zip.configure) zip.configure({ useWebWorkers: true });
+
+    const writer = new zip.ZipWriter(new zip.BlobWriter("application/zip"), { level: 5 });
+
+    /* Two results can easily share a name - the same tool run twice -
+       and inside a zip the second would silently replace the first. */
+    const used = new Set();
+    for (const record of results) {
+      let name = record.name;
+      let n = 2;
+      while (used.has(name)) {
+        const dot = record.name.lastIndexOf(".");
+        const base = dot > 0 ? record.name.slice(0, dot) : record.name;
+        const ext = dot > 0 ? record.name.slice(dot) : "";
+        name = `${base} (${n})${ext}`;
+        n++;
+      }
+      used.add(name);
+      await writer.add(name, new zip.BlobReader(record.blob));
+    }
+
+    const blob = await writer.close();
+    const stamp = new Date();
+    const date =
+      `${stamp.getFullYear()}-${String(stamp.getMonth() + 1).padStart(2, "0")}-` +
+      `${String(stamp.getDate()).padStart(2, "0")}`;
+    const name = `on-device-${date}.zip`;
+
+    const url = URL.createObjectURL(blob);
+    const a = el("a", { href: url, download: name });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 20000);
+
+    toast(
+      `${results.length} file${results.length === 1 ? "" : "s"} zipped into ` +
+      `“${name}” (${formatBytes(blob.size)}). Your results are still in the tray.`,
+      { kind: "ok", title: "Downloaded", timeout: 9000 }
+    );
+    announce(`${results.length} files downloaded as one zip.`);
+  } catch (err) {
+    toast(
+      "The zip could not be made: " + (err && err.message ? err.message : String(err)) +
+      " Your files are untouched and still in the tray — download them one at a time.",
+      { kind: "error", title: "That did not work", timeout: 12000 }
+    );
+    console.error("[On Device] Zipping the results tray failed:", err);
+  } finally {
+    button.textContent = original;
+    button.disabled = results.length === 0;
+  }
+}
+
 export function download(id) {
   const record = results.find((r) => r.id === id);
   if (!record) {
@@ -196,10 +271,11 @@ export function mount(container = document.body) {
   const zipBtn = el(
     "button",
     {
-      class: "btn btn-sm",
+      class: "btn btn-sm tray-zip",
       type: "button",
       disabled: true,
-      title: "Downloading everything as one zip arrives with the Zip tool in Phase 6."
+      title: t("tray.downloadAll"),
+      onclick: () => downloadAllAsZip(zipBtn)
     },
     t("tray.downloadAll")
   );
@@ -224,6 +300,12 @@ function render() {
   countNode.textContent = String(results.length);
   trayNode.dataset.peek = String(results.length > 0);
   document.body.classList.toggle("has-tray", results.length > 0);
+
+  /* Nothing to zip when the tray is empty. Selected by its own class
+     rather than by being the first button, so re-ordering the row
+     cannot quietly point this at the wrong one. */
+  const zipButton = trayNode.querySelector(".tray-zip");
+  if (zipButton) zipButton.disabled = results.length === 0;
 
   bodyNode.textContent = "";
   if (!results.length) {

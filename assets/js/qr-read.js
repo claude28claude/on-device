@@ -138,11 +138,36 @@ export function describe(text) {
 
   const wifi = /^WIFI:(.*);;?$/i.exec(value);
   if (wifi) {
+    /* A wifi code escapes the characters that would otherwise end a
+       field: backslash, semicolon, comma, quote and colon. Splitting
+       on a plain semicolon therefore cuts a password like "pa;ss" in
+       half and shows the wrong one - which on a password is not a
+       cosmetic fault. So the string is walked a character at a time,
+       and a backslash always means "the next character is data". */
     const parts = {};
-    for (const bit of wifi[1].split(";")) {
-      const at = bit.indexOf(":");
-      if (at > 0) parts[bit.slice(0, at).toUpperCase()] = bit.slice(at + 1);
+    let field = "";
+    let key = null;
+    const store = () => {
+      if (key !== null) parts[key.toUpperCase()] = field;
+      key = null;
+      field = "";
+    };
+
+    for (let i = 0; i < wifi[1].length; i++) {
+      const c = wifi[1][i];
+      if (c === "\\") {
+        i++;
+        if (i < wifi[1].length) field += wifi[1][i];
+      } else if (c === ":" && key === null) {
+        key = field;
+        field = "";
+      } else if (c === ";") {
+        store();
+      } else {
+        field += c;
+      }
     }
+    store();
     return {
       kind: "wifi",
       title: "A wifi network",

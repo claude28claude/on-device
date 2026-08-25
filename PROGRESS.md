@@ -29,6 +29,7 @@ is always current.
 | 11 | Optional extras | **Background removal built.** Video and audio, deliberately not |
 | 12 | The QR generator, finally checked | **Done** — three real faults found and fixed |
 | 13 | The QR reader, un-cancelled | **Done** — it was cancelled for the wrong reason |
+| 14 | A bug hunt | **Done** — three real faults, one of them shipped for seven phases |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1286,6 +1287,82 @@ HEIC decoder, a background-removal model, and ffmpeg.
 
 ---
 
+## Phase 14 — a bug hunt
+
+Not new features: going looking for things that were already wrong.
+
+### 1. A wifi password could be shown wrongly
+
+Our QR **generator** escapes the characters that would otherwise end a
+field — backslash, semicolon, comma, quote and colon — exactly as the
+standard requires. Our QR **reader** split the string on plain
+semicolons and ignored the escaping.
+
+So a wifi code whose password contained a semicolon was made correctly
+and then **read back wrong**: `pa;ss` came out as `pa\`. The two halves
+of our own site disagreed with each other.
+
+On a password that is not a cosmetic fault — it is showing somebody a
+credential that will not work, with no hint that anything was lost. The
+reader now walks the string a character at a time, where a backslash
+always means “the next character is data”. Six awkward cases —
+semicolons, colons, commas, backslashes and quotes in both the network
+name and the password — now round-trip exactly.
+
+### 2. “Download all as zip” had been dead for seven phases
+
+The button in the results tray was disabled, with a tooltip reading
+“Downloading everything as one zip arrives with the Zip tool in
+Phase 6”.
+
+The zip library arrived in Phase 6. Nobody connected the button to it.
+So from Phase 6 to Phase 13 the site sat there promising a feature it
+had been able to perform the whole time, and limitation 3 dutifully
+recorded it as “not built yet” rather than “not wired up”.
+
+It works now. Files with the same name do not silently overwrite each
+other inside the archive — the second becomes “notes (2).txt”. The zip
+goes straight to the downloads folder rather than back into the tray,
+and the tray keeps its contents.
+
+### 3. A full-size picture was held for as long as the tab stayed open
+
+In the QR reader, when no code was found and “show the picture” was
+switched on, the decoded picture was never released. Harmless on a
+screenshot; not harmless on a 12-megapixel photograph.
+
+### Also: fifteen dead imports
+
+Fifteen imports across twelve files were brought in and never used —
+leftovers from code that changed shape. None of them was a fault in
+itself; all of them are the kind of thing that makes a file harder to
+read and eventually misleads somebody. Each was verified as genuinely
+unused before removal, and every module was then re-imported in the
+browser to prove nothing had been cut that was needed.
+
+### What was checked and found sound
+
+Worth recording, because a hunt that only lists what it found tells you
+nothing about where it looked:
+
+- **Every `data-i18n` key on every page exists in both languages** —
+  1,001 uses across 48 pages, no missing keys. A missing one prints the
+  raw key on the page.
+- Empty input, absurdly long input, rubbish page ranges, reversed page
+  ranges, a 1-pixel picture, a fully transparent picture, an empty
+  file, and a tool asked to move a tool that does not exist: all
+  handled with a readable message rather than a crash.
+- **A `javascript:` or `data:` code is shown as plain text**, not
+  treated as a web address, and no result the reader produces is ever
+  clickable.
+- A web address with a username in it — the old trick for disguising
+  where a link goes — correctly reports the real host.
+- File locking still refuses a wrong password and recovers the exact
+  bytes with the right one.
+- No empty, unexplained `catch` anywhere in the project.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1330,8 +1407,9 @@ With the server dead, in the same browser:
    Phase 2**, and it is a licence decision rather than a technical one — see
    item 11.
 
-3. **"Download all as zip" is disabled**, with a tooltip saying it arrives with the
-   Zip tool in Phase 6. Better than a button that fails.
+3. ~~**“Download all as zip” is disabled.**~~ **Fixed in Phase 14.** It had been
+   possible since Phase 6 and was simply never wired up. Left here rather than
+   deleted, so the record of what was once broken stays honest.
 
 4. **Safari and iOS are completely untested.** This was built on Windows; Safari
    cannot be run here at all. Chrome was tested thoroughly. Firefox and Edge are
@@ -1488,6 +1566,11 @@ With the server dead, in the same browser:
     jsQR works, is permissively licensed and is fingerprinted, and it has at least
     one crash we work around. If it ever needs replacing, the check that proves the
     codes are right is already written.
+
+38. **The wifi reader understands the standard escaping; the vCard reader is
+    looser.** A contact card is split on plain colons and semicolons, so a name
+    or address containing one may be shown slightly wrong. It is displayed as
+    information, never acted on, and the exact text is always shown underneath.
 
 ---
 

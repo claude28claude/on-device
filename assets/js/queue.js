@@ -10,7 +10,7 @@
    steady queue that finishes beats a fast one that crashes.
    ============================================================ */
 
-import { el, icon, announce, formatBytes } from "./ui.js";
+import { el, announce, formatBytes } from "./ui.js";
 import { isCancellation, cancelEverything } from "./image/runner.js";
 
 export const STATES = {

@@ -2,7 +2,6 @@
 
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
 import { run as runJob } from "../image/runner.js";
-import * as workspace from "../workspace.js";
 import { el, toast, formatBytes, announce } from "../ui.js";
 import { adopt } from "../defaults.js";
 

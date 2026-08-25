@@ -1,7 +1,14 @@
 /* On Device - the Trust page */
 
 import { initPage } from "./app.js";
-import { el, icon, formatBytes, formatTime, toast, confirmDestructive, announce } from "./ui.js";
+import {
+  el,
+  formatBytes,
+  formatTime,
+  toast,
+  confirmDestructive,
+  announce
+} from "./ui.js";
 import * as idb from "./idb.js";
 import * as store from "./store.js";
 import * as workspace from "./workspace.js";

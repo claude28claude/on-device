@@ -1,7 +1,7 @@
 /* On Device - Rotate and flip */
 
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
-import { el } from "../ui.js";
+
 
 const $ = (id) => document.getElementById(id);
 let degrees = 0;

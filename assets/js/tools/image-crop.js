@@ -5,7 +5,7 @@
    once even when they are different sizes. */
 
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
-import { el, toast, announce } from "../ui.js";
+import { el, announce } from "../ui.js";
 
 const $ = (id) => document.getElementById(id);
 

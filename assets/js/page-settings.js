@@ -6,7 +6,7 @@ import * as idb from "./idb.js";
 import * as i18n from "./i18n.js";
 import { t } from "./i18n.js";
 import { el, icon, toast, announce, confirmDestructive, formatBytes } from "./ui.js";
-import { accentSet, contrastRatio, parseColour } from "./colour.js";
+import { accentSet } from "./colour.js";
 import * as shortcuts from "./shortcuts.js";
 import * as layout from "./layout.js";
 import { CATEGORIES } from "./tools.js";

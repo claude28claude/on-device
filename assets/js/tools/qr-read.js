@@ -65,6 +65,9 @@ async function run() {
     host.textContent = "";
 
     if (!result.found) {
+      /* Nothing to draw, so let the picture go rather than leaving a
+         full-size canvas held until the page is closed. */
+      if ($("show-picture").checked) releaseCanvas(canvas);
       showNothingFound(host, result);
       announce("No QR code was found in that picture.");
       return;

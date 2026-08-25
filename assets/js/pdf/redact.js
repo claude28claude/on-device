@@ -27,7 +27,7 @@
 
 import { openForReading, newDocument, PdfError } from "./doc.js";
 import { renderPage, scaleForDpi } from "./render.js";
-import { makeCanvas, toBlob, releaseCanvas } from "../image/ops.js";
+import { toBlob, releaseCanvas } from "../image/ops.js";
 import { loadPdfEngine } from "./loader.js";
 
 /* Redactions arrive as fractions of the page, so they mean the same

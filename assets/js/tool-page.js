@@ -10,10 +10,10 @@ import { initPage } from "./app.js";
 import * as workspace from "./workspace.js";
 import * as tray from "./tray.js";
 import * as store from "./store.js";
-import { el, icon, toast, announce, formatBytes } from "./ui.js";
+import { el, icon, toast, announce } from "./ui.js";
 import { Queue } from "./queue.js";
 import { run as runJob, usingBackgroundThread } from "./image/runner.js";
-import { makeFilename, resolveFormat } from "./image/pipeline.js";
+import { makeFilename } from "./image/pipeline.js";
 import { detectCapabilities } from "./image/decode.js";
 
 const IMAGE_KINDS = new Set(["image", "heic"]);
