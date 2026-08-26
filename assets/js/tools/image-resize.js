@@ -7,6 +7,40 @@ import { targetSize } from "../image/ops.js";
 
 const $ = (id) => document.getElementById(id);
 
+/* What each "job" preset means, in the boxes the tool already has.
+   These are the sizes people actually ask for, rather than round
+   numbers for their own sake. */
+const JOBS = {
+  email:  { mode: "longest", value: 1600, format: "jpg", limitKb: 1024, sharpen: 20,
+            says: "1600 across, saved as JPEG and kept under 1 MB, which nearly every mail server accepts." },
+  web:    { mode: "longest", value: 1600, format: "webp", quality: 82, sharpen: 25,
+            says: "1600 across as WebP: about a third the size of a JPEG at the same quality." },
+  thumb:  { mode: "pixels", width: 400, height: 400, fit: "cover", format: "jpg", quality: 80, sharpen: 35,
+            says: "A 400 square, filled and cropped from the middle." },
+  avatar: { mode: "pixels", width: 512, height: 512, fit: "cover", format: "jpg", quality: 85, sharpen: 30,
+            says: "A 512 square, filled and cropped from the middle." },
+  square: { mode: "pixels", width: 1080, height: 1080, fit: "cover", format: "jpg", quality: 85,
+            says: "1080 square, filled and cropped from the middle." },
+  story:  { mode: "pixels", width: 1080, height: 1920, fit: "cover", format: "jpg", quality: 85,
+            says: "1080 by 1920, upright, filled and cropped from the middle." },
+  wide:   { mode: "pixels", width: 1200, height: 630, fit: "cover", format: "jpg", quality: 85,
+            says: "1200 by 630, the shape most sites use for a link preview." },
+  hd:     { mode: "longest", value: 1920, format: "keep", sharpen: 15,
+            says: "Longest side 1920, which is Full HD." },
+  fourk:  { mode: "longest", value: 3840, format: "keep",
+            says: "Longest side 3840, which is 4K. Pictures already smaller are left alone unless you allow enlarging." },
+  print:  { mode: "longest", value: 3000, format: "jpg", quality: 92,
+            says: "Longest side 3000, which is about 10 inches at 300 dots per inch." }
+};
+
+const FIT_HINTS = {
+  contain: "The whole picture is kept. The space left over is filled with the colour below, so nothing is cut off and nothing is squashed.",
+  cover: "The picture fills the whole rectangle and whatever hangs over the edges is cut off. Nothing is squashed, but something is lost.",
+  keep: "The shape is kept, so the result fits inside these measurements rather than matching them exactly.",
+  stretch: "The picture is squashed or pulled to the exact shape. Nothing is lost and nothing is cropped, and it will look wrong."
+};
+
+
 const LABELS = {
   longest: ["Longest side", "Pictures larger than this are scaled down."],
   shortest: ["Shortest side", "Pictures larger than this are scaled down."],
@@ -60,7 +94,83 @@ async function start() {
     });
   }
 
+  $("job-preset").addEventListener("change", applyJob);
+  $("fit").addEventListener("change", () => { syncFit(); previewSizes(); });
+  $("pad-colour").addEventListener("input", previewSizes);
+  $("sharpen").addEventListener("input", paintSharpen);
+  $("use-limit").addEventListener("change", syncLimit);
+  $("limit-kb").addEventListener("input", paintLimit);
+
   syncQualityVisibility();
+  syncFit();
+  syncLimit();
+  paintSharpen();
+
+  /* ---- The new controls ---------------------------------- */
+  function applyJob() {
+    const job = JOBS[$("job-preset").value];
+    if (!job) { $("job-preset-hint").textContent = "Each one sets the boxes below. You can change anything afterwards."; return; }
+
+    $("mode").value = job.mode;
+    if (job.value) $("value").value = String(job.value);
+    if (job.width) $("exact-width").value = String(job.width);
+    if (job.height) $("exact-height").value = String(job.height);
+    if (job.fit) $("fit").value = job.fit;
+    if (job.format) $("format").value = job.format;
+    if (job.quality) $("quality").value = String(job.quality);
+    $("sharpen").value = String(job.sharpen || 0);
+
+    if (job.limitKb) {
+      $("use-limit").checked = true;
+      $("limit-kb").value = String(job.limitKb);
+    } else {
+      $("use-limit").checked = false;
+    }
+
+    $("job-preset-hint").textContent = job.says;
+    syncMode();
+    syncFit();
+    syncLimit();
+    syncQualityVisibility();
+    paintQuality();
+    paintSharpen();
+    previewSizes();
+  }
+
+  function syncFit() {
+    const fit = $("fit").value;
+    $("fit-hint").textContent = FIT_HINTS[fit] || "";
+    /* Only "contain" leaves space that needs filling. */
+    $("pad-field").hidden = fit !== "contain";
+    /* "Keep the shape" is the old behaviour, expressed properly. */
+    $("keep-aspect").closest(".check-row").hidden = $("mode").value === "pixels";
+  }
+
+  function syncLimit() {
+    const on = $("use-limit").checked;
+    $("limit-value-field").hidden = !on;
+    /* One place decides whether the quality slider is shown. */
+    syncQualityVisibility();
+    if (on) paintLimit();
+  }
+
+  function paintLimit() {
+    const kb = Number($("limit-kb").value) || 0;
+    const format = $("format").value;
+    $("limit-hint").textContent = format === "png"
+      ? "PNG has no quality to trade away, so a limit cannot be aimed for. Choose JPEG or WebP."
+      : `Kilobytes. The quality is lowered only as far as it needs to be, and the tool says what it settled on.`;
+  }
+
+  function paintSharpen() {
+    const v = Number($("sharpen").value);
+    $("sharpen-hint").textContent =
+      v === 0 ? "Off. Making a picture smaller always softens it a little; this puts some of the bite back."
+      : v <= 30 ? `${v} out of 100 — a light touch, which suits most photographs.`
+      : v <= 60 ? `${v} out of 100 — noticeable. Good for pictures that went down a long way.`
+      : `${v} out of 100 — strong. This can leave pale outlines along high-contrast edges.`;
+    $("sharpen").setAttribute("aria-valuetext", v === 0 ? "off" : `${v} out of 100`);
+  }
 
   function paintQuality() {
     const v = $("quality").value;
@@ -70,10 +180,16 @@ async function start() {
 
   function syncQualityVisibility() {
     const format = $("format").value;
-    /* PNG has no quality dial - it is lossless. Saying so beats
-       showing a slider that does nothing. */
+    /* Two reasons to hide the quality slider, and both have to be
+       considered together here. Deciding it in two places meant
+       whichever ran last won, and choosing a preset with a size
+       limit left the slider on screen pretending to be in charge.
+
+       PNG has no quality dial - it is lossless.
+       A size limit picks the quality for you. */
     const lossless = format === "png";
-    $("quality-field").hidden = lossless;
+    const limited = $("use-limit") && $("use-limit").checked;
+    $("quality-field").hidden = lossless || limited;
   }
 
   function syncMode() {
@@ -85,28 +201,37 @@ async function start() {
     const labelEl = $("value-field").querySelector("label");
     if (labelEl) labelEl.textContent = label;
     $("value-hint").textContent = hint;
+    if ($("fit")) syncFit();
     if (mode === "percent" && Number($("value").value) > 400) $("value").value = "50";
     if (mode !== "percent" && Number($("value").value) < 16) $("value").value = "1600";
   }
 
   function readOptions() {
     const mode = $("mode").value;
+    const fit = $("fit").value;
     return {
       mode,
       value: Number($("value").value) || 1600,
       targetWidth: Number($("exact-width").value) || undefined,
       targetHeight: Number($("exact-height").value) || undefined,
-      keepAspect: $("keep-aspect").checked,
-      allowGrow: $("allow-grow").checked
+      /* At an exact size the fit control decides the shape question,
+         so the old tick box only applies to the other modes. */
+      keepAspect: mode === "pixels" ? fit !== "stretch" : $("keep-aspect").checked,
+      allowGrow: $("allow-grow").checked,
+      fit: mode === "pixels" ? fit : undefined
     };
   }
 
   function buildJob() {
+    const limitOn = $("use-limit").checked;
     return {
       op: "resize",
       resize: readOptions(),
       format: $("format").value,
-      quality: Number($("quality").value)
+      quality: Number($("quality").value),
+      sharpen: Number($("sharpen").value) || 0,
+      background: $("pad-colour").value,
+      targetBytes: limitOn ? Math.max(1, Number($("limit-kb").value)) * 1024 : undefined
     };
   }
 
@@ -125,13 +250,38 @@ async function start() {
       const w = record.width;
       const h = record.height;
       if (!w || !h) continue;
-      const size = targetSize(w, h, options);
-      if (size.unchanged) anyUnchanged = true;
+      let after;
+      let note = "";
+      if (options.mode === "pixels" && options.fit && options.fit !== "keep") {
+        /* These three always produce exactly the rectangle asked for;
+           what differs is what happens to the picture inside it. */
+        after = `${options.targetWidth} × ${options.targetHeight}`;
+        if (options.fit === "cover") {
+          const scale = Math.max(options.targetWidth / w, options.targetHeight / h);
+          const lostW = Math.round(w * scale - options.targetWidth);
+          const lostH = Math.round(h * scale - options.targetHeight);
+          if (lostW > 1 || lostH > 1) {
+            note = lostW > lostH
+              ? `${Math.round((lostW / (w * scale)) * 100)}% cut off the sides`
+              : `${Math.round((lostH / (h * scale)) * 100)}% cut off the top and bottom`;
+          }
+        } else if (options.fit === "contain") {
+          note = "padded";
+        } else if (options.fit === "stretch") {
+          note = "proportions changed";
+        }
+      } else {
+        const size = targetSize(w, h, options);
+        if (size.unchanged) anyUnchanged = true;
+        after = size.unchanged ? "unchanged" : `${size.width} × ${size.height}`;
+      }
+
       rows.append(
         el("tr", {}, [
           el("td", { text: record.name }),
           el("td", { text: `${w} × ${h}` }),
-          el("td", { text: size.unchanged ? "unchanged" : `${size.width} × ${size.height}` })
+          el("td", { text: after }),
+          el("td", { text: note })
         ])
       );
     }
@@ -145,7 +295,8 @@ async function start() {
           el("thead", {}, el("tr", {}, [
             el("th", { scope: "col", text: "File" }),
             el("th", { scope: "col", text: "Now" }),
-            el("th", { scope: "col", text: "After" })
+            el("th", { scope: "col", text: "After" }),
+            el("th", { scope: "col", text: "" })
           ])),
           rows
         ]),

@@ -89,6 +89,19 @@
       ]
     },
     {
+      "name": "Atkinson Hyperlegible",
+      "version": "5.3.0",
+      "licence": "OFL-1.1",
+      "package": "@fontsource/atkinson-hyperlegible@5.3.0",
+      "purpose": "The 'extra legible' typeface, drawn for readers with low vision",
+      "files": [
+        "atkinson/atkinson-latin-400-normal.woff2",
+        "atkinson/atkinson-latin-400-italic.woff2",
+        "atkinson/atkinson-latin-700-normal.woff2",
+        "atkinson/atkinson-latin-700-italic.woff2"
+      ]
+    },
+    {
       "name": "DOMPurify",
       "version": "3.2.4",
       "licence": "Apache-2.0 (dual-licensed with MPL-2.0)",
@@ -99,9 +112,14 @@
       ]
     }
   ],
-  "totalFiles": 221,
-  "totalBytes": 24349958,
+  "totalFiles": 226,
+  "totalBytes": 24426069,
   "fingerprints": {
+    "atkinson/LICENSE": "e137caeef2ff7c04fbf87078ad09cf3dcba8a3a58a4aa4e2f399d42c50bc4b18",
+    "atkinson/atkinson-latin-400-italic.woff2": "bc8825fd435d4aa8e31449937826d583a7daaae15a83832c91b38375131ebf08",
+    "atkinson/atkinson-latin-400-normal.woff2": "d64ba838ef5472bba248620ec4fd8b5aa7cf0db2908e0bb230600caf279ba7bc",
+    "atkinson/atkinson-latin-700-italic.woff2": "73e0c9e1e284128dda599558f7c15bd5f3c056442c31dfae950528a16b3835cf",
+    "atkinson/atkinson-latin-700-normal.woff2": "140e2bd25a7315c8a062508391426b0d8c3297400c947b8d847be28f73a199f0",
     "dompurify/LICENSE": "1b02e03c3fb4f87d476c128f0eb9def1f5a1709d28b180465228bd41574623b7",
     "dompurify/purify.es.mjs": "3b024991882ccc83066a8f0e64f3ff2a84d7638e64591221f6b04f8c10cbb3c2",
     "jsqr/LICENSE": "c6596eb7be8581c18be736c846fb9173b69eccf6ef94c5135893ec56bd92ba08",

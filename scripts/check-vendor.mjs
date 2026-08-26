@@ -104,6 +104,19 @@ export const SOURCES = [
     files: ["jsqr/jsQR.js"]
   },
   {
+    name: "Atkinson Hyperlegible",
+    version: "5.3.0",
+    licence: "OFL-1.1",
+    package: "@fontsource/atkinson-hyperlegible@5.3.0",
+    purpose: "The 'extra legible' typeface, drawn for readers with low vision",
+    files: [
+      "atkinson/atkinson-latin-400-normal.woff2",
+      "atkinson/atkinson-latin-400-italic.woff2",
+      "atkinson/atkinson-latin-700-normal.woff2",
+      "atkinson/atkinson-latin-700-italic.woff2"
+    ]
+  },
+  {
     name: "DOMPurify",
     version: "3.2.4",
     licence: "Apache-2.0 (dual-licensed with MPL-2.0)",

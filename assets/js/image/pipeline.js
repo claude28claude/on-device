@@ -10,7 +10,8 @@
    ============================================================ */
 
 import { decodeImage, detectCapabilities } from "./decode.js";
-import { normalise, resize, crop, rotate, straighten, flatten, hasTransparency, toBlob, releaseCanvas } from "./ops.js";
+import { normalise, resize, crop, rotate, straighten, flatten, hasTransparency, toBlob,
+         releaseCanvas, fitInto, sharpen, toBlobUnder } from "./ops.js";
 import { stripMetadata, canStripLosslessly, mimeFor } from "./strip.js";
 
 /* ---- Filenames ------------------------------------------ */
@@ -136,13 +137,46 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
     onProgress(0.55);
 
     if (job.resize) {
-      const result = resize(canvas, job.resize);
-      if (result.changed) {
+      /* "Exact size" with a fit of cover or contain is a different
+         job from scaling: the result has to BE that rectangle, with
+         something cropped off or something added around it. */
+      const exact = job.resize.mode === "pixels" &&
+        job.resize.fit && job.resize.fit !== "keep";
+
+      if (exact) {
+        const next = fitInto(canvas, {
+          width: job.resize.targetWidth || canvas.width,
+          height: job.resize.targetHeight || canvas.height,
+          fit: job.resize.fit,
+          background: job.background || "#ffffff"
+        });
         releaseCanvas(canvas);
-        canvas = result.canvas;
+        canvas = next;
+        if (job.resize.fit === "contain") {
+          notes.push("The picture was fitted inside the size you asked for, and the space left over was filled in.");
+        } else if (job.resize.fit === "cover") {
+          notes.push("The picture was filled to the size you asked for, so the edges that hung over were cut off.");
+        } else if (job.resize.fit === "stretch") {
+          notes.push("The picture was stretched to the size you asked for, so its proportions have changed.");
+        }
+      } else {
+        const result = resize(canvas, job.resize);
+        if (result.changed) {
+          releaseCanvas(canvas);
+          canvas = result.canvas;
+        }
       }
     }
     onProgress(0.7);
+
+    /* Making a picture smaller softens it, so this goes after the
+       resize and never before it. */
+    if (job.sharpen) {
+      sharpen(canvas, Number(job.sharpen));
+      if (Number(job.sharpen) > 60) {
+        notes.push("Sharpening above 60 can leave pale outlines along high-contrast edges.");
+      }
+    }
 
     const format = await resolveFormat(job.format, sourceFormat);
 
@@ -162,7 +196,33 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
     }
     onProgress(0.8);
 
-    const blob = await toBlob(canvas, format, job.quality);
+    /* Either encode once at the chosen quality, or search for the
+       quality that lands under a size the visitor asked for. */
+    let blob;
+    let sizeSearch = null;
+    if (job.targetBytes) {
+      sizeSearch = await toBlobUnder(canvas, format, Number(job.targetBytes));
+      blob = sizeSearch.blob;
+      if (!sizeSearch.searchable) {
+        notes.push(
+          "PNG has no quality setting to trade away, so the size limit could not be " +
+          "aimed for. Choose JPEG or WebP if the limit matters."
+        );
+      } else if (!sizeSearch.met) {
+        notes.push(
+          `Even at the lowest quality this would not fit under the limit. You have the ` +
+          `smallest version that could be made; making the picture smaller in pixels ` +
+          `as well would get it there.`
+        );
+      } else {
+        notes.push(
+          `Landed under the limit at quality ${sizeSearch.quality}, after ` +
+          `${sizeSearch.attemptsMade} ${sizeSearch.attemptsMade === 1 ? "try" : "tries"}.`
+        );
+      }
+    } else {
+      blob = await toBlob(canvas, format, job.quality);
+    }
     onProgress(0.97);
 
     /* Re-encoding always drops the metadata, which is worth saying
@@ -174,6 +234,8 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
     const result = {
       blob,
       format,
+      qualityUsed: sizeSearch ? sizeSearch.quality : (job.quality ?? null),
+      metSizeLimit: sizeSearch ? sizeSearch.met : null,
       width: canvas.width,
       height: canvas.height,
       originalWidth,

@@ -89,6 +89,7 @@
           <label for="mode">Resize by</label>
           <select id="mode">
             <option value="longest">Longest side</option>
+            <option value="shortest">Shortest side</option>
             <option value="percent">Percentage</option>
             <option value="width">Width</option>
             <option value="height">Height</option>
@@ -113,11 +114,43 @@
           </div>
         </div>
 
+        <div class="field">
+          <label for="job-preset">Or pick what it is for</label>
+          <select id="job-preset">
+            <option value="">Choose a job&hellip;</option>
+            <option value="email">Email attachment &mdash; 1600px, under 1 MB</option>
+            <option value="web">Web page &mdash; 1600px WebP</option>
+            <option value="thumb">Thumbnail &mdash; 400px square, cropped</option>
+            <option value="avatar">Profile picture &mdash; 512px square, cropped</option>
+            <option value="square">Square post &mdash; 1080 &times; 1080, cropped</option>
+            <option value="story">Tall post &mdash; 1080 &times; 1920, cropped</option>
+            <option value="wide">Wide banner &mdash; 1200 &times; 630, cropped</option>
+            <option value="hd">Full HD &mdash; longest side 1920</option>
+            <option value="fourk">4K &mdash; longest side 3840</option>
+            <option value="print">Print at 300 dpi &mdash; longest side 3000</option>
+          </select>
+          <p class="field-hint" id="job-preset-hint">Each one sets the boxes below. You can change anything afterwards.</p>
+        </div>
+
         <div class="field" id="exact-field" hidden>
           <label for="exact-width">Width in pixels</label>
           <input type="number" id="exact-width" value="1600" min="1" max="30000">
           <label for="exact-height">Height in pixels</label>
           <input type="number" id="exact-height" value="900" min="1" max="30000">
+
+          <label for="fit">When the shape does not match</label>
+          <select id="fit">
+            <option value="contain">Fit it all in, and fill the rest with a colour</option>
+            <option value="cover">Fill the whole space, cutting off the overhang</option>
+            <option value="keep">Keep the shape, get close to this size</option>
+            <option value="stretch">Stretch it to fit, changing the proportions</option>
+          </select>
+          <p class="field-hint" id="fit-hint"></p>
+
+          <div id="pad-field">
+            <label for="pad-colour">Colour to fill with</label>
+            <input type="color" id="pad-colour" value="#ffffff">
+          </div>
         </div>
 
         <label class="check-row">
@@ -151,6 +184,27 @@
           <label for="quality">Quality</label>
           <input type="range" id="quality" min="40" max="100" value="85">
           <p class="field-hint" id="quality-hint">85 out of 100.</p>
+        </div>
+
+        <div class="field" id="sharpen-field">
+          <label for="sharpen">Sharpen afterwards</label>
+          <input type="range" id="sharpen" min="0" max="100" step="5" value="0">
+          <p class="field-hint" id="sharpen-hint">Off. Making a picture smaller always softens it a little; this puts some of the bite back.</p>
+        </div>
+
+        <div class="field" id="limit-field">
+          <label class="check-row">
+            <input type="checkbox" id="use-limit">
+            <span class="check-text">
+              <strong>Keep it under a size</strong>
+              <span>For upload limits and mail servers.</span>
+            </span>
+          </label>
+          <div id="limit-value-field" hidden>
+            <label for="limit-kb">Largest allowed</label>
+            <input type="number" id="limit-kb" value="500" min="5" max="20000" step="5">
+            <p class="field-hint" id="limit-hint">Kilobytes. The quality is lowered only as far as it needs to be, and the tool says what it settled on.</p>
+          </div>
         </div>
 
         <button class="btn btn-primary btn-block btn-lg" type="button" id="run-button" data-label="Resize" disabled>Resize</button>

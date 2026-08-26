@@ -136,6 +136,10 @@ export const STEPS = [
         hint: "Pixels, or a percentage if you chose percentage." },
       { key: "allowGrow", type: "toggle", label: "Enlarge pictures that are already smaller", default: false,
         hint: "Off by default: making a small picture bigger invents detail that was never there." },
+      { key: "sharpen", type: "number", label: "Sharpen afterwards", min: 0, max: 100, step: 5, default: 0,
+        hint: "Out of 100. Making a picture smaller softens it; this puts some of the bite back. Above 60 can leave pale outlines." },
+      { key: "limitKb", type: "number", label: "Keep each one under (kilobytes)", min: 0, max: 20000, step: 10, default: 0,
+        hint: "0 means no limit. Otherwise the quality is lowered only as far as it needs to be. Has no effect on PNG, which has no quality to trade." },
       IMAGE_FORMAT,
       QUALITY
     ],
@@ -148,6 +152,8 @@ export const STEPS = [
         const result = await runner.run(asFile(item), item.format, {
           op: "process",
           resize: { mode: o.mode, value: Number(o.value), allowGrow: Boolean(o.allowGrow) },
+          sharpen: Number(o.sharpen) || 0,
+          targetBytes: Number(o.limitKb) > 0 ? Number(o.limitKb) * 1024 : undefined,
           format: o.format,
           quality: Number(o.quality)
         });

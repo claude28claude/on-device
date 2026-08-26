@@ -12,7 +12,12 @@
              "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo,
                Consolas, "Liberation Mono", monospace;
-  /* Chosen for legibility. All are widely pre-installed; none are downloaded. */
+  /* Atkinson Hyperlegible is bundled with this site - see the
+     @font-face rules at the end of this file. It was drawn by the
+     Braille Institute specifically so that letters which usually get
+     confused with one another (capital I, lowercase l, the digit 1)
+     stay apart. The rest of the list is what a browser falls back to
+     if the file will not load. */
   --font-legible: "Atkinson Hyperlegible", "OpenDyslexic", Verdana, Tahoma,
                   "DejaVu Sans", sans-serif;
 
@@ -300,4 +305,50 @@
 [data-motion="reduced"] { --motion-scale: 0.001; }
 @media (prefers-reduced-motion: reduce) {
   :root { --motion-scale: 0.001; }
+}
+
+
+/* ============================================================
+   The bundled legible typeface
+
+   Atkinson Hyperlegible, from the Braille Institute of America,
+   under the SIL Open Font License 1.1. The licence sits next to the
+   files in assets/vendor/atkinson/.
+
+   Declaring a face here costs nothing: a browser fetches a font file
+   only when something on the page is actually drawn with it, which
+   only happens once "Extra legible" is chosen in Settings. So this
+   is not part of a first visit for anybody who does not want it.
+
+   "swap" means text is shown immediately in the fallback and
+   redrawn when the file arrives, rather than leaving the page blank
+   while it downloads.
+   ============================================================ */
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../vendor/atkinson/atkinson-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../vendor/atkinson/atkinson-latin-400-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../vendor/atkinson/atkinson-latin-700-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../vendor/atkinson/atkinson-latin-700-italic.woff2") format("woff2");
 }

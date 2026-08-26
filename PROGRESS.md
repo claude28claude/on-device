@@ -31,6 +31,7 @@ is always current.
 | 13 | The QR reader, un-cancelled | **Done** — it was cancelled for the wrong reason |
 | 14 | A bug hunt | **Done** — three real faults, one of them shipped for seven phases |
 | 15 | Closing the accessibility gap as far as it can be closed here | **Done** — twelve unnamed controls found and named |
+| 16 | The last unkept promise, and a much bigger resize tool | **Done** |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1455,6 +1456,105 @@ cannot be closed from here.
 
 ---
 
+## Phase 16 — the last unkept promise, and a much bigger resize tool
+
+### The bundled typeface, finally bundled
+
+Settings has always offered an “extra legible” font, and the hint
+underneath has always ended “a bundled font arrives in a later phase”.
+Until now it used whatever legible font happened to be installed on
+your machine, and quietly fell back to Verdana if none was.
+
+**Atkinson Hyperlegible** is now part of the site. It was drawn by the
+Braille Institute of America specifically so that the letters people
+confuse — capital I, lowercase l, the digit 1, and O against 0 — stay
+apart from one another. It is released under the SIL Open Font
+Licence, which is permissive, so it fits the rule this project set
+itself about borrowed things.
+
+Four files, about 72 KB in total, fingerprinted like everything else.
+**They are not part of a first visit.** A browser fetches a font file
+only when something on the page is actually drawn with it, so nothing
+is downloaded unless you choose the setting. Measured: zero requests
+for it until “Extra legible” is picked, then two — the upright and the
+bold — with the italics staying untouched until some italic text needs
+them.
+
+That was the last “arrives in a later phase” left anywhere in the
+interface.
+
+### The resize tool, roughly tripled
+
+It could scale by longest side, width, height, percentage or exact
+pixels. That is the arithmetic of resizing, not the reasons people
+resize. Now:
+
+**Ten job presets** that set every box at once: an email attachment,
+a web page, a thumbnail, a profile picture, a square post, a tall
+post, a wide banner, Full HD, 4K, and print at 300 dots per inch.
+Each one says in a sentence what it just did, and every box stays
+editable afterwards.
+
+**A real answer to “make it exactly 1080 by 1080”.** Before, an exact
+size either kept the shape (and so was not that size) or stretched.
+There are now four choices, and the tool explains each one rather
+than picking quietly:
+
+| Choice | What happens |
+|---|---|
+| Fit it all in | Nothing is lost; the space left over is filled with a colour you choose |
+| Fill the space | Nothing is squashed; whatever hangs over the edge is cut off |
+| Keep the shape | The result fits inside those measurements rather than matching them |
+| Stretch | Nothing is lost or cropped, and it will look wrong |
+
+**The preview says what it will cost before you commit.** Ask for a
+1600 × 1200 photograph as a 1080 square and the table reads
+“25% cut off the sides”. That is the number, not a warning triangle.
+
+**“Keep it under a size”**, for upload limits and mail servers. There
+is no way to ask an encoder for a file size, so it searches for the
+quality that lands just under, halving the range each time, and then
+**says which quality it settled on and how many tries it took**. If
+even the lowest quality will not fit, it says so plainly and points
+out that making the picture smaller in pixels would get there —
+rather than handing back something over the limit and calling it
+done.
+
+**Sharpening**, because making a picture smaller always softens it —
+several pixels are averaged into one, and averaging blurs. Measured
+on a real photograph: local contrast fell from 4.6 to 9.1 on shrinking
+and came back to 12.8 with sharpening at 50. Above 60 it warns that
+pale outlines can appear along high-contrast edges.
+
+**“Shortest side”**, which the underlying code had supported all
+along and the menu had simply never offered.
+
+Sharpening and the size limit are also available as options on the
+**recipe** step, so a saved chain can use them on forty files at once.
+Both default to off, and an existing recipe produces a byte-identical
+result to before — checked, not assumed.
+
+### What testing caught
+
+1. **Two functions fought over the quality slider.** One hid it for
+   PNG, the other hid it when a size limit was on, and whichever ran
+   last won. Choosing the email preset left the slider on screen
+   pretending to be in charge of a quality that the size limit was
+   actually choosing. One function now owns that decision.
+
+2. **The quality floor was too high to be useful.** The size search
+   stopped at quality 25, so a limit that needed 20 was reported as
+   impossible when it was not. Lowered to 15, and the quality it
+   settles on is always reported so the result can be judged.
+
+3. **My first sharpening test proved almost nothing.** It used a
+   linear gradient, and an unsharp mask mathematically does nothing
+   to a perfectly linear ramp — so a working implementation and a
+   broken one would both have “passed”. Re-tested on a real
+   photograph, where it is possible to fail.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1671,6 +1771,19 @@ With the server dead, in the same browser:
     cannot synthesise the browser's own activation behaviour, which was proved by
     a plain control button behaving the same way. Nothing on the page prevents
     it, and ordinary buttons are used throughout rather than anything custom.
+
+40. **Sharpening is one fixed radius.** Photo editors let you set the radius and a
+    threshold as well as the amount. This has one small radius that suits
+    pictures which have just been made smaller, which is what it is for.
+
+41. **“Fill the space” always crops from the middle.** For most photographs that
+    is where the subject is. There is no way to say “keep the top” for a picture
+    where it is not.
+
+42. **A size limit works by lowering quality, not by making the picture smaller.**
+    If the limit cannot be reached it says so and suggests reducing the pixel
+    size, but it will not do that for you — silently shrinking a picture somebody
+    asked to be a particular size would be worse.
 
 ---
 

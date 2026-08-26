@@ -205,7 +205,7 @@ export default {
   "settings.font.legible": "Extra-legible font",
   "settings.font.mono": "Monospace",
   "settings.font.hint":
-    "The extra-legible option uses a dyslexia-friendly font if one is installed on this device, and a very clear fallback if not. A bundled font arrives in a later phase.",
+    "The extra-legible option uses Atkinson Hyperlegible, drawn by the Braille Institute so that letters which are easily confused stay apart. It is bundled with this site and only downloaded if you choose it.",
 
   "settings.corners": "Corners",
   "settings.corners.rounded": "Rounded",

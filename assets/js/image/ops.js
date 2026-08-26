@@ -280,3 +280,163 @@ export async function toBlob(canvas, format, quality) {
 }
 
 export { releaseCanvas };
+
+/* ---- Fitting a picture into an exact rectangle ----------- */
+/* Three honest ways to make a picture exactly W by H, because there
+   is no single right answer:
+
+     "contain" - the whole picture is kept and the leftover space is
+                 filled with a colour. Nothing is lost, but the shape
+                 of the result is not the shape of the picture.
+     "cover"   - the picture fills the rectangle and whatever hangs
+                 over the edge is cut off. Nothing is distorted, but
+                 something is lost.
+     "stretch" - the picture is squashed to fit. Nothing is lost and
+                 nothing is cropped, and it will look wrong.
+
+   The tool says which of those is happening rather than picking one
+   quietly. */
+export function fitInto(canvas, { width, height, fit = "contain", background = "#ffffff" }) {
+  const targetW = Math.max(1, Math.round(width));
+  const targetH = Math.max(1, Math.round(height));
+  const out = makeCanvas(targetW, targetH);
+  const ctx = context2d(out);
+
+  if (fit === "stretch") {
+    ctx.drawImage(canvas, 0, 0, targetW, targetH);
+    return out;
+  }
+
+  if (fit === "cover") {
+    const scale = Math.max(targetW / canvas.width, targetH / canvas.height);
+    const drawW = canvas.width * scale;
+    const drawH = canvas.height * scale;
+    /* Centred: the middle of a photograph is usually the subject. */
+    ctx.drawImage(canvas, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
+    return out;
+  }
+
+  /* contain */
+  if (background) {
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, targetW, targetH);
+  }
+  const scale = Math.min(targetW / canvas.width, targetH / canvas.height);
+  const drawW = canvas.width * scale;
+  const drawH = canvas.height * scale;
+  ctx.drawImage(canvas, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
+  return out;
+}
+
+/* ---- Sharpening ------------------------------------------ */
+/* Making a picture smaller always softens it: several pixels are
+   averaged into one, and averaging blurs. This puts some of the
+   edge definition back using an unsharp mask - the same idea a
+   darkroom used, and what every photo editor means by "sharpen".
+
+   amount is 0 to 100. Anything above about 60 starts to look
+   crunchy and to ring around high-contrast edges, which is why the
+   tool warns rather than letting it run to 100 quietly. */
+export function sharpen(canvas, amount) {
+  const strength = Math.max(0, Math.min(100, amount)) / 100;
+  if (!strength) return canvas;
+
+  const ctx = context2d(canvas);
+  const { width, height } = canvas;
+  const image = ctx.getImageData(0, 0, width, height);
+  const src = image.data;
+  const out = new Uint8ClampedArray(src);
+
+  /* A small blur to subtract from the original. */
+  const blurred = new Float32Array(width * height * 3);
+  const at = (x, y, c) => {
+    const cx = Math.min(width - 1, Math.max(0, x));
+    const cy = Math.min(height - 1, Math.max(0, y));
+    return src[(cy * width + cx) * 4 + c];
+  };
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      for (let c = 0; c < 3; c++) {
+        /* A 3x3 tent, which is enough to find edges and cheap. */
+        const sum =
+          at(x - 1, y - 1, c) + 2 * at(x, y - 1, c) + at(x + 1, y - 1, c) +
+          2 * at(x - 1, y, c) + 4 * at(x, y, c) + 2 * at(x + 1, y, c) +
+          at(x - 1, y + 1, c) + 2 * at(x, y + 1, c) + at(x + 1, y + 1, c);
+        blurred[(y * width + x) * 3 + c] = sum / 16;
+      }
+    }
+  }
+
+  /* original + strength * (original - blurred) */
+  for (let i = 0, p = 0; i < src.length; i += 4, p += 3) {
+    for (let c = 0; c < 3; c++) {
+      const original = src[i + c];
+      out[i + c] = original + strength * 1.5 * (original - blurred[p + c]);
+    }
+    out[i + 3] = src[i + 3];
+  }
+
+  ctx.putImageData(new ImageData(out, width, height), 0, 0);
+  return canvas;
+}
+
+/* ---- Saving to a size limit ------------------------------ */
+/* "Get it under 500 KB" is a real thing people need - mail servers,
+   upload forms and messaging apps all have limits. There is no way
+   to ask an encoder for a size, so this searches for the quality
+   that lands just under, by halving the range each time.
+
+   It reports what it actually achieved rather than pretending. */
+export async function toBlobUnder(canvas, format, targetBytes, {
+  /* The floor is low on purpose. A quality of 15 does not look good,
+     but somebody who says "this must be under 80 KB" usually means
+     it, and the tool reports the quality it settled on so the result
+     can be judged rather than guessed at. */
+  minQuality = 15,
+  maxQuality = 95,
+  attempts = 8
+} = {}) {
+  /* PNG has no quality dial, so there is nothing to search. */
+  if (format === "png") {
+    const blob = await toBlob(canvas, format);
+    return { blob, quality: null, attemptsMade: 1, met: blob.size <= targetBytes, searchable: false };
+  }
+
+  let low = minQuality;
+  let high = maxQuality;
+  let best = null;
+  let bestQuality = null;
+  let made = 0;
+
+  /* Try the best quality first: if that already fits, take it. */
+  const first = await toBlob(canvas, format, high);
+  made++;
+  if (first.size <= targetBytes) {
+    return { blob: first, quality: high, attemptsMade: made, met: true, searchable: true };
+  }
+
+  for (let i = 0; i < attempts && low <= high; i++) {
+    const middle = Math.round((low + high) / 2);
+    const blob = await toBlob(canvas, format, middle);
+    made++;
+
+    if (blob.size <= targetBytes) {
+      best = blob;
+      bestQuality = middle;
+      low = middle + 1;        /* try for better quality */
+    } else {
+      high = middle - 1;       /* too big, try lower */
+    }
+  }
+
+  if (best) {
+    return { blob: best, quality: bestQuality, attemptsMade: made, met: true, searchable: true };
+  }
+
+  /* Nothing fitted, so hand back the smallest that could be made and
+     say plainly that the limit was not reached. */
+  const smallest = await toBlob(canvas, format, minQuality);
+  made++;
+  return { blob: smallest, quality: minQuality, attemptsMade: made, met: false, searchable: true };
+}
