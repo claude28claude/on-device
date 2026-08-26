@@ -296,34 +296,43 @@ export { releaseCanvas };
 
    The tool says which of those is happening rather than picking one
    quietly. */
-export function fitInto(canvas, { width, height, fit = "contain", background = "#ffffff" }) {
+export function fitInto(canvas, {
+  width, height, fit = "contain", background = "#ffffff", allowGrow = true
+}) {
   const targetW = Math.max(1, Math.round(width));
   const targetH = Math.max(1, Math.round(height));
   const out = makeCanvas(targetW, targetH);
   const ctx = context2d(out);
 
   if (fit === "stretch") {
+    /* Stretching to an exact rectangle IS enlarging when the
+       rectangle is bigger, and there is no way to do it without.
+       The caller says so in its notes. */
     ctx.drawImage(canvas, 0, 0, targetW, targetH);
     return out;
   }
 
-  if (fit === "cover") {
-    const scale = Math.max(targetW / canvas.width, targetH / canvas.height);
-    const drawW = canvas.width * scale;
-    const drawH = canvas.height * scale;
-    /* Centred: the middle of a photograph is usually the subject. */
-    ctx.drawImage(canvas, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
-    return out;
-  }
-
-  /* contain */
+  /* Both of the remaining fits need a background: "contain" always
+     leaves space, and "cover" leaves space too once enlarging is
+     refused and the picture is smaller than the rectangle. */
   if (background) {
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, targetW, targetH);
   }
-  const scale = Math.min(targetW / canvas.width, targetH / canvas.height);
+
+  let scale = fit === "cover"
+    ? Math.max(targetW / canvas.width, targetH / canvas.height)
+    : Math.min(targetW / canvas.width, targetH / canvas.height);
+
+  /* "Allow enlarging" means what it says, whichever fit is chosen.
+     Without this, asking a small picture for a big exact size blew it
+     up regardless of the setting - which is the one thing that
+     setting exists to prevent. */
+  if (!allowGrow && scale > 1) scale = 1;
+
   const drawW = canvas.width * scale;
   const drawH = canvas.height * scale;
+  /* Centred: the middle of a photograph is usually the subject. */
   ctx.drawImage(canvas, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
   return out;
 }

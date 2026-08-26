@@ -144,14 +144,27 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
         job.resize.fit && job.resize.fit !== "keep";
 
       if (exact) {
+        const wasSmaller =
+          canvas.width < (job.resize.targetWidth || canvas.width) ||
+          canvas.height < (job.resize.targetHeight || canvas.height);
+
         const next = fitInto(canvas, {
           width: job.resize.targetWidth || canvas.width,
           height: job.resize.targetHeight || canvas.height,
           fit: job.resize.fit,
-          background: job.background || "#ffffff"
+          background: job.background || "#ffffff",
+          allowGrow: job.resize.allowGrow !== false
         });
         releaseCanvas(canvas);
         canvas = next;
+
+        if (wasSmaller && job.resize.allowGrow === false) {
+          notes.push(
+            job.resize.fit === "stretch"
+              ? "This picture was smaller than the size asked for, and stretching to an exact size cannot avoid enlarging it."
+              : "This picture was smaller than the size asked for. Because enlarging is switched off it was left at its own size and the space around it was filled in."
+          );
+        }
         if (job.resize.fit === "contain") {
           notes.push("The picture was fitted inside the size you asked for, and the space left over was filled in.");
         } else if (job.resize.fit === "cover") {

@@ -32,6 +32,7 @@ is always current.
 | 14 | A bug hunt | **Done** — three real faults, one of them shipped for seven phases |
 | 15 | Closing the accessibility gap as far as it can be closed here | **Done** — twelve unnamed controls found and named |
 | 16 | The last unkept promise, and a much bigger resize tool | **Done** |
+| 17 | Going back over Phase 16 looking for what it broke | **Done** — three faults, all mine, all from the day before |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1552,6 +1553,71 @@ result to before — checked, not assumed.
    to a perfectly linear ramp — so a working implementation and a
    broken one would both have “passed”. Re-tested on a real
    photograph, where it is possible to fail.
+
+---
+
+## Phase 17 — going back over yesterday's work
+
+Every fault in this phase was introduced by Phase 16. None of them
+would have shown up in the checks, because all three produced a
+plausible-looking result rather than an error.
+
+### 1. “Allow enlarging” was ignored by the new fit modes
+
+The worst of the three. Ask for an exact size with “fill the space”
+or “fit it all in”, and a picture smaller than the rectangle was
+blown up to fill it — **regardless of whether enlarging was switched
+off**. A 200 × 100 picture asked for at 1000 × 1000 came back at
+1000 × 1000: five times its real size, every pixel of it invented.
+
+That setting exists precisely to stop that happening, and the new
+code path never consulted it.
+
+Now the scale is capped at 1:1 when enlarging is off, whichever fit
+is chosen. The picture is placed at its own size and the space around
+it is filled in, and a note says so in as many words. “Stretch” is
+the exception and says so too: stretching to an exact rectangle
+cannot avoid enlarging, and pretending otherwise would be worse than
+admitting it.
+
+### 2. The preview claimed a crop that was never going to happen
+
+Following straight from the first: with enlarging off, the preview
+still worked out how much “fill the space” would cut off and printed
+“33% cut off the sides”. Nothing was going to be cut off at all — the
+picture was about to be padded.
+
+A preview whose whole purpose is to tell you the cost before you
+commit had been made to state a cost that was not real. It now says
+“left at its own size and padded”, and the two readings were checked
+against each other by flipping the setting back and forth.
+
+### 3. The size-limit hint kept promising a trade PNG cannot make
+
+Switch the format to PNG while a size limit was on and the hint still
+read “the quality is lowered only as far as it needs to be”. PNG has
+no quality to lower. The hint was only repainted when the limit was
+switched on, not when the format changed underneath it.
+
+### Also cleared out
+
+Three pieces of dead code, one of them actively misleading: a flag
+was being set on the finished canvas as though something consulted it
+to decide what to report, and nothing ever read it — the note is
+worked out elsewhere. A future reader would have believed that flag
+mattered. Also an unused variable, an unused function and the lookup
+table it was the only user of.
+
+### What was checked afterwards
+
+- All 40 tool modules imported cleanly, which catches a bad import or
+  a syntax error in a file no test happens to open.
+- Eight resize paths run on a real photograph, old and new together:
+  longest side, percentage, width, shortest side, all three exact-size
+  fits, and sharpening combined with a size limit. Every one produced
+  exactly the dimensions it should.
+- The recipe step gained “shortest side” as well, which the tool had
+  been offering since yesterday and the step had not.
 
 ---
 

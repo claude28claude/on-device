@@ -37,16 +37,6 @@ export function makeItem(blob, name, format, kind) {
   return { blob, name, format, kind };
 }
 
-const KIND_OF = {
-  pdf: "pdf", jpg: "image", png: "image", webp: "image", avif: "image",
-  gif: "image", bmp: "image", tiff: "image", heic: "heic",
-  txt: "text", md: "text", csv: "csv", json: "json", zip: "zip"
-};
-
-function kindFor(format) {
-  return KIND_OF[format] || "any";
-}
-
 /* Rename a file, keeping it obvious which step produced it. */
 function renamed(name, suffix, extension) {
   const base = baseName(name);
@@ -127,6 +117,7 @@ export const STEPS = [
         key: "mode", type: "select", label: "Fit by", default: "longest",
         options: [
           { value: "longest", label: "Longest side" },
+          { value: "shortest", label: "Shortest side" },
           { value: "width", label: "Width" },
           { value: "height", label: "Height" },
           { value: "percent", label: "Percentage of the original" }

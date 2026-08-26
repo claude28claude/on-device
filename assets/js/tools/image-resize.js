@@ -85,6 +85,10 @@ async function start() {
   $("format").addEventListener("change", () => {
     store.set("defaults.imageFormat", $("format").value);
     syncQualityVisibility();
+    /* The size-limit hint says something different for PNG, so it has
+       to be repainted when the format changes and not only when the
+       limit is switched on. */
+    if ($("use-limit").checked) paintLimit();
   });
 
   for (const btn of document.querySelectorAll("[data-preset]")) {
@@ -155,11 +159,10 @@ async function start() {
   }
 
   function paintLimit() {
-    const kb = Number($("limit-kb").value) || 0;
     const format = $("format").value;
     $("limit-hint").textContent = format === "png"
       ? "PNG has no quality to trade away, so a limit cannot be aimed for. Choose JPEG or WebP."
-      : `Kilobytes. The quality is lowered only as far as it needs to be, and the tool says what it settled on.`;
+      : "Kilobytes. The quality is lowered only as far as it needs to be, and the tool says what it settled on.";
   }
 
   function paintSharpen() {
@@ -256,7 +259,18 @@ async function start() {
         /* These three always produce exactly the rectangle asked for;
            what differs is what happens to the picture inside it. */
         after = `${options.targetWidth} × ${options.targetHeight}`;
-        if (options.fit === "cover") {
+
+        /* A picture smaller than the rectangle is only enlarged if
+           that is allowed. If it is not, nothing is cropped however
+           the fit is set - it is placed at its own size and padded -
+           and the preview has to say that rather than a percentage
+           that will never happen. */
+        const wouldGrow = w < options.targetWidth || h < options.targetHeight;
+        const heldBack = wouldGrow && !options.allowGrow;
+
+        if (heldBack && options.fit !== "stretch") {
+          note = "left at its own size and padded";
+        } else if (options.fit === "cover") {
           const scale = Math.max(options.targetWidth / w, options.targetHeight / h);
           const lostW = Math.round(w * scale - options.targetWidth);
           const lostH = Math.round(h * scale - options.targetHeight);
@@ -268,7 +282,7 @@ async function start() {
         } else if (options.fit === "contain") {
           note = "padded";
         } else if (options.fit === "stretch") {
-          note = "proportions changed";
+          note = heldBack ? "stretched, which cannot avoid enlarging" : "proportions changed";
         }
       } else {
         const size = targetSize(w, h, options);
