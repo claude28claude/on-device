@@ -125,6 +125,9 @@ function mountDropPanel() {
     multiple: true,
     class: "sr-only",
     id: "recipe-input",
+    /* Off-screen but reachable by keyboard and read out, so it needs
+       a name of its own rather than borrowing the button's. */
+    "aria-label": "Choose files to run the recipe on",
     onchange: (e) => {
       const chosen = e.target.files;
       e.target.value = "";
@@ -824,6 +827,7 @@ function importFile() {
     type: "file",
     accept: "application/json,.json",
     class: "sr-only",
+    "aria-label": "Choose a recipe file to import",
     onchange: async (e) => {
       const file = e.target.files && e.target.files[0];
       e.target.value = "";

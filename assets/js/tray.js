@@ -250,6 +250,10 @@ export function mount(container = document.body) {
       type: "button",
       "aria-expanded": "false",
       "aria-controls": "tray-body",
+      /* This is an icon on its own, so it needs a name from the
+         moment it exists. openTray keeps it up to date afterwards,
+         but until something called openTray it had none at all. */
+      "aria-label": t("tray.open"),
       onclick: () => openTray(!openState)
     },
     [icon("chevron-down", 16)]

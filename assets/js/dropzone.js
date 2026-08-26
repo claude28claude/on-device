@@ -94,6 +94,10 @@ export function mountPanel(container, { onFiles } = {}) {
     multiple: true,
     class: "sr-only",
     id: "dz-input",
+    /* Off-screen but still reachable by keyboard and still read out,
+       so it needs a name of its own - the visible button beside it is
+       a separate element and does not lend it one. */
+    "aria-label": t("drop.choose"),
     onchange: (e) => {
       const chosen = e.target.files;
       if (chosen && chosen.length) onFiles(chosen);

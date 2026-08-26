@@ -59,6 +59,9 @@ async function start() {
     class: "sr-only",
     accept: ".txt,.md,.csv,.json,.log,text/*",
     id: "text-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose a text file",
     onchange: async (e) => {
       const f = e.target.files && e.target.files[0];
       e.target.value = "";

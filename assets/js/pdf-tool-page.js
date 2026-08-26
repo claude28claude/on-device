@@ -153,6 +153,10 @@ export async function setupPdfTool({
     accept: acceptAttr,
     class: "sr-only",
     id: "tool-file-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. The visible button beside it is a
+       separate element and does not lend it one. */
+    "aria-label": "Choose files for this tool",
     onchange: async (e) => {
       const picked = e.target.files;
       e.target.value = "";

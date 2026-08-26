@@ -15,7 +15,7 @@ import * as dropzone from "./dropzone.js";
 import * as palette from "./palette.js";
 import * as shortcuts from "./shortcuts.js";
 import { getTool } from "./tools.js";
-import { el, icon, toast, announce, openDialog, confirmDestructive } from "./ui.js";
+import { el, icon, toast, announce, openDialog, confirmDestructive, ensureRegions } from "./ui.js";
 import { t } from "./i18n.js";
 
 export const version = "0.1.0";
@@ -203,6 +203,9 @@ export async function initPage({ pathPrefix = "", withDropPanel = null } = {}) {
   }
 
   checkBrowser();
+
+  /* Before anything else can announce something: see ui.js. */
+  ensureRegions();
 
   tray.mount();
   wireHeader();

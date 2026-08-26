@@ -16,6 +16,9 @@ async function start() {
     multiple: true,
     class: "sr-only",
     id: "cmp-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose the two files to compare",
     onchange: async (e) => {
       const f = e.target.files;
       e.target.value = "";

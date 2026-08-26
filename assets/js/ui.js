@@ -119,7 +119,17 @@ export function hasIcon(name) {
 let politeRegion = null;
 let assertiveRegion = null;
 
-function ensureRegions() {
+/* These two empty boxes are what a screen reader watches in order to
+   read out something that happened without the page changing around
+   it - "3 files finished", "that password was wrong".
+
+   They have to EXIST, and be empty, before the text is put into
+   them. A region that appears with its message already inside is
+   frequently not announced at all: the screen reader has nothing to
+   compare it against and treats it as ordinary new content. That is
+   why this is now called once as the page starts rather than at the
+   moment of the first announcement. */
+export function ensureRegions() {
   if (politeRegion) return;
   politeRegion = el("div", { class: "sr-only", "aria-live": "polite", "aria-atomic": "true" });
   assertiveRegion = el("div", { class: "sr-only", role: "alert", "aria-live": "assertive", "aria-atomic": "true" });

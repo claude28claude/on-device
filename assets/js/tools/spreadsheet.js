@@ -73,6 +73,9 @@ async function start() {
     class: "sr-only",
     accept: ".csv,.tsv,.txt,.json,.xlsx,.xls,.ods",
     id: "sheet-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose a spreadsheet or data file",
     onchange: async (e) => {
       const f = e.target.files && e.target.files[0];
       e.target.value = "";

@@ -30,6 +30,7 @@ is always current.
 | 12 | The QR generator, finally checked | **Done** — three real faults found and fixed |
 | 13 | The QR reader, un-cancelled | **Done** — it was cancelled for the wrong reason |
 | 14 | A bug hunt | **Done** — three real faults, one of them shipped for seven phases |
+| 15 | Closing the accessibility gap as far as it can be closed here | **Done** — twelve unnamed controls found and named |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1363,6 +1364,97 @@ nothing about where it looked:
 
 ---
 
+## Phase 15 — what a screen reader would actually have heard
+
+### First, what could not be done
+
+Windows Narrator is on this machine. It has no way to show me what it
+says — its output is speech, and there is no transcript window. Running
+it would have let me watch a focus box move around while having no idea
+what was being announced. That is theatre, not a test, so it was not
+done. NVDA, which does have a speech viewer, is not installed.
+
+What *can* be done properly is to audit the exact information a screen
+reader is given, and to drive the site by keyboard and by touch. That
+is what this phase is.
+
+### Twelve controls that would have been announced as nothing
+
+A screen reader reads a control's **accessible name**. A control
+without one is announced as “button”, or “file upload”, and nothing
+else — you are told something is there but not what it does.
+
+Twelve were found:
+
+- The **file picker on every one of the 38 tool pages**. Each tool
+  hides a real file input off-screen and puts a friendly button next
+  to it. The button had a name; the input, which is what the keyboard
+  lands on, did not.
+- The same picker on the homepage drop zone, on the Recipes page, on
+  the Recipes import, and in seven tools that build their own.
+- The **results-tray expand button**, which is an icon on its own. It
+  was given a name by the function that opens and closes the tray —
+  so until something opened or closed the tray, it had none.
+
+Every one of these was invisible to the structural check written in
+Phase 10, for a simple reason: **they do not exist in the HTML.** They
+are built by JavaScript when the page runs. A checker that reads files
+can never see them. This is the difference between checking the
+source and checking the running page, and it took the second kind to
+find them.
+
+### The announcements were being made into a box that did not exist yet
+
+Screen readers announce a change by watching a region of the page for
+one. The two regions this site uses were created **at the moment of
+the first announcement**, with the message already inside them.
+
+That is a well-known way to have an announcement missed entirely: the
+reader has nothing to compare against, so it treats the text as
+ordinary new content and says nothing. The regions are now created,
+empty, as the page starts — which is what they are for.
+
+### Driven by keyboard
+
+Tabbing from the top of a tool page: the skip link comes first, then
+the wordmark, the six navigation links, the search and clear buttons,
+the breadcrumb, and then the tool itself. Focus is drawn with a
+three-pixel outline that is visible in every theme. Text was typed
+into a field and a code was produced without a mouse being used.
+
+One honest gap in the method: the test rig sends key presses that
+browsers do not treat as real activation, so pressing Enter on a
+button could not be confirmed this way. A plain button added to the
+page for comparison behaved identically, which shows the limitation is
+in the rig and not in the site — but it does mean “Enter activates
+every button” is reasoned rather than observed here.
+
+### Driven by touch
+
+Not a narrow window this time: the browser was put into full device
+emulation — Android user agent, five touch points, coarse pointer, no
+hover — and a job was completed by tapping. Tap the field, type,
+watch the code appear, and read it back: “Tapped on a phone”, exact.
+Nothing scrolled sideways.
+
+### Where this leaves the gap
+
+Genuinely narrower, and not closed:
+
+- Every control on every page now has a name a screen reader can read
+  out, checked on the **running** page rather than in the source.
+- Announcements will now be heard rather than swallowed.
+- The site can be operated by keyboard and by touch.
+
+But nobody has yet listened to it. A real screen reader user would
+still be the first to know whether the order things are announced in
+makes sense, whether the running commentary is useful or maddening,
+and whether the tool pages are navigable in practice rather than in
+principle. That remains the largest honest gap in this project, and it
+cannot be closed from here.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -1462,11 +1554,13 @@ With the server dead, in the same browser:
     every tool writes a new file to the results tray — so nothing is ever
     destroyed. But there is no button that walks a change back.
 
-15. **No accessibility audit with a real screen reader yet.** Structure is now
-    machine-checked on every page as well as contrast — see Phase 10 — and three
-    real faults were found and fixed that way. But nobody has still driven this
-    site with NVDA or VoiceOver, and a passing structural check is not the same
-    thing. This is the largest honest gap that remains.
+15. **Nobody has listened to this site with a screen reader.** Phase 15 went as
+    far as can be gone without one: every control on every **running** page now
+    has a name a screen reader can read out, the announcement regions exist
+    before they are used, and the site was driven by keyboard and by touch.
+    Twelve unnamed controls were found and fixed that way. But being readable in
+    principle is not the same as being usable in practice, and only somebody
+    using one can tell you which this is. Still the largest honest gap here.
 
 16. ~~**PDF page-drawing pauses while the tab is in the background.**~~
     **Fixed in Phase 10.** It was real, it is written up above, and a
@@ -1532,10 +1626,11 @@ With the server dead, in the same browser:
     with an annotation marked “do not print”, that annotation will not appear in
     an exported picture. No such document was to hand to test with.
 
-30. **The phone pass was measured, not held.** Every page was checked at 375
-    pixels in a desktop browser told to be that size. Nobody has used this on an
-    actual phone, where the keyboard covers half the screen and the memory runs
-    out sooner.
+30. **The phone pass is emulated, not held.** Phase 15 went further than a narrow
+    window — full device emulation, touch events, no hover — and completed a real
+    job by tapping. But nobody has held this on an actual phone, where the
+    on-screen keyboard covers half the display, the memory runs out sooner, and
+    Safari on iOS behaves differently from anything tested here.
 
 31. **The background remover cuts through hair, fur and glass.** Colour cannot
     tell a strand of hair from the wall behind it. Nothing here will fix that;
@@ -1571,6 +1666,11 @@ With the server dead, in the same browser:
     looser.** A contact card is split on plain colons and semicolons, so a name
     or address containing one may be shown slightly wrong. It is displayed as
     information, never acted on, and the exact text is always shown underneath.
+
+39. **“Enter activates every button” is reasoned, not observed.** The test rig
+    cannot synthesise the browser's own activation behaviour, which was proved by
+    a plain control button behaving the same way. Nothing on the page prevents
+    it, and ordinary buttons are used throughout rather than anything custom.
 
 ---
 

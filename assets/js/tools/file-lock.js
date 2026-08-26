@@ -19,6 +19,9 @@ async function start() {
     multiple: true,
     class: "sr-only",
     id: "lock-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose files to lock or unlock",
     onchange: async (e) => {
       const picked = e.target.files;
       e.target.value = "";

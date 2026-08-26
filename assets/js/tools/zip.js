@@ -28,6 +28,9 @@ async function start() {
     multiple: true,
     class: "sr-only",
     id: "zip-input",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose files to zip or unzip",
     onchange: async (e) => {
       const f = e.target.files;
       e.target.value = "";

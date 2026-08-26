@@ -67,6 +67,9 @@ async function start() {
     class: "sr-only",
     accept: ".md,.markdown,.txt,text/*",
     id: "md-file",
+    /* Off-screen but reachable by keyboard and read out, so it
+       needs a name of its own. */
+    "aria-label": "Choose a markdown file",
     onchange: async (e) => {
       const f = e.target.files && e.target.files[0];
       e.target.value = "";
