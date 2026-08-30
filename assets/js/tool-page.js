@@ -39,7 +39,7 @@ export async function setupImageTool({
      that meant a file called "-hidden" with nothing hidden in it. */
   ownRun = false
 }) {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   const filesHost = document.getElementById("files-host");
   const queueHost = document.getElementById("queue-host");
@@ -92,7 +92,14 @@ export async function setupImageTool({
        separate element and does not lend it one. */
     "aria-label": "Choose files for this tool",
     onchange: async (e) => {
-      const picked = e.target.files;
+      /* Take a copy of the list before clearing the input.
+
+         input.files is LIVE: clearing the input empties the very
+         same object, so reading it afterwards finds nothing and the
+         chosen file is silently dropped. Array.from takes a snapshot,
+         and the File objects in it stay readable once the input has
+         been reset. */
+      const picked = Array.from(e.target.files || []);
       e.target.value = "";
       if (!picked || !picked.length) return;
       const { added, problems } = await workspace.add(picked);

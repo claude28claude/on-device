@@ -33,6 +33,7 @@ is always current.
 | 15 | Closing the accessibility gap as far as it can be closed here | **Done** — twelve unnamed controls found and named |
 | 16 | The last unkept promise, and a much bigger resize tool | **Done** |
 | 17 | Going back over Phase 16 looking for what it broke | **Done** — three faults, all mine, all from the day before |
+| 18 | Choosing a file did nothing at all | **Done** — reported by the person using it, not by any check |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1618,6 +1619,87 @@ table it was the only user of.
   exactly the dimensions it should.
 - The recipe step gained “shortest side” as well, which the tool had
   been offering since yesterday and the step had not.
+
+---
+
+## Phase 18 — choosing a file did nothing at all
+
+Reported in four words: “it”s not uploading”. It was worse than
+that, and it had been shipped.
+
+### 1. The “Choose” button was dead on every tool page
+
+Press “Choose images”, pick a photograph, and **nothing happened**.
+No file appeared, no error, no message. The Run button stayed grey.
+The page looked exactly as it had a second earlier.
+
+The cause is a trap in the browser itself. The list of chosen files,
+`input.files`, is not a copy — it is a **live** view of what the input
+is holding. The code took a reference to that list, then immediately
+reset the input (so that choosing the same file twice would still
+count), and only then looked at the list. Resetting the input empties
+that very object. By the time the code asked “did you choose
+anything?” the answer was always no, so it quietly gave up.
+
+Measured directly rather than reasoned about: before the reset the
+list held 1 file, after it held 0, and it was the same object both
+times.
+
+The fix takes a snapshot of the list before the input is reset. The
+files inside a snapshot stay readable afterwards, which was also
+measured rather than assumed.
+
+This affected **every tool that had a Choose button** — all the image
+tools, all the PDF tools, and the checksum, compare, lock and zip
+tools. Twelve places in all wrote it the wrong way round.
+
+**Why nothing caught it.** Dragging a file in still worked, because
+that path never touches a file input. The homepage picker also worked,
+by luck: it read the list before resetting, and the code it handed the
+list to happened to copy it before pausing. So every route I had
+actually tested worked, and the one route most people reach for first
+did not.
+
+Worse: I had already seen this. In an earlier phase a test that set
+`input.files` and fired the change event “did not work”, and I put it
+down to my test rig being unrealistic. It was not the rig. The
+evidence was in front of me and I explained it away, which is the
+mistake that let this ship. The homepage picker has been rewritten to
+take a snapshot too — it worked only by accident, and one added pause
+anywhere upstream would have killed it the same silent way.
+
+### 2. One dropped file was stored twice
+
+Dropping a photograph onto a tool page added it to the file store
+**two times**. The tool itself showed “1 selected” and behaved
+correctly, so the only sign was a duplicate in the file list, a second
+copy of the picture held in memory, and a recipe that would have
+worked through the same file twice.
+
+Two handlers were listening. Every page gets a general one that
+catches files dropped anywhere; a tool page adds its own so that a
+drop lands in that tool rather than sending you back to the homepage.
+Neither knew about the other, so both stored it.
+
+Tool pages now say so when they start up, and the general handler
+stands aside for them. It still takes down the “drop it anywhere”
+overlay — the obvious fix, stopping the event outright, would have
+left that overlay stuck on the screen.
+
+### What was checked afterwards
+
+- **All 40 tools were driven through the Choose button** with real
+  sample files — a photograph, a three-page PDF, a spreadsheet, a
+  markdown file. Every one accepted the file. Before the fix the same
+  sweep would have failed on all of them.
+- **Resize, end to end**: a real 365 KB photograph came out at 195 KB.
+- **Merge, end to end**: a 1-page and a 3-page PDF produced a document
+  with 4 pages, confirmed by reading the finished file back.
+- **Dropping now stores one copy, not two**, and the overlay still
+  clears.
+- The homepage and the recipes page, which rely on the general
+  handler, still take dropped files and still store exactly one copy.
+- All five checks pass, and the site still makes no external request.
 
 ---
 

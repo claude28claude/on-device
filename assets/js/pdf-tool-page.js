@@ -135,7 +135,7 @@ export async function setupPdfTool({
   singleFile = false,
   onFilesChanged = null
 }) {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   const filesHost = document.getElementById("files-host");
   const statusHost = document.getElementById("tool-status");
@@ -158,7 +158,14 @@ export async function setupPdfTool({
        separate element and does not lend it one. */
     "aria-label": "Choose files for this tool",
     onchange: async (e) => {
-      const picked = e.target.files;
+      /* Take a copy of the list before clearing the input.
+
+         input.files is LIVE: clearing the input empties the very
+         same object, so reading it afterwards finds nothing and the
+         chosen file is silently dropped. Array.from takes a snapshot,
+         and the File objects in it stay readable once the input has
+         been reset. */
+      const picked = Array.from(e.target.files || []);
       e.target.value = "";
       if (picked && picked.length) await accept(picked);
     }

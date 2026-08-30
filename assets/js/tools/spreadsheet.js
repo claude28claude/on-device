@@ -66,7 +66,7 @@ async function readText(blob) {
 }
 
 async function start() {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   const input = el("input", {
     type: "file",

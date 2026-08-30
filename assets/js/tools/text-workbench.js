@@ -43,7 +43,7 @@ const OPERATIONS = {
 };
 
 async function start() {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   area = el("textarea", {
     id: "text-area",

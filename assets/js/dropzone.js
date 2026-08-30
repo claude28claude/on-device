@@ -53,7 +53,7 @@ function hasFiles(e) {
 }
 
 /* ---- Window-wide drag and drop -------------------------- */
-export function installWindowDrop(onFiles) {
+export function installWindowDrop(onFiles, { pageHandlesFiles = false } = {}) {
   window.addEventListener("dragenter", (e) => {
     if (!hasFiles(e)) return;
     e.preventDefault();
@@ -78,6 +78,12 @@ export function installWindowDrop(onFiles) {
     e.preventDefault();
     dragDepth = 0;
     showVeil(false);
+    /* A tool page puts dropped files into that tool itself, from its
+       own handler. Without this the very same file would also be added
+       to the workspace here, so one drop left two copies. The veil
+       still has to come down, which is why this returns at this point
+       and not at the top. */
+    if (pageHandlesFiles) return;
     const dropped = e.dataTransfer.files;
     if (dropped && dropped.length) onFiles(dropped);
   });
@@ -99,10 +105,14 @@ export function mountPanel(container, { onFiles } = {}) {
        a separate element and does not lend it one. */
     "aria-label": t("drop.choose"),
     onchange: (e) => {
-      const chosen = e.target.files;
-      if (chosen && chosen.length) onFiles(chosen);
+      /* Copy the list before resetting the input. input.files is LIVE,
+         so clearing the input empties that same object. This worked
+         only because the reader happened to copy the list before its
+         first await; a snapshot here does not depend on that. */
+      const chosen = Array.from(e.target.files || []);
       /* Reset so choosing the same file twice still fires. */
       e.target.value = "";
+      if (chosen.length) onFiles(chosen);
     }
   });
 

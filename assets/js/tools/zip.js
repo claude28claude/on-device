@@ -21,7 +21,7 @@ async function loadZip() {
 }
 
 async function start() {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   const input = el("input", {
     type: "file",
@@ -32,7 +32,14 @@ async function start() {
        needs a name of its own. */
     "aria-label": "Choose files to zip or unzip",
     onchange: async (e) => {
-      const f = e.target.files;
+      /* Take a copy of the list before clearing the input.
+
+         input.files is LIVE: clearing the input empties the very
+         same object, so reading it afterwards finds nothing and the
+         chosen file is silently dropped. Array.from takes a snapshot,
+         and the File objects in it stay readable once the input has
+         been reset. */
+      const f = Array.from(e.target.files || []);
       e.target.value = "";
       if (f && f.length) await accept(f);
     }

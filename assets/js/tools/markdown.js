@@ -48,7 +48,7 @@ async function loadEngine() {
 }
 
 async function start() {
-  await initPage({ pathPrefix: "../" });
+  await initPage({ pathPrefix: "../", handlesOwnDrops: true });
 
   area = el("textarea", {
     id: "md-input",

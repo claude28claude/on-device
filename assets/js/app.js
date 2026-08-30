@@ -189,7 +189,7 @@ export function checkBrowser() {
 }
 
 /* ---- Page start-up -------------------------------------- */
-export async function initPage({ pathPrefix = "", withDropPanel = null } = {}) {
+export async function initPage({ pathPrefix = "", withDropPanel = null, handlesOwnDrops = false } = {}) {
   prefix = pathPrefix;
   dropzone.setPathPrefix(prefix);
   palette.setPathPrefix(prefix);
@@ -232,7 +232,7 @@ export async function initPage({ pathPrefix = "", withDropPanel = null } = {}) {
     toast(message, { kind: "warn", title: "Could not save to this device", timeout: 12000 });
   });
 
-  dropzone.installWindowDrop((fileList) => dropzone.handleFiles(fileList));
+  dropzone.installWindowDrop((fileList) => dropzone.handleFiles(fileList), { pageHandlesFiles: handlesOwnDrops });
   if (withDropPanel) {
     dropzone.mountPanel(withDropPanel, { onFiles: (fileList) => dropzone.handleFiles(fileList) });
   }

@@ -129,7 +129,14 @@ function mountDropPanel() {
        a name of its own rather than borrowing the button's. */
     "aria-label": "Choose files to run the recipe on",
     onchange: (e) => {
-      const chosen = e.target.files;
+      /* Take a copy of the list before clearing the input.
+
+         input.files is LIVE: clearing the input empties the very
+         same object, so reading it afterwards finds nothing and the
+         chosen file is silently dropped. Array.from takes a snapshot,
+         and the File objects in it stay readable once the input has
+         been reset. */
+      const chosen = Array.from(e.target.files || []);
       e.target.value = "";
       if (chosen && chosen.length) dropzone.handleFiles(chosen);
     }
