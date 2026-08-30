@@ -34,6 +34,7 @@ is always current.
 | 16 | The last unkept promise, and a much bigger resize tool | **Done** |
 | 17 | Going back over Phase 16 looking for what it broke | **Done** — three faults, all mine, all from the day before |
 | 18 | Choosing a file did nothing at all | **Done** — reported by the person using it, not by any check |
+| 19 | A hunt across the whole site | **Done** — two faults found, plus four properties finally tested rather than assumed |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1700,6 +1701,82 @@ left that overlay stuck on the screen.
 - The homepage and the recipes page, which rely on the general
   handler, still take dropped files and still store exactly one copy.
 - All five checks pass, and the site still makes no external request.
+
+---
+
+## Phase 19 — a hunt across the whole site
+
+Every tool driven end to end with real files, watching for errors and
+for output that never arrived.
+
+### 1. Eight tools showed a queue that was a lie
+
+Choose a photograph on the watermark, blur, crop, combine, background,
+icon, colour-picker or code-reading tool and a panel appeared saying
+**“1 file in the queue — Waiting”**. It stayed that way for ever. The
+file had in fact been finished and saved seconds earlier.
+
+Those eight tools take the Run button and do their own work, because
+you mark or point at something first. They never touch the shared
+queue — but the queue was still being filled in, and nothing was ever
+going to empty it. On the colour picker and the code reader there is
+no queue of work at all, so it was describing something that does not
+exist.
+
+The queue is now left alone by the tools that do not use it. Checked
+both ways: those eight show nothing, and an ordinary tool still shows
+“Waiting” and then the result.
+
+### 2. Seven places promised tools that had already been built
+
+The site was still telling people that finished tools were yet to come:
+
+| Where | What it said | The truth |
+|---|---|---|
+| Merge, Split, Organise | “Remove the password first, which arrives in Phase 4” | That tool has existed for months |
+| Flatten, Rotate and crop | “the Redact tool arriving in Phase 5” | Also already built |
+| The PDF reader | “that tool arrives in Phase 4” | **Shown as an error** to someone who had just opened a locked PDF |
+| Help, on iPhone photos | “It arrives in Phase 2” | The converter is built |
+
+The worst is the third. It is not a note in the small print — it is
+the message someone gets at the exact moment they hit a
+password-protected file, telling them the thing that would fix it does
+not exist yet. It did, and it was one click away.
+
+All seven now name the real tool and **link to it**, so the answer is
+one click rather than a search. The iPhone answer was rewritten
+honestly rather than just re-pointed: the converter is built, but
+whether a HEIC photo opens at all depends on your browser, and the
+page now says which browsers manage it.
+
+The “not built yet” machinery itself is untouched and still correct —
+it is driven by data, and only the video and audio tool uses it now.
+
+### Four things that turned out to be fine, and are now actually tested
+
+- **Sideways photographs.** The code asks the browser to apply a
+  photo”s rotation tag, and falls back to doing the maths itself if the
+  browser cannot. That fallback never runs on this machine, so it had
+  never once been exercised. Tested against the specification for all
+  eight rotations and mirrorings: **all eight correct**. My first
+  attempt at that test was wrong, and said so by failing the one case
+  that is a straight copy and cannot fail.
+- **Locking a file.** The highest-stakes tool here: if unlocking ever
+  failed, someone would lose a file for good. Locked and then unlocked
+  a real file — **byte for byte identical** to the original — and a
+  wrong password is refused with an explanation rather than quietly
+  handing back rubbish.
+- **Zipping.** The result is a real zip, with both files inside it
+  under the right names, confirmed by reading the file”s own structure
+  rather than trusting the label.
+- **QR codes.** Typed a web address in, read the finished picture back:
+  exactly the same text.
+
+Also checked and clean: no silently swallowed errors anywhere (the
+three quiet ones are freeing memory and clearing a stored setting),
+no leaked picture memory, and the two tools that produced nothing on a
+plain run — Split and Rotate and crop — were right to, and say so
+(“No pages chosen”, “Nothing to do”) rather than failing quietly.
 
 ---
 

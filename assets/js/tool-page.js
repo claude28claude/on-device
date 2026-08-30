@@ -125,7 +125,13 @@ export async function setupImageTool({
     }
     if (!images.length) return;
     chosen = singleFile ? images.slice(0, 1) : images;
-    queue.setFiles(chosen);
+    /* A tool that takes the Run button does its own work and never
+       touches this queue. Filling it in anyway put "1 file in the
+       queue - Waiting" on screen, where it stayed for ever: the file
+       had in fact been finished and saved. On the colour picker and
+       the code reader there is no queue of work at all, so it was
+       describing something that does not exist. */
+    if (!ownRun) queue.setFiles(chosen);
     renderChosen();
     if (onFilesChanged) onFilesChanged(chosen);
     updateRunButton();

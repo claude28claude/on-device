@@ -141,8 +141,8 @@ export async function openForWriting(file, { name = "this file" } = {}) {
     if (/encrypt/i.test(message)) {
       throw new PdfError(
         `“${name}” is password-protected, and protected documents cannot be edited ` +
-        `directly. Remove the password first — that tool arrives in Phase 4 — and ` +
-        `then this will work.`,
+        `directly. Remove the password first with the “Remove a PDF password” tool, ` +
+        `and then this will work.`,
         ENCRYPTED_FOR_WRITING
       );
     }
