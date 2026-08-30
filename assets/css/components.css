@@ -261,6 +261,15 @@ input[type="color"] {
 }
 @media (max-width: 560px) { .search-box .search-kbd { display: none; } }
 
+/* The same hint sits inside the search button in the header, and that
+   one was missed. A touch screen has no Ctrl key, so the badge was
+   telling people to press something they do not have. "pointer:
+   coarse" is what a finger reports, and it is the honest test here -
+   a tablet has no Ctrl key at any width, while a narrow desktop
+   window still does. The button itself stays either way: tapping it
+   opens the search exactly as before. */
+@media (pointer: coarse) { #open-palette kbd { display: none; } }
+
 .filter-chips {
   display: flex;
   flex-wrap: wrap;

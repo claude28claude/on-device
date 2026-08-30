@@ -35,6 +35,7 @@ is always current.
 | 17 | Going back over Phase 16 looking for what it broke | **Done** — three faults, all mine, all from the day before |
 | 18 | Choosing a file did nothing at all | **Done** — reported by the person using it, not by any check |
 | 19 | A hunt across the whole site | **Done** — two faults found, plus four properties finally tested rather than assumed |
+| 20 | Random retesting: touch screens and the Hindi half-translation | **Done** |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1780,6 +1781,89 @@ plain run — Split and Rotate and crop — were right to, and say so
 
 ---
 
+## Phase 20 — random retesting, and a language that stopped halfway
+
+This pass deliberately went where earlier ones had not: hostile files,
+a phone-sized screen, and the second language.
+
+### 1. A phone was told to press a key it does not have
+
+At phone width the search button still carried a **`Ctrl K`** badge.
+There is no Ctrl key on a phone. The site was telling somebody to
+press something that does not exist on their device.
+
+The same hint beside the homepage search box was already hidden on
+narrow screens, so the intent was there — the button in the header had
+simply been missed. It now goes away wherever the pointer is coarse,
+which is what a finger reports. That is a better test than width: a
+tablet has no Ctrl key at any size, while a narrow desktop window
+still does. The button itself is untouched, and tapping it still opens
+the search.
+
+### 2. Choosing Hindi translated the page but not the tool
+
+This is the real find. Set the language to Hindi and the heading,
+navigation and description all turned into Hindi properly — and then
+**the parts you actually use stayed in English**:
+
+| What | Was |
+|---|---|
+| The Run button on all 40 tools | `Resize`, `Merge into one PDF` … |
+| Every queue word | `Waiting`, `Working`, `Done`, `Failed` |
+| The queue summary | `2 files in the queue` |
+| Stop, Skip, Retry | English |
+| What is read out to a screen reader | English |
+
+The cause: those are drawn by JavaScript, and the translation machinery
+only ever touched things written into the page itself. The run label in
+particular lived as `data-label="Resize"` in each of the 40 pages, so it
+could not be translated at all.
+
+So a Hindi reader got a Hindi page wrapped around an English tool —
+and the English half was the half that matters. The string table was
+not the problem: it was complete, 370 keys with nothing missing.
+
+**Fixed.** The queue now looks its words up as it draws them, so
+changing the language updates a queue already on screen rather than
+leaving it in the language it started in. Each tool's Run label became
+a proper key, and the counted form is a template so Hindi can put the
+number where Hindi puts it — `आकार बदलें (2 तस्वीरें)` rather than a
+word-for-word English order. 91 new keys in both languages, and both
+tables still match exactly: 431 each, nothing missing either way.
+
+Checked in both languages: English is **unchanged** — still `Resize`,
+`Resize 1 image`, `Resize 2 images`, `Merge into one PDF (2 files)`,
+`Waiting` — and Hindi now reads `आकार बदलें (2 तस्वीरें)` and
+`कतार में 2 फ़ाइलें`.
+
+### What is still English, and why it was left
+
+Roughly **300 further strings** — the sentence each tool writes about
+what it just did, such as “365 KB → 195 KB (46% smaller)” and
+“Re-saving removed the original's hidden information”. Translating
+those is a translation project, not a bug fix, and doing it here would
+have meant inventing three hundred Hindi sentences that nobody could
+check. The skeleton every tool shares is now translated; the prose each
+tool writes is not. It is written down below rather than left to be
+discovered.
+
+### Things that turned out to be right
+
+- **Damaged and lying files.** A cut-short PDF, a text file named
+  `.pdf`, and an empty file were each refused with a specific
+  explanation — including which one was really a text file. The
+  damaged one produces a red panel naming the file and quoting what
+  the reader said.
+- **Split and Rotate-and-crop doing nothing** on a plain run: correct,
+  and both say why.
+- **The phone layout** does not scroll sideways, and all 41 tool links
+  are present and reachable.
+- **The Hindi string table** was complete before this phase: 370 of
+  370, with the only identical entries being units like KB and MB,
+  which do not change.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -2009,6 +2093,16 @@ With the server dead, in the same browser:
     If the limit cannot be reached it says so and suggests reducing the pixel
     size, but it will not do that for you — silently shrinking a picture somebody
     asked to be a particular size would be worse.
+
+43. **The sentence each tool writes about its own result is English only.** About
+    300 strings — “46% smaller”, “Re-saving removed the original's hidden
+    information” and their like. The shared skeleton (buttons, queue, states,
+    what is read aloud) is translated; this layer is not, and a Hindi reader
+    will see English here.
+
+44. **The Hindi has still never been read by a Hindi speaker.** That was true of
+    the 370 strings already shipped and it is true of the 91 added in Phase 20.
+    The setting says so where the language is chosen.
 
 ---
 

@@ -71,6 +71,78 @@ export default {
   "tool.ready": "Ready",
   "tool.open": "Open {name}",
 
+  /* ---- The queue, and the shared tool machinery -----------
+     These are drawn by JavaScript rather than written into each
+     page, so until now they stayed in English however the site was
+     set. That left a Hindi reader with a translated page but an
+     English button, queue and result — the working parts. */
+  "tool.imagesReady": "{n} image ready.",
+  "tool.imagesReady.plural": "{n} images ready.",
+  "pdfTools.preparing": "Preparing the PDF tools. This happens once.",
+  "pdfTools.ready": "PDF tools ready.",
+  "queue.state.waiting": "Waiting",
+  "queue.state.running": "Working",
+  "queue.state.done": "Done",
+  "queue.state.error": "Failed",
+  "queue.state.cancelled": "Cancelled",
+  "queue.state.skipped": "Skipped",
+  "queue.progress": "Working — {done} of {total} done",
+  "queue.count": "{n} file in the queue",
+  "queue.count.plural": "{n} files in the queue",
+  "queue.stop": "Stop",
+  "queue.skip": "Skip",
+  "queue.retry": "Retry",
+  "queue.retryFailed": "Retry {n} failed",
+  "queue.stopped": "Stopped.",
+
+  /* ---- The label on each tool's Run button --------------
+     These used to live only in the page as data-label, which
+     meant the main button of every tool stayed English no
+     matter what language was chosen. */
+  "tool.background-remover.run": "Remove the background",
+  "tool.checksum.run": "Work out the checksum",
+  "tool.colour-palette.run": "Read the colours",
+  "tool.file-compare.run": "Compare",
+  "tool.file-lock.run": "Lock",
+  "tool.icon-generator.run": "Make the icons",
+  "tool.image-blur.run": "Hide the marked areas",
+  "tool.image-combine.run": "Combine",
+  "tool.image-compress.run": "Compress",
+  "tool.image-convert.run": "Convert",
+  "tool.image-crop.run": "Crop",
+  "tool.image-metadata.run": "Strip metadata from",
+  "tool.image-resize.run": "Resize",
+  "tool.image-rotate.run": "Rotate",
+  "tool.image-watermark.run": "Watermark",
+  "tool.images-to-pdf.run": "Make the PDF",
+  "tool.markdown.run": "Export as a web page",
+  "tool.pdf-compress.run": "Compress",
+  "tool.pdf-extract-text.run": "Extract the text",
+  "tool.pdf-fill-sign.run": "Save the signed PDF",
+  "tool.pdf-flatten.run": "Flatten",
+  "tool.pdf-merge.run": "Merge into one PDF",
+  "tool.pdf-metadata.run": "Save the changes",
+  "tool.pdf-nup.run": "Lay out",
+  "tool.pdf-ocr.run": "Read the text",
+  "tool.pdf-organise.run": "Save the new order",
+  "tool.pdf-page-numbers.run": "Add numbers",
+  "tool.pdf-password-add.run": "Protect",
+  "tool.pdf-password-remove.run": "Remove the password",
+  "tool.pdf-redact.run": "Redact and destroy",
+  "tool.pdf-rotate-crop.run": "Apply",
+  "tool.pdf-split.run": "Split",
+  "tool.pdf-to-images.run": "Export pages",
+  "tool.pdf-watermark.run": "Add the watermark",
+  "tool.qr-generate.run": "Download",
+  "tool.qr-read.run": "Read the code",
+  "tool.screenshot-polish.run": "Polish",
+  "tool.spreadsheet.run": "Convert",
+  "tool.text-workbench.run": "Download as a text file",
+  "tool.zip.run": "Make a zip",
+  "tool.runCount.images": "{label} {n} image",
+  "tool.runCount.images.plural": "{label} {n} images",
+  "tool.runCount.files": "{label} ({n} files)",
+
   /* ---- Not-built dialog --------------------------------- */
   "notBuilt.title": "{name} is not built yet",
   "notBuilt.body":

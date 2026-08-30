@@ -12,15 +12,14 @@
 
 import { el, announce, formatBytes } from "./ui.js";
 import { isCancellation, cancelEverything } from "./image/runner.js";
+import { t, tn } from "./i18n.js";
 
-export const STATES = {
-  waiting: "Waiting",
-  running: "Working",
-  done: "Done",
-  error: "Failed",
-  cancelled: "Cancelled",
-  skipped: "Skipped"
-};
+/* Looked up at the moment it is drawn rather than when this file is
+   loaded, so that changing the language updates a queue already on
+   screen instead of leaving it in the language it started in. */
+export function stateLabel(state) {
+  return t(`queue.state.${state}`);
+}
 
 export class Queue {
   constructor({ host, onItemDone, worker, toolName }) {
@@ -124,7 +123,7 @@ export class Queue {
       if (item.state === "waiting") item.state = "cancelled";
     }
     this.render();
-    announce("Stopped.");
+    announce(t("queue.stopped"));
   }
 
   skip(id) {
@@ -175,7 +174,7 @@ export class Queue {
     const bar = item.node.querySelector(".progress > i");
     if (bar) bar.style.width = `${Math.round(item.progress * 100)}%`;
     const state = item.node.querySelector(".q-state");
-    if (state) state.textContent = `${STATES[item.state]} ${Math.round(item.progress * 100)}%`;
+    if (state) state.textContent = `${stateLabel(item.state)} ${Math.round(item.progress * 100)}%`;
   }
 
   render() {
@@ -186,17 +185,17 @@ export class Queue {
     const summary = el("div", { class: "flex-row mb-4" }, [
       el("strong", {
         text: this.running
-          ? `Working — ${this.doneCount} of ${this.items.length} done`
-          : `${this.items.length} file${this.items.length === 1 ? "" : "s"} in the queue`
+          ? t("queue.progress", { done: this.doneCount, total: this.items.length })
+          : tn("queue.count", this.items.length)
       }),
       this.running
-        ? el("button", { class: "btn btn-sm btn-danger", type: "button", onclick: () => this.stop() }, "Stop")
+        ? el("button", { class: "btn btn-sm btn-danger", type: "button", onclick: () => this.stop() }, t("queue.stop"))
         : null,
       !this.running && this.failedCount
         ? el(
             "button",
             { class: "btn btn-sm", type: "button", onclick: () => this.retryAllFailed() },
-            `Retry ${this.failedCount} failed`
+            t("queue.retryFailed", { n: this.failedCount })
           )
         : null
     ]);
@@ -242,20 +241,22 @@ export class Queue {
       ]),
       el("span", {
         class: "badge " + badgeClass(item.state),
-        text: item.state === "running" ? `${STATES[item.state]} ${Math.round(item.progress * 100)}%` : STATES[item.state]
+        text: item.state === "running"
+          ? `${stateLabel(item.state)} ${Math.round(item.progress * 100)}%`
+          : stateLabel(item.state)
       }),
       item.state === "waiting" && this.running
         ? el(
             "button",
             { class: "btn btn-sm btn-quiet", type: "button", onclick: () => this.skip(item.id) },
-            "Skip"
+            t("queue.skip")
           )
         : null,
       item.state === "error" || item.state === "cancelled" || item.state === "skipped"
         ? el(
             "button",
             { class: "btn btn-sm", type: "button", onclick: () => this.retry(item.id) },
-            "Retry"
+            t("queue.retry")
           )
         : null
     ]);

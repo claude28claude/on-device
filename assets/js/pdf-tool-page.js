@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { initPage } from "./app.js";
+import { t } from "./i18n.js";
 import * as workspace from "./workspace.js";
 import * as tray from "./tray.js";
 import * as store from "./store.js";
@@ -39,7 +40,7 @@ export async function ensureEngine(host) {
     host.textContent = "";
     host.append(panel);
   }
-  announce("Preparing the PDF tools. This happens once.");
+  announce(t("pdfTools.preparing"));
 
   try {
     await loadPdfEngine(({ loaded, total, fraction, label: part }) => {
@@ -49,7 +50,7 @@ export async function ensureEngine(host) {
         `(${Math.round(fraction * 100)}%)`;
     });
     if (host) host.textContent = "";
-    announce("PDF tools ready.");
+    announce(t("pdfTools.ready"));
     return true;
   } catch (err) {
     if (host) {
@@ -239,8 +240,8 @@ export async function setupPdfTool({
     if (!runButton) return;
     const label = runButton.dataset.label || "Run";
     runButton.disabled = !chosen.length;
-    runButton.textContent = chosen.length
-      ? `${label}${chosen.length > 1 ? ` (${chosen.length} files)` : ""}`
+    runButton.textContent = chosen.length > 1
+      ? t("tool.runCount.files", { n: chosen.length, label })
       : label;
   }
 

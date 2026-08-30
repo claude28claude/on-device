@@ -7,6 +7,7 @@
    ============================================================ */
 
 import { initPage } from "./app.js";
+import { tn } from "./i18n.js";
 import * as workspace from "./workspace.js";
 import * as tray from "./tray.js";
 import * as store from "./store.js";
@@ -135,7 +136,7 @@ export async function setupImageTool({
     renderChosen();
     if (onFilesChanged) onFilesChanged(chosen);
     updateRunButton();
-    announce(`${chosen.length} image${chosen.length === 1 ? "" : "s"} ready.`);
+    announce(tn("tool.imagesReady", chosen.length));
   }
 
   function renderChosen() {
@@ -183,7 +184,7 @@ export async function setupImageTool({
     runButton.disabled = !chosen.length || queue.running;
     const label = runButton.dataset.label || "Run";
     runButton.textContent = chosen.length
-      ? `${label} ${chosen.length} image${chosen.length === 1 ? "" : "s"}`
+      ? tn("tool.runCount.images", chosen.length, { label })
       : label;
   }
 
