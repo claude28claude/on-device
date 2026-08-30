@@ -245,9 +245,14 @@ export async function setupPdfTool({
       : label;
   }
 
+  /* Deferred for the same reason as in tool-page.js: a PDF tool's
+     onFilesChanged almost always calls openDocument(tool, ...), and
+     "tool" is the thing this function has not finished returning yet.
+     A timeout, not a promise - a promise still runs before the caller
+     can assign it. */
   const already = workspace.list().filter(wanted);
-  if (already.length) useFiles(already);
-  else render();
+  render();
+  if (already.length) setTimeout(() => useFiles(already), 0);
 
   window.addEventListener("drop", async (e) => {
     if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;

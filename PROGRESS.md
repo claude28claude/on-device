@@ -36,6 +36,7 @@ is always current.
 | 18 | Choosing a file did nothing at all | **Done** — reported by the person using it, not by any check |
 | 19 | A hunt across the whole site | **Done** — two faults found, plus four properties finally tested rather than assumed |
 | 20 | Random retesting: touch screens and the Hindi half-translation | **Done** |
+| 21 | Seeing the picture — and two bugs found on the way there | **Done** |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1864,6 +1865,94 @@ discovered.
 
 ---
 
+## Phase 21 — seeing the picture, and two bugs found on the way
+
+Asked for: show the picture when it is chosen, and show it again once
+Resize has done its work. Getting there turned up two faults that had
+nothing to do with previews.
+
+### The feature: before and after, as pictures
+
+Resize could always tell you the numbers. It could not show you the
+picture, and those are not the same thing — “1080 × 810” does not tell
+you whether *fill the space* has taken somebody off the edge of the
+photograph.
+
+Now, as soon as you choose a picture it appears, with its real size
+underneath. Once you press Resize it becomes a **before and after**
+pair: the original on the left, the finished picture on the right, each
+labelled with its measurements and its file size. Measured on a real
+photograph: `Before 1600 × 1200 · 365 KB` beside `After 400 × 300 · 30 KB`.
+
+Choose several and it shows the first, says “Showing the first of 3.
+All 3 will be resized”, and afterwards adds “2 other pictures were
+resized as well.” It deliberately does **not** flicker through forty
+photographs during a batch.
+
+It reuses the same before-and-after panels the Compress tool already
+had, so it is not a second way of doing the same thing. Every picture
+held open for display is handed back when the panel is rebuilt and
+when the page is left — these are full-size photographs, and holding
+them costs real memory.
+
+Tools can now be told about their own finished work through an
+`onResult` hook. It runs **after** the file is safely in the tray, and
+its failures are caught and logged: showing a picture is a nicety and
+must never be able to lose a file that has already been made.
+
+### 1. Choosing a file and then picking a tool threw the file away
+
+The homepage invites you to drop a file and then choose a tool. Doing
+exactly that lost the file every time.
+
+“Clear everything when you close the tab” is a privacy feature, and it
+worked by listening for `pagehide`. But `pagehide` fires when you click
+a link to another page of this same site just as it does when you close
+the tab. So going from the homepage to Resize looked like leaving, and
+the next page dutifully deleted everything.
+
+It now tells the two apart using a mark in `sessionStorage`, which
+survives moving from page to page inside one tab and is thrown away
+when the tab closes — exactly the line the feature wanted to draw.
+Files now travel from the homepage into a tool. Closing the tab still
+clears them.
+
+### 2. Half the tools crashed on startup — hidden behind the first bug
+
+Fixing that immediately broke something else, which is how the second
+fault came to light. Every tool page has a line meaning “files you
+already loaded are offered straight away”. Because of bug 1 there were
+never any, so **that line had never once run**.
+
+When it finally did, about half the tools failed to start outright with
+`Cannot access 'tool' before initialization`. The reason: a tool's
+“files changed” handler almost always reaches for the object it is
+being set up by — `preview(tool)`, `openDocument(tool, …)` — and that
+object does not exist until setting-up has finished. Handing the files
+over in the middle of that was asking for something not yet built.
+
+The handover now waits until setting-up has returned. A timeout rather
+than a promise, on purpose: a promise would still run before the tool
+had been assigned, because that assignment is itself waiting on the
+very function doing the handing over.
+
+Checked afterwards on both kinds of tool page: a picture chosen on the
+homepage arrives in Resize with the Run button live and reading
+“Resize 1 image”, and a PDF arrives in Split with its pages already
+counted.
+
+### A false alarm worth recording
+
+A screenshot showed a result filename running down the page one letter
+per line, which looked like a broken layout. At a real phone width
+(375px) the same name wraps onto two lines and the page does not scroll
+sideways. It was an artefact of the unusually narrow test pane with the
+results panel open, not something a person would meet. `word-break:
+break-all` is heavier than it needs to be, but it is not misbehaving,
+and it was left alone rather than churned on a guess.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -2103,6 +2192,15 @@ With the server dead, in the same browser:
 44. **The Hindi has still never been read by a Hindi speaker.** That was true of
     the 370 strings already shipped and it is true of the 91 added in Phase 20.
     The setting says so where the language is chosen.
+
+45. **Only Resize shows the picture.** The other image tools still describe their
+    work in words. The machinery (`onResult`, and the before-and-after panels)
+    is shared, so the others can be given the same treatment, but they have not
+    been.
+
+46. **Files now build up as you move between tools.** That is the point — a file
+    chosen once can be used by several tools — but nothing prunes the list, so a
+    long session accumulates. “Clear everything” in the header empties it.
 
 ---
 

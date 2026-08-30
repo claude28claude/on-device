@@ -287,15 +287,34 @@ export function installAutoClear() {
   });
 }
 
+/* Moving from page to page inside this site keeps one sessionStorage
+   for the tab; closing the tab throws it away. That is exactly the
+   line "clear when you leave" wants to draw, and pagehide alone
+   cannot draw it - pagehide fires when you click a link to another
+   page of this site just as it does when you close the tab.
+
+   Without this the flag set on the way out of the homepage was acted
+   on as soon as a tool page opened, so choosing a file and then
+   picking a tool threw the file away. It also made the "files you
+   already loaded are offered straight away" part of every tool page
+   unreachable: by the time it looked, everything had been deleted. */
+const SAME_TAB_KEY = "ondevice.sameTabSession";
+
 export async function applyPendingAutoClear() {
   let flagged = false;
+  let continuingSameTab = false;
   try {
     flagged = window.localStorage.getItem("ondevice.clearOnNextLoad") === "1";
     if (flagged) window.localStorage.removeItem("ondevice.clearOnNextLoad");
+    continuingSameTab = window.sessionStorage.getItem(SAME_TAB_KEY) === "1";
+    window.sessionStorage.setItem(SAME_TAB_KEY, "1");
   } catch (err) {
     return false;
   }
   if (!flagged) return false;
+  /* Still the same tab, so this was a step within the site rather
+     than leaving it. The files stay. */
+  if (continuingSameTab) return false;
   if (!store.get("behaviour.autoClearOnClose", true)) return false;
   try {
     await idb.clear("workspace");

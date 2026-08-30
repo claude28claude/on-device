@@ -25,6 +25,10 @@ export async function setupImageTool({
   fileToken,
   buildJob,
   onFilesChanged = null,
+  /* Called after each finished file has been put in the tray, so a
+     tool can show the result rather than only naming it. The tray
+     copy is made first, so nothing depends on this running. */
+  onResult = null,
   singleFile = false,
   accept = "image/*,.heic,.heif",
   /* Does this tool produce a picture at the end? A reader does not. */
@@ -78,6 +82,13 @@ export async function setupImageTool({
         fromTool: toolLabel,
         fromFile: item.record.name
       });
+      /* Deliberately after the tray, and deliberately not awaited into
+         the same try: showing a picture is a nicety, and it must not
+         be able to lose a file that has already been made. */
+      if (onResult) {
+        try { onResult(item.record, result, name); }
+        catch (err) { console.error("[On Device] Showing the result failed:", err); }
+      }
     }
   });
 
@@ -188,10 +199,22 @@ export async function setupImageTool({
       : label;
   }
 
-  /* Files already loaded elsewhere on the site are offered straight away. */
+  /* Files already loaded elsewhere on the site are offered straight away.
+
+     Handing them over is deliberately left until this function has
+     returned. Nearly every tool's onFilesChanged reaches for the very
+     object this function is still building - "preview(tool)",
+     "openDocument(tool...)" - and that object does not exist until the
+     call finishes. Doing it inline threw "Cannot access 'tool' before
+     initialization" and stopped the tool starting at all, in about
+     half of them.
+
+     A timeout rather than a promise on purpose: a promise would still
+     run before the caller had assigned its "tool" variable, because
+     that assignment is itself waiting on this function. */
   const alreadyLoaded = workspace.list().filter((r) => IMAGE_KINDS.has(r.kind));
-  if (alreadyLoaded.length) useFiles(alreadyLoaded);
-  else renderChosen();
+  renderChosen();
+  if (alreadyLoaded.length) setTimeout(() => useFiles(alreadyLoaded), 0);
 
   /* Dropping onto a tool page uses that tool, rather than sending the
      visitor back to the homepage to start again. */

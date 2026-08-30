@@ -2,10 +2,16 @@
 
 import { setupImageTool, pruneFormatOptions } from "../tool-page.js";
 import * as store from "../store.js";
-import { el } from "../ui.js";
+import { el, formatBytes } from "../ui.js";
 import { targetSize } from "../image/ops.js";
 
 const $ = (id) => document.getElementById(id);
+
+/* Kept at the top level rather than inside start(), because the
+   picture can be shown before start() has finished running - a file
+   carried over from another page arrives that early. */
+let shownUrls = [];
+let resultsShown = 0;
 
 /* What each "job" preset means, in the boxes the tool already has.
    These are the sizes people actually ask for, rather than round
@@ -55,7 +61,8 @@ async function start() {
     toolId: "image-resize",
     toolLabel: "Resize",
     fileToken: "resized",
-    onFilesChanged: () => previewSizes(),
+    onFilesChanged: (files) => { showChosen(files); previewSizes(); },
+    onResult: (record, result) => showResult(record, result),
     buildJob: async () => buildJob()
   });
 
@@ -326,6 +333,117 @@ async function start() {
       ])
     );
   }
+
+  /* ---- Showing the picture itself --------------------------
+     This tool could always tell you the numbers. It could not show
+     you the picture, and the two are not the same thing: "1080 x 810"
+     does not tell you whether "fill the space" has taken somebody off
+     the edge of the photograph. */
+
+  function releaseShown() {
+    for (const url of shownUrls) URL.revokeObjectURL(url);
+    shownUrls = [];
+  }
+
+  /* Every URL made here is remembered so it can be handed back. A
+     picture held open this way stays in memory until it is released,
+     and these are full-size photographs. */
+  function urlFor(blob) {
+    const url = URL.createObjectURL(blob);
+    shownUrls.push(url);
+    return url;
+  }
+
+  function pane(title, blob, caption, alt) {
+    return el("figure", { class: "compare-pane" }, [
+      el("figcaption", {}, [
+        el("span", { text: title }),
+        el("span", { class: "mono", text: caption })
+      ]),
+      el("img", { class: "pane-image", src: urlFor(blob), alt, loading: "lazy" })
+    ]);
+  }
+
+  function sizeCaption(w, h, bytes) {
+    return w && h ? `${w} \u00d7 ${h} \u00b7 ${formatBytes(bytes)}` : formatBytes(bytes);
+  }
+
+  /* Before anything has been done: the picture you chose. */
+  function showChosen(files) {
+    const host = $("preview-host");
+    if (!host) return;
+    releaseShown();
+    resultsShown = 0;
+    host.textContent = "";
+    if (!files || !files.length) return;
+
+    const first = files[0];
+    if (!first || !first.blob) return;
+
+    host.append(
+      el("div", { class: "panel" }, [
+        el("h2", { class: "h-lg", text: "The picture you chose" }),
+        el("div", { class: "compare-grid" }, [
+          pane(first.name, first.blob,
+               sizeCaption(first.width, first.height, first.blob.size),
+               `The picture you chose, ${first.name}`)
+        ]),
+        files.length > 1
+          ? el("p", {
+              class: "field-hint mb-0",
+              text: `Showing the first of ${files.length}. All ${files.length} will be resized.`
+            })
+          : null
+      ])
+    );
+  }
+
+  /* After the work: the same picture, before and after, side by side. */
+  function showResult(record, result) {
+    const host = $("preview-host");
+    if (!host || !record || !result || !result.blob) return;
+
+    resultsShown++;
+    if (resultsShown > 1) {
+      /* The comparison stays on the first picture rather than being
+         rebuilt for every file in a batch, which would leave it
+         flickering through forty photographs. The rest are counted. */
+      const more = $("more-resized");
+      const others = resultsShown - 1;
+      if (more) {
+        more.textContent =
+          others === 1
+            ? "One other picture was resized as well. Both are in Results below."
+            : `${others} other pictures were resized as well. All of them are in Results below.`;
+      }
+      return;
+    }
+
+    releaseShown();
+    host.textContent = "";
+
+    const beforeW = result.originalWidth || record.width;
+    const beforeH = result.originalHeight || record.height;
+
+    host.append(
+      el("div", { class: "panel" }, [
+        el("h2", { class: "h-lg", text: "Before and after" }),
+        el("div", { class: "compare-grid" }, [
+          pane("Before", record.blob,
+               sizeCaption(beforeW, beforeH, record.blob.size),
+               `${record.name} before resizing`),
+          pane("After", result.blob,
+               sizeCaption(result.width, result.height, result.blob.size),
+               `${record.name} after resizing`)
+        ]),
+        el("p", { class: "field-hint mb-0", id: "more-resized", text: "" })
+      ])
+    );
+  }
+
+  /* A picture held open costs memory, so hand it back when the page
+     goes rather than waiting for the tab to close. */
+  window.addEventListener("pagehide", releaseShown);
 }
 
 start().catch((err) => {
