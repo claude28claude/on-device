@@ -37,6 +37,7 @@ is always current.
 | 19 | A hunt across the whole site | **Done** — two faults found, plus four properties finally tested rather than assumed |
 | 20 | Random retesting: touch screens and the Hindi half-translation | **Done** |
 | 21 | Seeing the picture — and two bugs found on the way there | **Done** |
+| 22 | Every tool re-checked, and real choices in the resizer | **Done** |
 
 **Tools built: 40 of 41.** Every unbuilt tool on the homepage is marked "Not built
 yet" with the phase it arrives in, and pressing one says so rather than doing
@@ -1953,6 +1954,86 @@ and it was left alone rather than churned on a guess.
 
 ---
 
+## Phase 22 — every tool re-checked, and real choices in the resizer
+
+### First: does any of it still work?
+
+A great deal of shared code had changed in the last few phases — the
+queue, the language machinery, the way files are handed to a tool. So
+before adding anything, all **40 tools were opened with a photograph, a
+PDF and a text file already loaded**, which is the path that was
+crashing half of them one phase ago.
+
+**40 of 40 started cleanly.** No tool reported failing to start, and
+Resize showed its new preview for the picture it had been handed.
+
+### Then: three real choices in the resizer
+
+**Which part to keep.** “Fill the space” had always cropped from the
+middle. That suits most photographs and ruins the rest: a
+head-and-shoulders portrait squeezed into a square loses the top of the
+head. There are now **nine positions** — the middle, the four sides and
+the four corners — and the same setting does both jobs. With *fill the
+space* it decides which part survives the crop; with *fit it all in* it
+decides which corner the picture sits in and so which side the spare
+space goes on.
+
+Measured, not assumed: a wide photograph cropped to a banner keeps
+**96% different pixels** anchored to the top versus the bottom, and a
+tall test picture cropped square returns red, green or blue depending
+on whether it is held to the top, middle or bottom.
+
+**Transparent padding.** “Fit it all in” could only fill the spare
+space with a colour. It can now leave it see-through instead — and the
+offer is honest about itself. Choose JPEG and the option switches off
+and says *“JPEG cannot hold transparency, so this is switched off.”*
+Choose PNG or WebP and it works. Choose “keep the original format” and
+it says it depends on what the original was. The colour picker hides
+itself when it would not be used.
+
+Checked on a real photograph: the padding comes back fully transparent
+and the picture itself fully opaque.
+
+**Where the controls appear** now follows what they can do. The
+position only shows for the two fits that leave something to place;
+stretching fills the rectangle exactly and “keep the shape” never
+crops, so neither offers it.
+
+### The bug this turned up
+
+The first version put a line in the notes saying *“The picture was held
+to the top rather than the middle”* whenever the setting was not the
+middle. But anchoring to the top does **nothing** to a wide photograph
+squeezed into a square: the overhang is sideways, there is no spare
+height, and the picture lands exactly where it would have done anyway.
+The tool was claiming work it had not done.
+
+It now works out whether the position actually moved anything before
+saying so. Confirmed all three ways: a top anchor on a square says
+nothing, a left anchor on the same square says it, and a top anchor on
+a banner — where the overhang really is vertical — says it and changes
+96% of the pixels.
+
+That is the second time in three phases a sentence describing the work
+has been wrong while the work itself was right. Notes deserve the same
+suspicion as the code.
+
+### Two tests of mine that were wrong before the code was
+
+Worth writing down, because both looked like failures:
+
+1. Top versus bottom on a **landscape photograph cropped to a square**
+   produced byte-identical files. That is correct — the overhang is
+   sideways, so a vertical anchor has nothing to move. The axis had to
+   be chosen to match the shape.
+2. The transparency check read a corner that was **inside the
+   picture**, because the position was still set to “top” from the
+   previous test, which pushed all the padding to the bottom.
+
+Both were read as bugs at first. Neither was.
+
+---
+
 ## The offline check — run with the server switched off
 
 The whole point of On Device is that it does not need a server once you have it.
@@ -2174,9 +2255,9 @@ With the server dead, in the same browser:
     threshold as well as the amount. This has one small radius that suits
     pictures which have just been made smaller, which is what it is for.
 
-41. **“Fill the space” always crops from the middle.** For most photographs that
-    is where the subject is. There is no way to say “keep the top” for a picture
-    where it is not.
+41. ~~**“Fill the space” always crops from the middle.**~~ Fixed in Phase 22: nine
+    positions, and the tool only claims to have used one when it actually
+    changed where the picture landed.
 
 42. **A size limit works by lowering quality, not by making the picture smaller.**
     If the limit cannot be reached it says so and suggests reducing the pixel
@@ -2201,6 +2282,11 @@ With the server dead, in the same browser:
 46. **Files now build up as you move between tools.** That is the point — a file
     chosen once can be used by several tools — but nothing prunes the list, so a
     long session accumulates. “Clear everything” in the header empties it.
+
+47. **The recipe step still only scales.** The resizer offers exact sizes, fits,
+    positions and transparent padding; the saved-recipe version of the same step
+    offers longest/shortest side, width, height and percentage only. Anything
+    needing an exact rectangle has to be done in the tool itself.
 
 ---
 

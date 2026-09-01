@@ -96,6 +96,11 @@ async function start() {
        to be repainted when the format changes and not only when the
        limit is switched on. */
     if ($("use-limit").checked) paintLimit();
+    /* Whether transparency is even possible depends on the format, so
+       the offer has to be re-examined the moment it changes - the same
+       trap the size-limit hint fell into. */
+    syncTransparency();
+    previewSizes();
   });
 
   for (const btn of document.querySelectorAll("[data-preset]")) {
@@ -107,6 +112,8 @@ async function start() {
 
   $("job-preset").addEventListener("change", applyJob);
   $("fit").addEventListener("change", () => { syncFit(); previewSizes(); });
+  $("fit-position").addEventListener("change", previewSizes);
+  $("pad-transparent").addEventListener("change", () => { syncTransparency(); previewSizes(); });
   $("pad-colour").addEventListener("input", previewSizes);
   $("sharpen").addEventListener("input", paintSharpen);
   $("use-limit").addEventListener("change", syncLimit);
@@ -155,6 +162,45 @@ async function start() {
     $("pad-field").hidden = fit !== "contain";
     /* "Keep the shape" is the old behaviour, expressed properly. */
     $("keep-aspect").closest(".check-row").hidden = $("mode").value === "pixels";
+
+    /* Position only means something when there is space left over or
+       an overhang. Stretching fills the rectangle exactly, and
+       "keep the shape" never crops, so neither has anything to place. */
+    const placeable = fit === "cover" || fit === "contain";
+    $("position-field").hidden = !placeable;
+    $("position-hint").textContent =
+      fit === "cover"
+        ? "Which part survives the crop. A head-and-shoulders photograph cropped from the middle can lose the top of the head; hold it to the top and it will not."
+        : "Which corner the picture sits in, and so which side the filled space goes on.";
+    syncTransparency();
+  }
+
+  /* Transparency is only honest if the format can actually hold it. */
+  function transparentWanted() {
+    const box = $("pad-transparent");
+    return !!box && box.checked && !box.disabled;
+  }
+
+  function syncTransparency() {
+    const fmt = $("format").value;
+    const box = $("pad-transparent");
+    const hint = $("transparent-hint");
+    if (!box) return;
+
+    const canHold = fmt === "png" || fmt === "webp";
+    const dependsOnSource = fmt === "keep";
+
+    box.disabled = !canHold && !dependsOnSource;
+    if (box.disabled) box.checked = false;
+
+    hint.textContent = canHold
+      ? "The space around the picture is left see-through instead of painted."
+      : dependsOnSource
+        ? "Only works if the original format can hold transparency. A JPEG cannot, and its space will be painted with the colour above."
+        : "JPEG cannot hold transparency, so this is switched off. Choose PNG or WebP to use it.";
+
+    /* No point offering a colour that will not be painted. */
+    $("pad-colour-row").hidden = transparentWanted();
   }
 
   function syncLimit() {
@@ -228,7 +274,8 @@ async function start() {
          so the old tick box only applies to the other modes. */
       keepAspect: mode === "pixels" ? fit !== "stretch" : $("keep-aspect").checked,
       allowGrow: $("allow-grow").checked,
-      fit: mode === "pixels" ? fit : undefined
+      fit: mode === "pixels" ? fit : undefined,
+      position: $("fit-position").value
     };
   }
 
@@ -240,7 +287,9 @@ async function start() {
       format: $("format").value,
       quality: Number($("quality").value),
       sharpen: Number($("sharpen").value) || 0,
-      background: $("pad-colour").value,
+      /* null, not "" - the pipeline treats null as "leave it
+         transparent" and anything else falsy as "nobody chose". */
+      background: transparentWanted() ? null : $("pad-colour").value,
       targetBytes: limitOn ? Math.max(1, Number($("limit-kb").value)) * 1024 : undefined
     };
   }

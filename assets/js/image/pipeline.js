@@ -11,7 +11,7 @@
 
 import { decodeImage, detectCapabilities } from "./decode.js";
 import { normalise, resize, crop, rotate, straighten, flatten, hasTransparency, toBlob,
-         releaseCanvas, fitInto, sharpen, toBlobUnder } from "./ops.js";
+         releaseCanvas, fitInto, fitPositionMoves, sharpen, toBlobUnder } from "./ops.js";
 import { stripMetadata, canStripLosslessly, mimeFor } from "./strip.js";
 
 /* ---- Filenames ------------------------------------------ */
@@ -144,6 +144,9 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
         job.resize.fit && job.resize.fit !== "keep";
 
       if (exact) {
+        /* Measured before fitInto replaces the canvas. */
+        const sourceW = canvas.width;
+        const sourceH = canvas.height;
         const wasSmaller =
           canvas.width < (job.resize.targetWidth || canvas.width) ||
           canvas.height < (job.resize.targetHeight || canvas.height);
@@ -152,8 +155,12 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
           width: job.resize.targetWidth || canvas.width,
           height: job.resize.targetHeight || canvas.height,
           fit: job.resize.fit,
-          background: job.background || "#ffffff",
-          allowGrow: job.resize.allowGrow !== false
+          /* An explicit null means "leave it transparent". Only null,
+             not any falsy value: "" or undefined still mean nobody
+             chose, so white stays the default. */
+          background: job.background === null ? null : (job.background || "#ffffff"),
+          allowGrow: job.resize.allowGrow !== false,
+          position: job.resize.position || "centre"
         });
         releaseCanvas(canvas);
         canvas = next;
@@ -165,10 +172,29 @@ export async function processImage(file, sourceFormat, job, onProgress = () => {
               : "This picture was smaller than the size asked for. Because enlarging is switched off it was left at its own size and the space around it was filled in."
           );
         }
+        /* Only say the picture was held to one side if doing so
+           actually moved it. Anchoring to the top does nothing to a
+           wide photograph in a square - the overhang is sideways -
+           and claiming otherwise would be describing work that was
+           never done. */
+        const moved = fitPositionMoves(sourceW, sourceH, {
+          width: job.resize.targetWidth || sourceW,
+          height: job.resize.targetHeight || sourceH,
+          fit: job.resize.fit,
+          allowGrow: job.resize.allowGrow !== false,
+          position: job.resize.position
+        });
+        const where = moved
+          ? ` The picture was held to the ${String(job.resize.position).replace("-", " ")} rather than the middle.`
+          : "";
         if (job.resize.fit === "contain") {
-          notes.push("The picture was fitted inside the size you asked for, and the space left over was filled in.");
+          notes.push(
+            (job.background === null
+              ? "The picture was fitted inside the size you asked for, and the space left over was left transparent."
+              : "The picture was fitted inside the size you asked for, and the space left over was filled in.") + where
+          );
         } else if (job.resize.fit === "cover") {
-          notes.push("The picture was filled to the size you asked for, so the edges that hung over were cut off.");
+          notes.push("The picture was filled to the size you asked for, so the edges that hung over were cut off." + where);
         } else if (job.resize.fit === "stretch") {
           notes.push("The picture was stretched to the size you asked for, so its proportions have changed.");
         }

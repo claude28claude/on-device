@@ -296,8 +296,47 @@ export { releaseCanvas };
 
    The tool says which of those is happening rather than picking one
    quietly. */
+/* Where the picture sits inside the rectangle, as a fraction of the
+   space left over on each axis. The same two numbers do both jobs:
+   with "fit it all in" the leftover space is padding and this decides
+   which side it goes on; with "fill the space" the leftover is
+   negative - the overhang - and this decides which part is kept.
+
+   It matters most for people. A head-and-shoulders photograph cropped
+   from the middle to a square loses the top of the head; anchored to
+   the top it does not. */
+export const FIT_POSITIONS = {
+  "top-left": [0, 0],     "top": [0.5, 0],     "top-right": [1, 0],
+  "left": [0, 0.5],       "centre": [0.5, 0.5], "right": [1, 0.5],
+  "bottom-left": [0, 1],  "bottom": [0.5, 1],  "bottom-right": [1, 1]
+};
+
+/* Did the chosen position actually move anything?
+
+   Anchoring to the top does nothing to a wide photograph squeezed into
+   a square: the overhang is sideways, there is no spare height, and
+   the picture lands in exactly the same place as it would have done
+   centred. Saying "held to the top" then would be claiming work that
+   was not done, so the caller asks this first. */
+export function fitPositionMoves(srcW, srcH, {
+  width, height, fit = "contain", allowGrow = true, position = "centre"
+}) {
+  if (!position || position === "centre" || fit === "stretch" || fit === "keep") return false;
+  const [fx, fy] = FIT_POSITIONS[position] || FIT_POSITIONS.centre;
+  const targetW = Math.max(1, Math.round(width));
+  const targetH = Math.max(1, Math.round(height));
+  let scale = fit === "cover"
+    ? Math.max(targetW / srcW, targetH / srcH)
+    : Math.min(targetW / srcW, targetH / srcH);
+  if (!allowGrow && scale > 1) scale = 1;
+  const spareX = targetW - srcW * scale;
+  const spareY = targetH - srcH * scale;
+  return (fx !== 0.5 && Math.abs(spareX) > 1) || (fy !== 0.5 && Math.abs(spareY) > 1);
+}
+
 export function fitInto(canvas, {
-  width, height, fit = "contain", background = "#ffffff", allowGrow = true
+  width, height, fit = "contain", background = "#ffffff", allowGrow = true,
+  position = "centre"
 }) {
   const targetW = Math.max(1, Math.round(width));
   const targetH = Math.max(1, Math.round(height));
@@ -314,7 +353,11 @@ export function fitInto(canvas, {
 
   /* Both of the remaining fits need a background: "contain" always
      leaves space, and "cover" leaves space too once enlarging is
-     refused and the picture is smaller than the rectangle. */
+     refused and the picture is smaller than the rectangle.
+
+     A background of null means leave it transparent, which only makes
+     sense in a format that can hold transparency. The caller checks
+     that; here, null simply means do not paint. */
   if (background) {
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, targetW, targetH);
@@ -332,8 +375,8 @@ export function fitInto(canvas, {
 
   const drawW = canvas.width * scale;
   const drawH = canvas.height * scale;
-  /* Centred: the middle of a photograph is usually the subject. */
-  ctx.drawImage(canvas, (targetW - drawW) / 2, (targetH - drawH) / 2, drawW, drawH);
+  const [fx, fy] = FIT_POSITIONS[position] || FIT_POSITIONS.centre;
+  ctx.drawImage(canvas, (targetW - drawW) * fx, (targetH - drawH) * fy, drawW, drawH);
   return out;
 }
 
